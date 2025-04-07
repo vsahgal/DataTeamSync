@@ -247,9 +247,11 @@ export default function DirtyUnicorn({
             </>
           )}
 
-          {/* Eye appearance changes with dirtiness */}
+          {/* Eyes appearance changes with dirtiness - now with two eyes */}
           <circle cx="210" cy="110" r="5" fill={dirtiness >= 6 ? "#f0f0f0" : "white"} />
           <circle cx="210" cy="110" r="2" fill="#333" />
+          <circle cx="190" cy="110" r="5" fill={dirtiness >= 6 ? "#f0f0f0" : "white"} />
+          <circle cx="190" cy="110" r="2" fill="#333" />
 
           {/* Sad eyes - gets even sadder with dirtiness */}
           <path 
