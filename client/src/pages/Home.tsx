@@ -3,7 +3,7 @@ import LevelDisplay from "@/components/LevelDisplay";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
 import DancingUnicorn from "@/components/DancingUnicorn";
-import LevelUpAnimation from "@/components/LevelUpAnimation";
+import AnimatedLevelIndicator from "@/components/AnimatedLevelIndicator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
@@ -180,15 +180,7 @@ export default function Home() {
         onAnimationComplete={() => setShowDancingUnicorn(false)}
       />
       
-      {/* Level-up animation */}
-      {newLevel && (
-        <LevelUpAnimation 
-          isVisible={showLevelAnimation}
-          level={newLevel}
-          color={LEVELS.find(l => l.level === newLevel)?.color || '#4299E1'}
-          onAnimationComplete={() => setShowLevelAnimation(false)}
-        />
-      )}
+      {/* We've removed the LevelUpAnimation and replaced it with the inline AnimatedLevelIndicator */}
       
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
@@ -256,17 +248,27 @@ export default function Home() {
                     return (
                       <>
                         <div className="flex flex-col items-center justify-center mb-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="bg-blue-100 px-3 py-1 rounded-full">
-                              <span className="text-lg font-bold" style={{ color: currentLevelInfo.color }}>
-                                Level {currentLevel}
+                          {/* Use the animated level indicator when leveling up, otherwise show the static one */}
+                          {didLevelUp && newLevel ? (
+                            <AnimatedLevelIndicator
+                              previousLevel={currentLevel}
+                              targetLevel={newLevel}
+                              isAnimating={showLevelAnimation}
+                              onAnimationComplete={() => setShowLevelAnimation(false)}
+                            />
+                          ) : (
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="bg-blue-100 px-3 py-1 rounded-full">
+                                <span className="text-lg font-bold" style={{ color: currentLevelInfo.color }}>
+                                  Level {currentLevel}
+                                </span>
+                              </div>
+                              <span className="text-lg font-medium text-blue-600">•</span>
+                              <span className="text-lg font-medium text-blue-600">
+                                {currentLevelInfo.name}
                               </span>
                             </div>
-                            <span className="text-lg font-medium text-blue-600">•</span>
-                            <span className="text-lg font-medium text-blue-600">
-                              {currentLevelInfo.name}
-                            </span>
-                          </div>
+                          )}
                           <div className="text-sm text-gray-500 mb-1">
                             {pointsNeeded} points to Level {currentLevel + 1}
                           </div>
