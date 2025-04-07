@@ -144,8 +144,43 @@ export default function Home() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [justCompletedShower, setJustCompletedShower] = useState(false);
   
-  // Get current level information 
-  const currentLevelInfo = LEVELS.find(l => l.level === stats.level) || LEVELS[0];
+  // Helper function to get level info for any level, even beyond predefined levels
+  const getLevelInfo = (level: number) => {
+    // First check if this is a predefined level
+    const predefinedLevel = LEVELS.find(l => l.level === level);
+    if (predefinedLevel) {
+      return predefinedLevel;
+    }
+    
+    // For levels beyond our predefined list, generate info dynamically
+    const levelNames = [
+      "Legendary Cleanser",
+      "Mythical Washer",
+      "Cosmic Bather",
+      "Galactic Showerer",
+      "Universal Scrubber",
+      "Stellar Soaper",
+      "Interstellar Hygienist",
+      "Celestial Washer"
+    ];
+    
+    // Pick a name based on the level (cycling through the options)
+    const nameIndex = (level - LEVELS.length - 1) % levelNames.length;
+    
+    // Generate colors by cycling through a rainbow pattern
+    const hue = ((level - LEVELS.length - 1) * 30) % 360;
+    
+    return {
+      level,
+      name: levelNames[nameIndex],
+      pointsNeeded: 10000 + (level - LEVELS.length) * 500,
+      color: `hsl(${hue}, 80%, 60%)`,
+      showersNeeded: 3 // All levels beyond the predefined ones need 3 showers
+    };
+  };
+  
+  // Get current level information
+  const currentLevelInfo = getLevelInfo(stats.level || 1);
   
   // Manage the level-up celebration sequence
   useEffect(() => {
@@ -234,16 +269,8 @@ export default function Home() {
                 <div className="level-progress">
                   {(() => {
                     const currentLevel = stats.level || 1;
-                    const currentLevelInfo = LEVELS.find(l => l.level === currentLevel) || LEVELS[0];
-                    const nextLevelInfo = LEVELS.find(l => l.level === currentLevel + 1);
-                    
-                    if (!nextLevelInfo) {
-                      return (
-                        <div className="text-center text-sm text-blue-600 mb-1">
-                          Maximum level reached!
-                        </div>
-                      );
-                    }
+                    const currentLevelInfo = getLevelInfo(currentLevel);
+                    const nextLevelInfo = getLevelInfo(currentLevel + 1);
                     
                     // Determine how many sessions needed for next level
                     const sessionsNeeded = currentLevel <= 10 ? 1 : 

@@ -235,10 +235,12 @@ const checkLevelProgression = (stats: ShowerStats): number => {
     }
     
     // Determine how many sessions needed for next level
+    // For levels beyond 20, always require 3 showers
     const sessionsNeeded = currentLevel <= 10 ? 1 : 
                            currentLevel <= 20 ? 2 : 3;
     
     // Check if earned enough sessions for next level
+    // No level cap - can progress infinitely
     if (sessionsAfterLastLevel >= sessionsNeeded) {
       return currentLevel + 1;
     }

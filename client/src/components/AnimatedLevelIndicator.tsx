@@ -20,12 +20,47 @@ export default function AnimatedLevelIndicator({
   const [glow, setGlow] = useState(0);
   const animationRef = useRef<number | null>(null);
   
+  // Helper function to get level info even for levels beyond the predefined ones
+  const getLevelInfo = (level: number) => {
+    // Check if it's a predefined level
+    const predefinedLevel = LEVELS.find(l => l.level === level);
+    if (predefinedLevel) {
+      return predefinedLevel;
+    }
+    
+    // Generate level info for higher levels
+    const levelNames = [
+      "Legendary Cleanser",
+      "Mythical Washer",
+      "Cosmic Bather",
+      "Galactic Showerer",
+      "Universal Scrubber",
+      "Stellar Soaper",
+      "Interstellar Hygienist",
+      "Celestial Washer"
+    ];
+    
+    // Pick a name based on the level (cycling through the options)
+    const nameIndex = (level - LEVELS.length - 1) % levelNames.length;
+    
+    // Generate colors by cycling through a rainbow pattern
+    const hue = ((level - LEVELS.length - 1) * 30) % 360;
+    
+    return {
+      level,
+      name: levelNames[nameIndex],
+      pointsNeeded: 10000 + (level - LEVELS.length) * 500,
+      color: `hsl(${hue}, 80%, 60%)`,
+      showersNeeded: 3 // All levels beyond the predefined ones need 3 showers
+    };
+  };
+  
   // Get color information for the levels
-  const previousLevelInfo = LEVELS.find(l => l.level === previousLevel) || LEVELS[0];
-  const targetLevelInfo = LEVELS.find(l => l.level === targetLevel) || LEVELS[0];
+  const previousLevelInfo = getLevelInfo(previousLevel);
+  const targetLevelInfo = getLevelInfo(targetLevel);
   
   // Get the current level's color based on the animation state
-  const currentLevelInfo = LEVELS.find(l => l.level === currentDisplayLevel) || LEVELS[0];
+  const currentLevelInfo = getLevelInfo(currentDisplayLevel);
   
   useEffect(() => {
     if (!isAnimating) {

@@ -14,16 +14,34 @@ export default function LevelDisplay({ stats }: LevelDisplayProps) {
   
   const levelInfo = useMemo(() => {
     const currentLevelInfo = LEVELS.find(l => l.level === currentLevel) || LEVELS[0];
-    const nextLevelInfo = LEVELS.find(l => l.level === currentLevel + 1);
+    let nextLevelInfo = LEVELS.find(l => l.level === currentLevel + 1);
     
-    // If there's no next level (max level reached)
+    // If there's no next level in our predefined levels, generate one
     if (!nextLevelInfo) {
-      return {
-        currentLevel: currentLevelInfo,
-        nextLevel: null,
-        progress: 100,
-        showersCompleted: 0,
-        showersNeeded: 0
+      // Generate a name for the next level based on a pattern
+      const levelNames = [
+        "Legendary Cleanser",
+        "Mythical Washer",
+        "Cosmic Bather",
+        "Galactic Showerer",
+        "Universal Scrubber",
+        "Stellar Soaper",
+        "Interstellar Hygienist",
+        "Celestial Washer"
+      ];
+      
+      // Pick a name based on the current level (cycling through the options)
+      const nameIndex = (currentLevel - LEVELS.length) % levelNames.length;
+      
+      // Generate colors by cycling through a rainbow pattern
+      const hue = ((currentLevel - LEVELS.length) * 30) % 360;
+      
+      nextLevelInfo = {
+        level: currentLevel + 1,
+        name: levelNames[nameIndex],
+        pointsNeeded: currentLevelInfo.pointsNeeded + 500,
+        color: `hsl(${hue}, 80%, 60%)`,
+        showersNeeded: 3 // All levels beyond the predefined ones need 3 showers
       };
     }
     
@@ -66,13 +84,10 @@ export default function LevelDisplay({ stats }: LevelDisplayProps) {
             Level {currentLevel}: {levelInfo.currentLevel.name}
           </h3>
           <p className="text-gray-600 text-sm">
-            {levelInfo.nextLevel ? (
-              levelInfo.showersRemaining > 0 ? 
-                `${levelInfo.showersRemaining} more ${levelInfo.showersRemaining === 1 ? 'shower' : 'showers'} needed for Level ${currentLevel + 1}` : 
-                `Ready to level up to Level ${currentLevel + 1}!`
-            ) : (
-              'Maximum level reached!'
-            )}
+            {levelInfo.showersRemaining > 0 ? 
+              `${levelInfo.showersRemaining} more ${levelInfo.showersRemaining === 1 ? 'shower' : 'showers'} needed for Level ${currentLevel + 1}` : 
+              `Ready to level up to Level ${currentLevel + 1}!`
+            }
           </p>
         </div>
         <div className="bg-blue-100 text-blue-800 text-xl font-bold rounded-full w-12 h-12 flex items-center justify-center">
