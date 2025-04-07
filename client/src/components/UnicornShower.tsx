@@ -758,9 +758,11 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
             }}
           />
           
-          {/* Eyes - more excited as cleaning progresses */}
+          {/* Eyes - more excited as cleaning progresses - now with two eyes */}
           <circle cx="210" cy="110" r={5 + (cleaningStage * 0.5)} fill="white" />
           <circle cx="210" cy="110" r={2 + (cleaningStage * 0.3)} fill="#333" />
+          <circle cx="190" cy="110" r={5 + (cleaningStage * 0.5)} fill="white" />
+          <circle cx="190" cy="110" r={2 + (cleaningStage * 0.3)} fill="#333" />
           
           {/* Smile - gets bigger as cleaning progresses */}
           <motion.path 
