@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import LevelDisplay from "@/components/LevelDisplay";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
-import DancingUnicorn from "@/components/DancingUnicorn";
 import AnimatedLevelIndicator from "@/components/AnimatedLevelIndicator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -132,7 +131,7 @@ export default function Home() {
   
   // States for managing the level-up celebration sequence
   const [showLevelAnimation, setShowLevelAnimation] = useState(false);
-  const [showDancingUnicorn, setShowDancingUnicorn] = useState(false);
+  const [isDancingUnicorn, setIsDancingUnicorn] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   
   // Get current level information 
@@ -145,16 +144,16 @@ export default function Home() {
       setShowConfetti(true);
       setShowLevelAnimation(true);
       
-      // After level animation completes, show dancing unicorn
+      // After level animation completes, make the unicorn dance
       setTimeout(() => {
-        setShowDancingUnicorn(true);
+        setIsDancingUnicorn(true);
         // Hide level animation
         setShowLevelAnimation(false);
       }, 2000);
       
       // After dancing unicorn completes, end the celebration
       setTimeout(() => {
-        setShowDancingUnicorn(false);
+        setIsDancingUnicorn(false);
         setShowConfetti(false);
         resetLevelUp(); // Reset the level-up state
       }, 5000);
@@ -174,11 +173,7 @@ export default function Home() {
         />
       )}
       
-      {/* Dancing unicorn animation */}
-      <DancingUnicorn 
-        isVisible={showDancingUnicorn} 
-        onAnimationComplete={() => setShowDancingUnicorn(false)}
-      />
+      {/* We've replaced the separate DancingUnicorn component with enhanced DirtyUnicorn */}
       
       {/* We've removed the LevelUpAnimation and replaced it with the inline AnimatedLevelIndicator */}
       
@@ -207,7 +202,9 @@ export default function Home() {
                 <DirtyUnicorn 
                   dirtiness={stats.lastShowerDate ? 
                     (getDaysSinceLastShower(stats.lastShowerDate) === 0 ? 0 : Math.min(7, getDaysSinceLastShower(stats.lastShowerDate))) : 
-                    3} 
+                    3}
+                  isDancing={isDancingUnicorn}
+                  onDanceComplete={() => setIsDancingUnicorn(false)}
                 />
               </div>
             )}

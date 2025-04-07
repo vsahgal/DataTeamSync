@@ -1,15 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface DirtyUnicornProps {
   dirtiness: number; // Scale of 0-7, where 0 is clean and 7 is the dirtiest
+  isDancing?: boolean; // Flag to trigger dancing animation
+  onDanceComplete?: () => void; // Callback for when dance animation completes
 }
 
-export default function DirtyUnicorn({ dirtiness = 3 }: DirtyUnicornProps) {
+export default function DirtyUnicorn({ 
+  dirtiness = 3, 
+  isDancing = false, 
+  onDanceComplete 
+}: DirtyUnicornProps) {
   const [showSmell1, setShowSmell1] = useState(false);
   const [showSmell2, setShowSmell2] = useState(false);
   const [showSmell3, setShowSmell3] = useState(false);
   const [sparkle, setSparkle] = useState(false);
   const [sigh, setSigh] = useState(false);
+  
+  // Dancing animation states
+  const [position, setPosition] = useState(0);
+  const [rotation, setRotation] = useState(0);
+  const [scale, setScale] = useState(1);
+  const animationRef = useRef<number | null>(null);
   
   // Only show dirt when dirtiness is greater than 0
   const isClean = dirtiness === 0;
@@ -18,6 +30,7 @@ export default function DirtyUnicorn({ dirtiness = 3 }: DirtyUnicornProps) {
   const baseOpacity = 0.4;
   const dirtOpacity = baseOpacity + (dirtiness * 0.08); // Increases with dirtiness
   
+  // Handle regular animations like sparkles and smell clouds
   useEffect(() => {
     if (isClean) {
       // Sparkle animation for clean unicorn
@@ -59,8 +72,68 @@ export default function DirtyUnicorn({ dirtiness = 3 }: DirtyUnicornProps) {
     }
   }, [dirtiness, isClean]);
   
+  // Handle dancing animation
+  useEffect(() => {
+    if (!isDancing) {
+      // Reset animation states when not dancing
+      setPosition(0);
+      setRotation(0);
+      setScale(1);
+      
+      // Clear any ongoing animation
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      return;
+    }
+    
+    // Dancing animation sequence
+    let step = 0;
+    const totalSteps = 60; // 2 seconds at 30fps
+    
+    const animate = () => {
+      // Calculate progress (0 to 1)
+      const progress = step / totalSteps;
+      
+      // Bouncy movement
+      setPosition(Math.sin(progress * Math.PI * 4) * 15);
+      
+      // Rotation
+      setRotation(Math.sin(progress * Math.PI * 3) * 10);
+      
+      // Scale breathing effect
+      setScale(1 + Math.sin(progress * Math.PI * 5) * 0.1);
+      
+      step++;
+      
+      if (step <= totalSteps) {
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
+        // Animation complete
+        if (onDanceComplete) {
+          onDanceComplete();
+        }
+      }
+    };
+    
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isDancing, onDanceComplete]);
+  
   return (
-    <div className="relative w-54 h-54 mx-auto">
+    <div 
+      className="relative w-54 h-54 mx-auto"
+      style={{
+        transform: isDancing ? `translateY(${position}px) rotate(${rotation}deg) scale(${scale})` : 'none',
+        transition: 'transform 0.1s ease-out'
+      }}
+    >
       {isClean ? (
         // Clean unicorn SVG
         <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
