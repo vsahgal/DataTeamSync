@@ -22,12 +22,16 @@ const initializeStorage = () => {
   }
   
   if (!localStorage.getItem(STORAGE_KEYS.STATS)) {
+    // Set a default last shower date that's 2 days ago
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    
     const initialStats: ShowerStats = {
-      totalSessions: 0,
-      totalPoints: 0,
-      longestShower: 0,
+      totalSessions: 1,
+      totalPoints: 10,
+      longestShower: 120, // 2 minutes
       streakDays: 0,
-      lastShowerDate: null,
+      lastShowerDate: twoDaysAgo.toISOString(),
       level: 1,
       lastLevelUp: null
     };
@@ -105,12 +109,16 @@ export const getShowerStats = (): ShowerStats => {
   try {
     const stats = localStorage.getItem(STORAGE_KEYS.STATS);
     if (!stats) {
+      // Set a default last shower date that's 2 days ago
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      
       const initialStats: ShowerStats = {
-        totalSessions: 0,
-        totalPoints: 0,
-        longestShower: 0,
+        totalSessions: 1,
+        totalPoints: 10,
+        longestShower: 120, // 2 minutes
         streakDays: 0,
-        lastShowerDate: null,
+        lastShowerDate: twoDaysAgo.toISOString(),
         level: 1,
         lastLevelUp: null
       };
@@ -143,12 +151,16 @@ export const getShowerStats = (): ShowerStats => {
     return parsedStats;
   } catch (error) {
     console.error('Error getting shower stats:', error);
+    // Set a default last shower date that's 2 days ago
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    
     return {
-      totalSessions: 0,
-      totalPoints: 0,
-      longestShower: 0,
+      totalSessions: 1,
+      totalPoints: 10,
+      longestShower: 120, // 2 minutes
       streakDays: 0,
-      lastShowerDate: null,
+      lastShowerDate: twoDaysAgo.toISOString(),
       level: 1,
       lastLevelUp: null
     };
