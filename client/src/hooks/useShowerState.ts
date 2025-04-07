@@ -91,12 +91,8 @@ export default function useShowerState() {
       console.log("Level up detected! From level", currentLevel, "to level", freshLevel);
       setDidLevelUp(true);
       setNewLevel(freshLevel);
-    } else {
-      // For testing purposes, force a level up on every shower
-      console.log("Forcing a level up for testing");
-      setDidLevelUp(true);
-      setNewLevel(freshLevel + 1); // Test with the next level
     }
+    // We've removed the forced level-up testing code that was triggering on every shower
     
     return finalPoints;
   }, [intervalId, waterToggleId, elapsedTime, toast]);

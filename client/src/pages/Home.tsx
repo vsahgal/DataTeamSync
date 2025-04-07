@@ -143,6 +143,11 @@ export default function Home() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [justCompletedShower, setJustCompletedShower] = useState(false);
   
+  // For testing level up animation without a real level up
+  const [testPreviousLevel, setTestPreviousLevel] = useState<number | null>(null);
+  const [testTargetLevel, setTestTargetLevel] = useState<number | null>(null);
+  const [testAnimating, setTestAnimating] = useState(false);
+  
   // Helper function to get level info for any level, even beyond predefined levels
   const getLevelInfo = (level: number) => {
     // First check if this is a predefined level
@@ -295,18 +300,21 @@ export default function Home() {
                     return (
                       <>
                         <div className="flex flex-col items-center justify-center mb-2">
-                          {/* Use the animated level indicator when leveling up, otherwise show the static one */}
-                          {didLevelUp && newLevel ? (
+                          {/* Use the animated level indicator when leveling up or testing, otherwise show the static one */}
+                          {(didLevelUp && newLevel) || testAnimating ? (
                             <AnimatedLevelIndicator
-                              previousLevel={currentLevel}
-                              targetLevel={newLevel}
-                              isAnimating={showLevelAnimation}
-                              onAnimationComplete={() => setShowLevelAnimation(false)}
+                              previousLevel={testAnimating ? (testPreviousLevel || currentLevel) : currentLevel}
+                              targetLevel={testAnimating ? (testTargetLevel || currentLevel + 1) : (newLevel || currentLevel + 1)}
+                              isAnimating={showLevelAnimation || testAnimating}
+                              onAnimationComplete={() => {
+                                setShowLevelAnimation(false);
+                                setTestAnimating(false);
+                              }}
                             />
                           ) : (
                             <div className="flex items-center gap-2 mb-1">
-                              <div className="bg-blue-100 px-3 py-1 rounded-full">
-                                <span className="text-lg font-bold" style={{ color: currentLevelInfo.color }}>
+                              <div className="bg-blue-100 px-4 py-1.5 rounded-full">
+                                <span className="text-xl font-bold" style={{ color: currentLevelInfo.color }}>
                                   Level {currentLevel}
                                 </span>
                               </div>
@@ -347,30 +355,32 @@ export default function Home() {
                 >
                   Start Shower
                 </Button>
+                {/* Keep this test button during development and remove before deploying to production */}
                 <Button 
                   onClick={() => {
-                    console.log("Testing level animation");
-                    // Force a temporary level-up animation for testing
+                    // For testing only - simulate a level up situation
                     const currentLevel = stats.level || 1;
-                    setShowLevelAnimation(true);
+                    const nextLevel = currentLevel + 1;
+                    console.log("Testing level animation for level", currentLevel, "to", nextLevel);
+                    
+                    // Set up test animation parameters
+                    setTestPreviousLevel(currentLevel);
+                    setTestTargetLevel(nextLevel);
+                    setTestAnimating(true);
+                    
+                    // Show confetti
                     setShowConfetti(true);
                     
-                    // Set a fake level-up state to trigger the animation
-                    const fakeNewLevel = currentLevel + 1;
-                    setDidLevelUp(true);
-                    setNewLevel(fakeNewLevel);
-                    
-                    // After level animation completes, make the unicorn dance
+                    // Start unicorn dancing after animation
                     setTimeout(() => {
                       setIsDancingUnicorn(true);
-                      setShowLevelAnimation(false);
                     }, 3000);
                     
-                    // After dancing unicorn completes, end the celebration
+                    // End celebration
                     setTimeout(() => {
                       setIsDancingUnicorn(false);
                       setShowConfetti(false);
-                      resetLevelUp(); // Reset the level-up state
+                      setTestAnimating(false);
                     }, 6000);
                   }} 
                   className="w-full h-10 bg-blue-500 hover:bg-blue-600 mt-2 text-sm"
