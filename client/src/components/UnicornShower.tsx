@@ -10,11 +10,13 @@ interface UnicornShowerProps {
 }
 
 export default function UnicornShower({ isShowering, elapsedTime, isActive, onStopShower }: UnicornShowerProps) {
+  // Force dirty state at the beginning of the shower
   const [showingSoap, setShowingSoap] = useState(false);
   const [showingRinse, setShowingRinse] = useState(false);
   const [cleaningStage, setCleaningStage] = useState(0); // 0: dirty, 1: getting clean, 2: almost clean, 3: sparkling clean
   const [waterFlowing, setWaterFlowing] = useState(false);
   const [unicornJumping, setUnicornJumping] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   
   // Get the current dirtiness level from stats
   const stats = getShowerStats();
@@ -36,10 +38,24 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   const seconds = elapsedTime % 60;
   const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   
+  // Initialize the unicorn with the proper dirt level on first render
+  useEffect(() => {
+    if (isShowering && !initialized) {
+      // Start with the unicorn in its dirty state
+      setCleaningStage(0);
+      setWaterFlowing(false);
+      setShowingSoap(false);
+      setShowingRinse(false);
+      setInitialized(true);
+      
+      console.log("Initial dirt level:", initialDirtiness);
+    }
+  }, [isShowering, initialized, initialDirtiness]);
+
   // Progressive cleaning animation that depends on elapsed time
   useEffect(() => {
     if (isShowering) {
-      // Start with water flowing animation
+      // Start with water flowing animation after a delay
       const waterStartTimer = setTimeout(() => {
         setWaterFlowing(true);
       }, 1000);
@@ -52,7 +68,6 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
       // Show soap and continue cleaning
       const soapTimer = setTimeout(() => {
         setShowingSoap(true);
-        setCleaningStage(1);
         
         // Make unicorn do a little jump of happiness
         setUnicornJumping(true);
@@ -90,7 +105,6 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
       setShowingSoap(false);
       setShowingRinse(false);
       setWaterFlowing(false);
-      setCleaningStage(0);
     }
   }, [isShowering]);
   
@@ -98,10 +112,16 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   
   // Calculate dirt spots based on initial dirtiness and current cleaning stage
   const calculateDirtSpots = () => {
+    // Use a minimum of 3 dirt spots if the unicorn is dirty to make it more visible
+    const baseSpots = Math.max(3, initialDirtiness);
+    
+    // Scale up dirt spots for better visibility (3x as many dirt spots as days since shower)
+    const scaledBaseSpots = baseSpots * 3;
+    
     // Reduce dirt spots as cleaning progresses
-    const baseSpots = initialDirtiness;
-    const reduction = cleaningStage * (baseSpots / 3); // Full cleaning (stage 3) removes all dirt
-    const currentSpots = Math.max(0, Math.floor(baseSpots - reduction));
+    const reduction = cleaningStage * (scaledBaseSpots / 3); // Full cleaning (stage 3) removes all dirt
+    const currentSpots = Math.max(0, Math.floor(scaledBaseSpots - reduction));
+    
     return currentSpots;
   };
   
