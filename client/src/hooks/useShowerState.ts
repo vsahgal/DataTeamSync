@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import { saveShowerSession, getShowerStats, updateShowerStats } from '@/lib/storage';
-import { POINTS_PER_SECOND, MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL } from '@/lib/constants';
+import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL } from '@/lib/constants';
 
 export default function useShowerState() {
   const [isShowering, setIsShowering] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [points, setPoints] = useState(0);
   const [isWaterOn, setIsWaterOn] = useState(true);
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [waterToggleId, setWaterToggleId] = useState<number | null>(null);
@@ -15,21 +14,11 @@ export default function useShowerState() {
   const startShower = useCallback(() => {
     setIsShowering(true);
     setElapsedTime(0);
-    setPoints(0);
     setIsWaterOn(true);
     
     // Start the timer
     const id = window.setInterval(() => {
-      setElapsedTime(prevTime => {
-        // Calculate new points - with diminishing returns after optimal time
-        if (prevTime < MAX_SHOWER_TIME) {
-          setPoints(prevPoints => Math.floor(prevPoints + POINTS_PER_SECOND));
-        } else {
-          // Reduce points for excessively long showers
-          setPoints(prevPoints => Math.max(0, Math.floor(prevPoints - (POINTS_PER_SECOND / 2))));
-        }
-        return prevTime + 1;
-      });
+      setElapsedTime(prevTime => prevTime + 1);
     }, 1000);
     setIntervalId(id);
     
@@ -54,8 +43,8 @@ export default function useShowerState() {
     
     setIsShowering(false);
     
-    // Calculate final points
-    const finalPoints = Math.max(10, points);
+    // Fixed points reward - always 10 points per shower
+    const finalPoints = 10;
     
     // Save the session
     saveShowerSession({
@@ -77,7 +66,7 @@ export default function useShowerState() {
     });
     
     return finalPoints;
-  }, [intervalId, waterToggleId, elapsedTime, points]);
+  }, [intervalId, waterToggleId, elapsedTime]);
   
   // Clean up on unmount
   useEffect(() => {
@@ -90,7 +79,8 @@ export default function useShowerState() {
   return {
     isShowering,
     elapsedTime,
-    points,
+    // Fixed reward of 10 points per shower
+    points: 10,
     isWaterOn,
     startShower,
     stopShower

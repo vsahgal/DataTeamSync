@@ -9,6 +9,7 @@ import useShowerState from "@/hooks/useShowerState";
 import { getShowerStats } from "@/lib/storage";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { Droplets, Zap, Award, BarChart } from "lucide-react";
+import { ShowerStats } from "@shared/schema";
 
 export default function Home() {
   const { toast } = useToast();
@@ -21,7 +22,7 @@ export default function Home() {
     isWaterOn
   } = useShowerState();
   
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<ShowerStats>({
     totalSessions: 0,
     totalPoints: 0,
     longestShower: 0,
@@ -37,7 +38,7 @@ export default function Home() {
     startShower();
     toast({
       title: "Shower started!",
-      description: "Let's get clean and earn points!",
+      description: "Let's get clean and earn 10 points!",
       variant: "default",
     });
   };
@@ -73,15 +74,13 @@ export default function Home() {
               isActive={isShowering}
             />
             
-            <div className="flex items-center justify-center gap-4 my-4">
-              <div className="text-center bg-blue-100 p-3 rounded-lg">
-                <p className="text-xs text-blue-600 font-medium">Current Points</p>
-                <p className="text-2xl font-bold text-blue-700">{points}</p>
-              </div>
-              
-              <div className="text-center bg-indigo-100 p-3 rounded-lg">
+            <div className="flex items-center justify-center my-4">
+              <div className="text-center bg-indigo-100 p-3 rounded-lg w-40">
                 <p className="text-xs text-indigo-600 font-medium">Total Points</p>
                 <p className="text-2xl font-bold text-indigo-700">{stats.totalPoints}</p>
+                {isShowering && (
+                  <div className="mt-1 text-xs text-green-600">+10 points when done</div>
+                )}
               </div>
             </div>
             
