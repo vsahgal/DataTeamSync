@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
 import AnimatedLevelIndicator from "@/components/AnimatedLevelIndicator";
+import LevelUpAnimation from "@/components/LevelUpAnimation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
@@ -219,7 +220,15 @@ export default function Home() {
       
       {/* We've replaced the separate DancingUnicorn component with enhanced DirtyUnicorn */}
       
-      {/* We've removed the LevelUpAnimation and replaced it with the inline AnimatedLevelIndicator */}
+      {/* Level up animation overlay */}
+      {showLevelAnimation && newLevel && (
+        <LevelUpAnimation 
+          isVisible={showLevelAnimation}
+          level={newLevel}
+          color={getLevelInfo(newLevel).color}
+          onAnimationComplete={() => setShowLevelAnimation(false)}
+        />
+      )}
       
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
