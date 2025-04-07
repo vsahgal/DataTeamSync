@@ -11,7 +11,8 @@ export default function Rewards() {
   const [rewards, setRewards] = useState<LocalReward[]>([]);
   const [stats, setStats] = useState({
     totalPoints: 0,
-    totalSessions: 0
+    totalSessions: 0,
+    level: 1
   });
   
   useEffect(() => {
@@ -19,7 +20,8 @@ export default function Rewards() {
     const userStats = getShowerStats();
     setStats({
       totalPoints: userStats.totalPoints,
-      totalSessions: userStats.totalSessions
+      totalSessions: userStats.totalSessions,
+      level: userStats.level || 1
     });
   }, []);
   
@@ -32,11 +34,13 @@ export default function Rewards() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Trophy className="w-8 h-8 mr-3" />
-            <h1 className="text-2xl font-bold">Rewards Gallery</h1>
+            <h1 className="text-2xl font-bold">Zoya's Rewards</h1>
           </div>
           <div className="flex flex-col items-end">
-            <p className="text-sm text-indigo-100">Total Points</p>
-            <p className="text-xl font-bold">{stats.totalPoints}</p>
+            <div className="bg-white bg-opacity-30 px-3 py-1 rounded-full text-sm font-bold mb-1">
+              Level {stats.level}
+            </div>
+            <p className="text-xl font-bold">{stats.totalPoints} Points</p>
           </div>
         </div>
         

@@ -60,9 +60,14 @@ export default function Home() {
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
           <div className="p-6 flex flex-col items-center justify-center relative z-10">
-            <h1 className="text-3xl font-bold mb-4 text-blue-600 text-center">
-              Shower Buddy
-            </h1>
+            <div className="flex justify-between items-center w-full mb-4">
+              <h1 className="text-3xl font-bold text-blue-600">
+                Zoya's Shower Time
+              </h1>
+              <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                Level {stats.level || 1}
+              </div>
+            </div>
             
             <CharacterDisplay isShowering={isShowering} points={points} />
             
