@@ -15,18 +15,16 @@ import { Droplets, Zap, Award, BarChart } from "lucide-react";
 import { ShowerStats } from "@shared/schema";
 import Confetti from "react-confetti";
 
-// Helper function to calculate days since last shower
+// Helper function to calculate "days" since last shower
+// For testing: using seconds instead of days (5 seconds = 1 "day")
 const getDaysSinceLastShower = (lastShowerDate: string): number => {
   const lastDate = new Date(lastShowerDate);
   const today = new Date();
   
-  // Reset time part to avoid partial day calculations
-  lastDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  
-  // Calculate the difference in days
+  // For testing: Calculate difference in seconds and consider every 5 seconds as 1 "day"
   const diffTime = Math.abs(today.getTime() - lastDate.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffSeconds = Math.floor(diffTime / 1000);
+  const diffDays = Math.floor(diffSeconds / 5);
   
   return diffDays;
 };
@@ -237,12 +235,24 @@ export default function Home() {
             </div>
             
             {!isShowering && (
-              <Button 
-                onClick={handleStart} 
-                className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
-              >
-                Start Shower
-              </Button>
+              <>
+                <Button 
+                  onClick={handleStart} 
+                  className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
+                >
+                  Start Shower
+                </Button>
+                <div className="mt-2 text-center">
+                  <Button
+                    onClick={() => setStats(getShowerStats())}
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-500"
+                  >
+                    Refresh Dirtiness (wait 5+ seconds)
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </CardContent>
