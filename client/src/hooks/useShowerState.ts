@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { saveShowerSession, getShowerStats, updateShowerStats } from '@/lib/storage';
 import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
+import { ShowerStats } from '@shared/schema';
 
 export default function useShowerState() {
   const { toast } = useToast();
@@ -63,34 +64,34 @@ export default function useShowerState() {
     // Get current stats before update
     const currentStats = getShowerStats();
     
-    // Check if this update will cause a level-up
+    // Shower session has already been saved - the checkLevelProgression function in storage.ts
+    // will now handle level progression based on sessions instead of points
+    // We still need to get the current stats
     const currentLevel = currentStats.level || 1;
-    const newTotalPoints = currentStats.totalPoints + finalPoints;
     
-    // Find potential new level
-    let newLevel = currentLevel;
-    for (const level of LEVELS) {
-      if (newTotalPoints >= level.pointsNeeded && level.level > newLevel) {
-        newLevel = level.level;
-      }
-    }
-    
-    // Update stats
-    updateShowerStats({
+    // Create updated stats object
+    const updatedStats: ShowerStats = {
       ...currentStats,
       totalSessions: currentStats.totalSessions + 1,
-      totalPoints: newTotalPoints,
+      totalPoints: currentStats.totalPoints + finalPoints,
       longestShower: Math.max(currentStats.longestShower, elapsedTime),
       lastShowerDate: new Date().toISOString()
-    });
+    };
     
-    // Check if there was a level-up
-    if (newLevel > currentLevel) {
-      const newLevelInfo = LEVELS.find(l => l.level === newLevel);
+    // Update stats in storage
+    updateShowerStats(updatedStats);
+    
+    // Get the fresh stats to check if level-up occurred
+    const freshStats = getShowerStats();
+    
+    // Check if there was a level-up (with fallback to current level if it's undefined)
+    const freshLevel = freshStats.level || currentLevel;
+    if (freshLevel > currentLevel) {
+      const newLevelInfo = LEVELS.find(l => l.level === freshLevel);
       if (newLevelInfo) {
         // Set level up state for animations
         setDidLevelUp(true);
-        setNewLevel(newLevel);
+        setNewLevel(freshLevel);
       }
     }
     

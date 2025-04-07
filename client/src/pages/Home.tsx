@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { useToast } from "@/hooks/use-toast";
 import useShowerState from "@/hooks/useShowerState";
-import { getShowerStats } from "@/lib/storage";
+import { getShowerStats, getShowerSessions } from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart } from "lucide-react";
-import { ShowerStats } from "@shared/schema";
+import { ShowerStats, LocalShowerSession } from "@shared/schema";
 import Confetti from "react-confetti";
 
 // Helper function to calculate days since last shower
@@ -235,12 +235,26 @@ export default function Home() {
                       );
                     }
                     
-                    const currentLevelPoints = currentLevelInfo.pointsNeeded;
-                    const nextLevelPoints = nextLevelInfo.pointsNeeded;
-                    const pointsDifference = nextLevelPoints - currentLevelPoints;
-                    const pointsEarned = stats.totalPoints - currentLevelPoints;
-                    const progress = Math.min(100, Math.floor((pointsEarned / pointsDifference) * 100));
-                    const pointsNeeded = nextLevelPoints - stats.totalPoints;
+                    // Determine how many sessions needed for next level
+                    const sessionsNeeded = currentLevel <= 10 ? 1 : 
+                                          currentLevel <= 20 ? 2 : 3;
+                    
+                    // Get the number of sessions since last level up
+                    const sessions = getShowerSessions();
+                    let sessionsAfterLastLevel = 0;
+                    
+                    if (stats.lastLevelUp) {
+                      const lastLevelUpDate = new Date(stats.lastLevelUp);
+                      sessionsAfterLastLevel = sessions.filter(
+                        (session: LocalShowerSession) => new Date(session.createdAt) > lastLevelUpDate
+                      ).length;
+                    } else {
+                      // If never leveled up before, count all sessions
+                      sessionsAfterLastLevel = sessions.length;
+                    }
+                    
+                    const progress = Math.min(100, Math.floor((sessionsAfterLastLevel / sessionsNeeded) * 100));
+                    const showersNeeded = Math.max(0, sessionsNeeded - sessionsAfterLastLevel);
                     
                     return (
                       <>
@@ -267,13 +281,13 @@ export default function Home() {
                             </div>
                           )}
                           <div className="text-sm text-gray-500 mb-1">
-                            {pointsNeeded} points to Level {currentLevel + 1}
+                            {showersNeeded} shower{showersNeeded !== 1 ? 's' : ''} to Level {currentLevel + 1}
                           </div>
                         </div>
                         <ProgressIndicator 
                           value={progress} 
                           color={currentLevelInfo.color}
-                          label={`${stats.totalPoints} / ${nextLevelPoints} points`} 
+                          label={`${sessionsAfterLastLevel} / ${sessionsNeeded} showers`} 
                           className="h-5"
                         />
                       </>

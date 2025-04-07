@@ -167,7 +167,7 @@ export const getShowerStats = (): ShowerStats => {
   }
 };
 
-export const updateShowerStats = (stats: ShowerStats): void => {
+export const updateShowerStats = (stats: ShowerStats): ShowerStats => {
   try {
     // If it's a new day, update streak
     const currentStats = getShowerStats();
@@ -203,8 +203,10 @@ export const updateShowerStats = (stats: ShowerStats): void => {
     }
     
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
+    return stats;
   } catch (error) {
     console.error('Error updating shower stats:', error);
+    return stats; // Return the original stats object even if there was an error
   }
 };
 
@@ -225,7 +227,7 @@ const checkLevelProgression = (stats: ShowerStats): number => {
     if (stats.lastLevelUp) {
       const lastLevelUpDate = new Date(stats.lastLevelUp);
       sessionsAfterLastLevel = sessions.filter(
-        session => new Date(session.createdAt) > lastLevelUpDate
+        (session: LocalShowerSession) => new Date(session.createdAt) > lastLevelUpDate
       ).length;
     } else {
       // If never leveled up before, count all sessions
@@ -249,6 +251,7 @@ const checkLevelProgression = (stats: ShowerStats): number => {
 };
 
 // Check if any rewards should be unlocked based on current progress
+// Function to check for new rewards unlocks based on player progress
 const checkAndUnlockRewards = (): void => {
   try {
     const stats = getShowerStats();
