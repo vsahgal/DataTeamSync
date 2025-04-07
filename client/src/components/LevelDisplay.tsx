@@ -2,7 +2,8 @@ import React from 'react';
 import { LEVELS } from '@/lib/constants';
 import { ProgressIndicator } from '@/components/ui/progress-indicator';
 import { useMemo } from 'react';
-import { ShowerStats } from '@shared/schema';
+import { ShowerStats, LocalShowerSession } from '@shared/schema';
+import { getShowerSessions } from '@/lib/storage';
 
 interface LevelDisplayProps {
   stats: ShowerStats;
@@ -21,26 +22,41 @@ export default function LevelDisplay({ stats }: LevelDisplayProps) {
         currentLevel: currentLevelInfo,
         nextLevel: null,
         progress: 100,
-        pointsNeeded: 0,
-        pointsForNextLevel: 0
+        showersCompleted: 0,
+        showersNeeded: 0
       };
     }
     
-    const currentLevelPoints = currentLevelInfo.pointsNeeded;
-    const nextLevelPoints = nextLevelInfo.pointsNeeded;
-    const pointsDifference = nextLevelPoints - currentLevelPoints;
-    const pointsEarned = stats.totalPoints - currentLevelPoints;
-    const progress = Math.min(100, Math.floor((pointsEarned / pointsDifference) * 100));
-    const pointsNeeded = nextLevelPoints - stats.totalPoints;
+    // Calculate sessions since the last level up
+    const sessions = getShowerSessions();
+    let sessionsAfterLastLevel = 0;
+    
+    if (stats.lastLevelUp) {
+      const lastLevelUpDate = new Date(stats.lastLevelUp);
+      sessionsAfterLastLevel = sessions.filter(
+        session => new Date(session.createdAt) > lastLevelUpDate
+      ).length;
+    } else {
+      // If never leveled up before, count all sessions
+      sessionsAfterLastLevel = sessions.length;
+    }
+    
+    // Get showers needed for next level
+    const showersNeeded = nextLevelInfo.showersNeeded;
+    
+    // Calculate progress
+    const progress = Math.min(100, Math.floor((sessionsAfterLastLevel / showersNeeded) * 100));
+    const showersRemaining = showersNeeded - sessionsAfterLastLevel;
     
     return {
       currentLevel: currentLevelInfo,
       nextLevel: nextLevelInfo,
       progress,
-      pointsNeeded,
-      pointsForNextLevel: pointsDifference
+      showersCompleted: sessionsAfterLastLevel,
+      showersNeeded,
+      showersRemaining
     };
-  }, [currentLevel, stats.totalPoints]);
+  }, [currentLevel, stats.lastLevelUp]);
   
   return (
     <div className="bg-white rounded-lg shadow-md p-4 mb-6">
@@ -50,9 +66,13 @@ export default function LevelDisplay({ stats }: LevelDisplayProps) {
             Level {currentLevel}: {levelInfo.currentLevel.name}
           </h3>
           <p className="text-gray-600 text-sm">
-            {levelInfo.nextLevel ? 
-              `${levelInfo.pointsNeeded} points needed for Level ${currentLevel + 1}` : 
-              'Maximum level reached!'}
+            {levelInfo.nextLevel ? (
+              levelInfo.showersRemaining > 0 ? 
+                `${levelInfo.showersRemaining} more ${levelInfo.showersRemaining === 1 ? 'shower' : 'showers'} needed for Level ${currentLevel + 1}` : 
+                `Ready to level up to Level ${currentLevel + 1}!`
+            ) : (
+              'Maximum level reached!'
+            )}
           </p>
         </div>
         <div className="bg-blue-100 text-blue-800 text-xl font-bold rounded-full w-12 h-12 flex items-center justify-center">
@@ -65,10 +85,20 @@ export default function LevelDisplay({ stats }: LevelDisplayProps) {
           <ProgressIndicator 
             value={levelInfo.progress} 
             color={levelInfo.currentLevel.color}
-            label={`${stats.totalPoints} / ${levelInfo.nextLevel.pointsNeeded} points`} 
+            label={`${levelInfo.showersCompleted} / ${levelInfo.showersNeeded} ${levelInfo.showersNeeded === 1 ? 'shower' : 'showers'}`} 
           />
         </div>
       )}
+      
+      {/* Show explanation of leveling system */}
+      <div className="mt-3 text-xs text-gray-500">
+        <p>Leveling System:</p>
+        <ul className="list-disc list-inside pl-2">
+          <li>Levels 1-10: 1 shower per level</li>
+          <li>Levels 11-20: 2 showers per level</li>
+          <li>Levels 21+: 3 showers per level</li>
+        </ul>
+      </div>
     </div>
   );
 }

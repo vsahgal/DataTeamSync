@@ -208,22 +208,40 @@ export const updateShowerStats = (stats: ShowerStats): void => {
   }
 };
 
-// Check if the user has earned enough points to level up
+// Check if the user has earned enough showers to level up
+// New simplified system:
+// - Levels 1-10: 1 shower per level
+// - Levels 11-20: 2 showers per level
+// - Levels 21+: 3 showers per level
 const checkLevelProgression = (stats: ShowerStats): number => {
   try {
     // If no current level, default to 1
     const currentLevel = stats.level || 1;
-    let newLevel = currentLevel;
     
-    // Check if points are enough for next level
-    for (let i = 0; i < LEVELS.length; i++) {
-      const level = LEVELS[i];
-      if (stats.totalPoints >= level.pointsNeeded && level.level > newLevel) {
-        newLevel = level.level;
-      }
+    // Get the number of sessions since last level up
+    let sessionsAfterLastLevel = 0;
+    const sessions = getShowerSessions();
+    
+    if (stats.lastLevelUp) {
+      const lastLevelUpDate = new Date(stats.lastLevelUp);
+      sessionsAfterLastLevel = sessions.filter(
+        session => new Date(session.createdAt) > lastLevelUpDate
+      ).length;
+    } else {
+      // If never leveled up before, count all sessions
+      sessionsAfterLastLevel = sessions.length;
     }
     
-    return newLevel;
+    // Determine how many sessions needed for next level
+    const sessionsNeeded = currentLevel <= 10 ? 1 : 
+                           currentLevel <= 20 ? 2 : 3;
+    
+    // Check if earned enough sessions for next level
+    if (sessionsAfterLastLevel >= sessionsNeeded) {
+      return currentLevel + 1;
+    }
+    
+    return currentLevel;
   } catch (error) {
     console.error('Error checking level progression:', error);
     return stats.level || 1;
