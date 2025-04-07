@@ -374,13 +374,14 @@ export default function DirtyUnicorn({
         </div>
       )}
       
-      {/* Rainbow effect for clean unicorn */}
+      {/* Rainbow effect for clean unicorn - positioned to not cover horn */}
       {isClean && (
         <div 
-          className={`absolute top-0 right-10 transform transition-opacity duration-1000 ease-in-out ${sparkle ? 'opacity-95' : 'opacity-80'}`}
+          className={`absolute top-[-20px] right-[-40px] transform transition-opacity duration-1000 ease-in-out ${sparkle ? 'opacity-95' : 'opacity-80'}`}
           style={{ 
-            transform: "scale(1.3)",
-            filter: "drop-shadow(0 0 3px rgba(255,255,255,0.7))"
+            transform: "scale(1.2)",
+            filter: "drop-shadow(0 0 3px rgba(255,255,255,0.7))",
+            zIndex: -1 // Place behind unicorn
           }}
         >
           <svg width="140" height="70" viewBox="0 0 140 70" fill="none" xmlns="http://www.w3.org/2000/svg">
