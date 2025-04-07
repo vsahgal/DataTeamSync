@@ -26,7 +26,8 @@ const getDaysSinceLastShower = (lastShowerDate: string): number => {
   const diffSeconds = Math.floor(diffTime / 1000);
   const diffDays = Math.floor(diffSeconds / 5);
   
-  return diffDays;
+  // Cap at 7 days maximum
+  return Math.min(diffDays, 7);
 };
 
 export default function Home() {
