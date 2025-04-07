@@ -28,7 +28,10 @@ export default function DirtyUnicorn({
   
   // Adjust opacity of dirt spots based on dirtiness level (1-7)
   const baseOpacity = 0.4;
-  const dirtOpacity = baseOpacity + (dirtiness * 0.08); // Increases with dirtiness
+  const dirtOpacity = baseOpacity + (dirtiness * 0.12); // Increases more dramatically with dirtiness
+  
+  // Track if the unicorn is crying (only when very dirty, level 6-7)
+  const [isCrying, setIsCrying] = useState(false);
   
   // Handle regular animations like sparkles and smell clouds
   useEffect(() => {
@@ -61,13 +64,20 @@ export default function DirtyUnicorn({
       const sighInterval = setInterval(() => {
         setSigh(true);
         setTimeout(() => setSigh(false), 500);
-      }, dirtiness >= 5 ? 2500 : 4000);
+      }, dirtiness >= 5 ? 2000 : 4000);
+      
+      // Crying animation for very dirty unicorn (days 6-7)
+      const cryingInterval = dirtiness >= 6 ? setInterval(() => {
+        setIsCrying(true);
+        setTimeout(() => setIsCrying(false), 1000);
+      }, 3000) : null;
       
       return () => {
         clearInterval(smell1Interval);
         clearInterval(smell2Interval);
         if (smell3Interval) clearInterval(smell3Interval);
         clearInterval(sighInterval);
+        if (cryingInterval) clearInterval(cryingInterval);
       };
     }
   }, [dirtiness, isClean]);
@@ -182,8 +192,18 @@ export default function DirtyUnicorn({
           {/* Extra dirt spots for very dirty unicorns */}
           {dirtiness >= 4 && (
             <>
-              <circle cx="150" cy="150" r={10 + (dirtiness - 4) * 2} fill="#D8BAB5" fillOpacity={dirtOpacity} />
-              <circle cx="190" cy="150" r={8 + (dirtiness - 4) * 2} fill="#D8BAB5" fillOpacity={dirtOpacity - 0.1} />
+              <circle cx="150" cy="150" r={10 + (dirtiness - 4) * 3} fill="#D8BAB5" fillOpacity={dirtOpacity} />
+              <circle cx="190" cy="150" r={8 + (dirtiness - 4) * 3} fill="#D8BAB5" fillOpacity={dirtOpacity - 0.1} />
+            </>
+          )}
+          
+          {/* Even more dirt spots for extremely dirty unicorns (days 5-7) */}
+          {dirtiness >= 5 && (
+            <>
+              <circle cx="140" cy="160" r={7 + (dirtiness - 5) * 4} fill="#D8BAB5" fillOpacity={dirtOpacity + 0.1} />
+              <circle cx="180" cy="140" r={6 + (dirtiness - 5) * 4} fill="#D8BAB5" fillOpacity={dirtOpacity + 0.05} />
+              <circle cx="110" cy="150" r={8 + (dirtiness - 5) * 3} fill="#D8BAB5" fillOpacity={dirtOpacity} />
+              <circle cx="165" cy="170" r={7 + (dirtiness - 5) * 3} fill="#D8BAB5" fillOpacity={dirtOpacity + 0.05} />
             </>
           )}
           
@@ -269,6 +289,33 @@ export default function DirtyUnicorn({
         </div>
       )}
       
+      {/* Tears for very dirty unicorn (days 6-7) */}
+      {dirtiness >= 6 && isCrying && (
+        <>
+          {/* Left tear */}
+          <div className="absolute left-[185px] top-[115px] animate-drip">
+            <svg width="15" height="25" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
+                fill="#89CFF0"
+                fillOpacity="0.8"
+              />
+            </svg>
+          </div>
+          
+          {/* Right tear */}
+          <div className="absolute left-[210px] top-[115px] animate-drip-delayed">
+            <svg width="15" height="25" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
+                fill="#89CFF0"
+                fillOpacity="0.8"
+              />
+            </svg>
+          </div>
+        </>
+      )}
+
       {/* Sparkles for clean unicorn */}
       {isClean && (
         <>
