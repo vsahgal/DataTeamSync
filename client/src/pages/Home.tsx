@@ -122,6 +122,15 @@ export default function Home() {
   
   const handleStop = () => {
     const earnedPoints = stopShower();
+    
+    // Set the justCompletedShower flag to trigger progress animation
+    setJustCompletedShower(true);
+    
+    // Clear the flag after a delay to allow time for UI updates and animations
+    setTimeout(() => {
+      setJustCompletedShower(false);
+    }, 3000);
+    
     toast({
       title: "Shower completed!",
       description: `Great job! You earned ${earnedPoints} points.`,
@@ -133,6 +142,7 @@ export default function Home() {
   const [showLevelAnimation, setShowLevelAnimation] = useState(false);
   const [isDancingUnicorn, setIsDancingUnicorn] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [justCompletedShower, setJustCompletedShower] = useState(false);
   
   // Get current level information 
   const currentLevelInfo = LEVELS.find(l => l.level === stats.level) || LEVELS[0];
@@ -289,6 +299,7 @@ export default function Home() {
                           color={currentLevelInfo.color}
                           label={`${sessionsAfterLastLevel} / ${sessionsNeeded} showers`} 
                           className="h-5"
+                          animated={justCompletedShower} // Only animate when shower just completed
                         />
                       </>
                     );
