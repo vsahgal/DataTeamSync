@@ -22,11 +22,11 @@ export const ProgressIndicator = React.forwardRef<HTMLDivElement, ProgressIndica
         {...props}
       >
         <div 
-          className={cn(
-            "h-full transition-all duration-500 ease-in-out",
-            color || "bg-gradient-to-r from-blue-400 to-indigo-500"
-          )}
-          style={{ width: `${percentage}%` }}
+          className="h-full transition-all duration-500 ease-in-out"
+          style={{ 
+            width: `${percentage}%`,
+            backgroundColor: color || "#4EA0EA"
+          }}
         />
         
         {label && (
