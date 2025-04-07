@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import LevelDisplay from "@/components/LevelDisplay";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
 import AnimatedLevelIndicator from "@/components/AnimatedLevelIndicator";
@@ -352,8 +351,6 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Level Display */}
-      <LevelDisplay stats={stats} />
 
       <Card className="overflow-hidden border-2 border-indigo-200">
         <CardContent className="pt-6">
