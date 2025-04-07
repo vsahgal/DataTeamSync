@@ -12,6 +12,22 @@ import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart } from "lucide-react";
 import { ShowerStats } from "@shared/schema";
 
+// Helper function to calculate days since last shower
+const getDaysSinceLastShower = (lastShowerDate: string): number => {
+  const lastDate = new Date(lastShowerDate);
+  const today = new Date();
+  
+  // Reset time part to avoid partial day calculations
+  lastDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  
+  // Calculate the difference in days
+  const diffTime = Math.abs(today.getTime() - lastDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+};
+
 export default function Home() {
   const { toast } = useToast();
   const { 
@@ -61,15 +77,25 @@ export default function Home() {
         <CardContent className="p-0 relative">
           <div className="p-4 flex flex-col items-center justify-center relative z-10">
             <div className="flex justify-center items-center w-full mb-2">
-              <h1 className="text-3xl font-bold text-blue-600">
-                Zoya's Shower Time
+              <h1 className="text-2xl font-bold text-blue-600 text-center">
+                {stats.lastShowerDate ? (
+                  <>
+                    It's been {getDaysSinceLastShower(stats.lastShowerDate)} day{getDaysSinceLastShower(stats.lastShowerDate) !== 1 ? 's' : ''} since Zoya's last shower
+                  </>
+                ) : (
+                  <>Zoya's First Shower</>
+                )}
               </h1>
             </div>
             
             {/* Animated dirty unicorn */}
             {!isShowering && (
               <div className="text-center py-0 mb-4">
-                <DirtyUnicorn />
+                <DirtyUnicorn 
+                  dirtiness={stats.lastShowerDate ? 
+                    Math.min(7, getDaysSinceLastShower(stats.lastShowerDate)) : 
+                    3} 
+                />
               </div>
             )}
             
