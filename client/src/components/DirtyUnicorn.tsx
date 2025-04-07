@@ -42,14 +42,11 @@ export default function DirtyUnicorn({
         setSparkle(prev => !prev);
       }, 1500);
       
-      // Rainbow animation for clean unicorn
-      const rainbowInterval = setInterval(() => {
-        setShowRainbow(prev => !prev);
-      }, 3000);
+      // Set rainbow to always be visible for clean unicorn
+      setShowRainbow(true);
       
       return () => {
         clearInterval(sparkleInterval);
-        clearInterval(rainbowInterval);
       };
     } else if (dirtiness >= 2) { // Only show smell clouds when dirtiness is at least 2
       // First smell cloud animation
@@ -374,43 +371,49 @@ export default function DirtyUnicorn({
       )}
       
       {/* Rainbow effect for clean unicorn */}
-      {isClean && showRainbow && (
+      {isClean && (
         <div 
-          className="absolute top-5 right-12 transform transition-all duration-700 ease-in-out"
+          className={`absolute top-0 right-10 transform transition-opacity duration-1000 ease-in-out ${sparkle ? 'opacity-95' : 'opacity-80'}`}
           style={{ 
-            transform: "scale(1.2)",
-            opacity: 0.8
+            transform: "scale(1.3)",
+            filter: "drop-shadow(0 0 3px rgba(255,255,255,0.7))"
           }}
         >
-          <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="140" height="70" viewBox="0 0 140 70" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path 
-              d="M10 60C10 35 35 10 60 10C85 10 110 35 110 60" 
+              d="M10 70C10 40 40 10 70 10C100 10 130 40 130 70" 
               stroke="#FF0000" 
-              strokeWidth="5"
+              strokeWidth="6"
               strokeLinecap="round"
             />
             <path 
-              d="M20 60C20 40 40 20 60 20C80 20 100 40 100 60" 
+              d="M20 70C20 45 45 20 70 20C95 20 120 45 120 70" 
               stroke="#FF9900" 
-              strokeWidth="5"
+              strokeWidth="6"
               strokeLinecap="round"
             />
             <path 
-              d="M30 60C30 45 45 30 60 30C75 30 90 45 90 60" 
+              d="M30 70C30 50 50 30 70 30C90 30 110 50 110 70" 
               stroke="#FFFF00" 
-              strokeWidth="5"
+              strokeWidth="6"
               strokeLinecap="round"
             />
             <path 
-              d="M40 60C40 50 50 40 60 40C70 40 80 50 80 60" 
+              d="M40 70C40 55 55 40 70 40C85 40 100 55 100 70" 
               stroke="#33CC33" 
-              strokeWidth="5"
+              strokeWidth="6"
               strokeLinecap="round"
             />
             <path 
-              d="M50 60C50 55 55 50 60 50C65 50 70 55 70 60" 
+              d="M50 70C50 60 60 50 70 50C80 50 90 60 90 70" 
               stroke="#3399FF" 
-              strokeWidth="5"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+            <path 
+              d="M60 70C60 65 65 60 70 60C75 60 80 65 80 70" 
+              stroke="#9966FF" 
+              strokeWidth="6"
               strokeLinecap="round"
             />
           </svg>
