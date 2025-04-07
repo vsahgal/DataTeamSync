@@ -79,9 +79,13 @@ export default function Home() {
             <div className="flex justify-center items-center w-full mb-2">
               <h1 className="text-2xl font-bold text-blue-600 text-center">
                 {stats.lastShowerDate ? (
-                  <>
-                    It's been {getDaysSinceLastShower(stats.lastShowerDate)} day{getDaysSinceLastShower(stats.lastShowerDate) !== 1 ? 's' : ''} since Zoya's last shower
-                  </>
+                  getDaysSinceLastShower(stats.lastShowerDate) === 0 ? (
+                    <>Zoya had a shower today!</>
+                  ) : (
+                    <>
+                      It's been {getDaysSinceLastShower(stats.lastShowerDate)} day{getDaysSinceLastShower(stats.lastShowerDate) !== 1 ? 's' : ''} since Zoya's last shower
+                    </>
+                  )
                 ) : (
                   <>Zoya's First Shower</>
                 )}
@@ -93,7 +97,7 @@ export default function Home() {
               <div className="text-center py-0 mb-4">
                 <DirtyUnicorn 
                   dirtiness={stats.lastShowerDate ? 
-                    Math.min(7, getDaysSinceLastShower(stats.lastShowerDate)) : 
+                    (getDaysSinceLastShower(stats.lastShowerDate) === 0 ? 0 : Math.min(7, getDaysSinceLastShower(stats.lastShowerDate))) : 
                     3} 
                 />
               </div>
