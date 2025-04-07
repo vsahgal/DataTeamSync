@@ -15,8 +15,9 @@ import { Droplets, Zap, Award, BarChart } from "lucide-react";
 import { ShowerStats } from "@shared/schema";
 import Confetti from "react-confetti";
 
-// Helper function to calculate "days" since last shower
-// For testing: using seconds instead of days (5 seconds = 1 "day")
+// Helper function to calculate days since last shower
+// COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
+// FOR TESTING ONLY: Using seconds instead of days (5 seconds = 1 "day")
 const getDaysSinceLastShower = (lastShowerDate: string): number => {
   const lastDate = new Date(lastShowerDate);
   const today = new Date();
@@ -29,6 +30,28 @@ const getDaysSinceLastShower = (lastShowerDate: string): number => {
   // Cap at 7 days maximum
   return Math.min(diffDays, 7);
 };
+// COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
+
+// UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
+/*
+// Production version: Calculate actual days difference
+const getDaysSinceLastShower = (lastShowerDate: string): number => {
+  const lastDate = new Date(lastShowerDate);
+  const today = new Date();
+  
+  // Reset time part to avoid partial day calculations
+  lastDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  
+  // Calculate the difference in days
+  const diffTime = Math.abs(today.getTime() - lastDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Cap at 7 days maximum
+  return Math.min(diffDays, 7);
+};
+*/
+// UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
 
 export default function Home() {
   const { toast } = useToast();
@@ -54,9 +77,40 @@ export default function Home() {
     lastLevelUp: null
   });
   
+  // Update stats when shower status changes
   useEffect(() => {
     setStats(getShowerStats());
   }, [isShowering]);
+  
+  // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
+  // Automatically update stats periodically to keep dirtiness current (FOR TESTING)
+  useEffect(() => {
+    if (!isShowering) {
+      // Refresh stats every 5 seconds to update dirtiness (FOR TESTING)
+      const intervalId = setInterval(() => {
+        setStats(getShowerStats());
+      }, 5000);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [isShowering]);
+  // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
+  
+  // UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
+  /*
+  // Automatically update stats periodically to keep the UI current (FOR PRODUCTION)
+  useEffect(() => {
+    if (!isShowering) {
+      // In production, we only need to refresh once per hour to check for day changes
+      const intervalId = setInterval(() => {
+        setStats(getShowerStats());
+      }, 3600000); // Once per hour in milliseconds
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [isShowering]);
+  */
+  // UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
   
   const handleStart = () => {
     startShower();
@@ -236,24 +290,12 @@ export default function Home() {
             </div>
             
             {!isShowering && (
-              <>
-                <Button 
-                  onClick={handleStart} 
-                  className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
-                >
-                  Start Shower
-                </Button>
-                <div className="mt-2 text-center">
-                  <Button
-                    onClick={() => setStats(getShowerStats())}
-                    variant="outline"
-                    size="sm"
-                    className="text-gray-500"
-                  >
-                    Refresh Dirtiness (wait 5+ seconds)
-                  </Button>
-                </div>
-              </>
+              <Button 
+                onClick={handleStart} 
+                className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
+              >
+                Start Shower
+              </Button>
             )}
           </div>
         </CardContent>
