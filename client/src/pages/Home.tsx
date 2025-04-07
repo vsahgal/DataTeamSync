@@ -221,14 +221,12 @@ export default function Home() {
       {/* We've replaced the separate DancingUnicorn component with enhanced DirtyUnicorn */}
       
       {/* Level up animation overlay */}
-      {showLevelAnimation && newLevel && (
-        <LevelUpAnimation 
-          isVisible={showLevelAnimation}
-          level={newLevel}
-          color={getLevelInfo(newLevel).color}
-          onAnimationComplete={() => setShowLevelAnimation(false)}
-        />
-      )}
+      <LevelUpAnimation 
+        isVisible={showLevelAnimation}
+        level={newLevel || 2} // Provide a fallback level for testing
+        color={newLevel ? getLevelInfo(newLevel).color : "#4EADEA"} // Provide a fallback color
+        onAnimationComplete={() => setShowLevelAnimation(false)}
+      />
       
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
@@ -349,12 +347,36 @@ export default function Home() {
             </div>
             
             {!isShowering && (
-              <Button 
-                onClick={handleStart} 
-                className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
-              >
-                Start Shower
-              </Button>
+              <>
+                <Button 
+                  onClick={handleStart} 
+                  className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
+                >
+                  Start Shower
+                </Button>
+                <Button 
+                  onClick={() => {
+                    console.log("Testing level animation");
+                    setShowLevelAnimation(true);
+                    setShowConfetti(true);
+                    
+                    // After level animation completes, make the unicorn dance
+                    setTimeout(() => {
+                      setIsDancingUnicorn(true);
+                      setShowLevelAnimation(false);
+                    }, 2000);
+                    
+                    // After dancing unicorn completes, end the celebration
+                    setTimeout(() => {
+                      setIsDancingUnicorn(false);
+                      setShowConfetti(false);
+                    }, 5000);
+                  }} 
+                  className="w-full h-10 bg-blue-500 hover:bg-blue-600 mt-2 text-sm"
+                >
+                  Test Level Up Animation
+                </Button>
+              </>
             )}
           </div>
         </CardContent>

@@ -87,12 +87,15 @@ export default function useShowerState() {
     // Check if there was a level-up (with fallback to current level if it's undefined)
     const freshLevel = freshStats.level || currentLevel;
     if (freshLevel > currentLevel) {
-      const newLevelInfo = LEVELS.find(l => l.level === freshLevel);
-      if (newLevelInfo) {
-        // Set level up state for animations
-        setDidLevelUp(true);
-        setNewLevel(freshLevel);
-      }
+      // Set level up state for animations
+      console.log("Level up detected! From level", currentLevel, "to level", freshLevel);
+      setDidLevelUp(true);
+      setNewLevel(freshLevel);
+    } else {
+      // For testing purposes, force a level up on every shower
+      console.log("Forcing a level up for testing");
+      setDidLevelUp(true);
+      setNewLevel(freshLevel + 1); // Test with the next level
     }
     
     return finalPoints;
