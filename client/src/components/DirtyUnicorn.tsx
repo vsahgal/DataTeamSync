@@ -15,6 +15,7 @@ export default function DirtyUnicorn({
   const [showSmell2, setShowSmell2] = useState(false);
   const [showSmell3, setShowSmell3] = useState(false);
   const [sparkle, setSparkle] = useState(false);
+  const [showRainbow, setShowRainbow] = useState(true);
   const [sigh, setSigh] = useState(false);
   
   // Dancing animation states
@@ -33,7 +34,7 @@ export default function DirtyUnicorn({
   // Track if the unicorn is crying (only when very dirty, level 6-7)
   const [isCrying, setIsCrying] = useState(false);
   
-  // Handle regular animations like sparkles and smell clouds
+  // Handle regular animations like sparkles, rainbows, and smell clouds
   useEffect(() => {
     if (isClean) {
       // Sparkle animation for clean unicorn
@@ -41,19 +42,25 @@ export default function DirtyUnicorn({
         setSparkle(prev => !prev);
       }, 1500);
       
+      // Rainbow animation for clean unicorn
+      const rainbowInterval = setInterval(() => {
+        setShowRainbow(prev => !prev);
+      }, 3000);
+      
       return () => {
         clearInterval(sparkleInterval);
+        clearInterval(rainbowInterval);
       };
-    } else {
+    } else if (dirtiness >= 2) { // Only show smell clouds when dirtiness is at least 2
       // First smell cloud animation
       const smell1Interval = setInterval(() => {
         setShowSmell1(prev => !prev);
       }, 2000);
       
-      // Second smell cloud animation (offset timing)
-      const smell2Interval = setInterval(() => {
+      // Second smell cloud animation (offset timing) - only when dirtier
+      const smell2Interval = dirtiness >= 3 ? setInterval(() => {
         setShowSmell2(prev => !prev);
-      }, 3000);
+      }, 3000) : null;
       
       // Third smell cloud for very dirty unicorn
       const smell3Interval = dirtiness >= 5 ? setInterval(() => {
@@ -76,10 +83,20 @@ export default function DirtyUnicorn({
       
       return () => {
         clearInterval(smell1Interval);
-        clearInterval(smell2Interval);
+        if (smell2Interval) clearInterval(smell2Interval);
         if (smell3Interval) clearInterval(smell3Interval);
         clearInterval(sighInterval);
         if (cryingInterval) clearInterval(cryingInterval);
+      };
+    } else {
+      // Dirtiness level 1 - no smell clouds, just occasional sighing
+      const sighInterval = setInterval(() => {
+        setSigh(true);
+        setTimeout(() => setSigh(false), 500);
+      }, 6000); // Less frequent sighing
+      
+      return () => {
+        clearInterval(sighInterval);
       };
     }
   }, [dirtiness, isClean]);
@@ -352,6 +369,50 @@ export default function DirtyUnicorn({
               fillOpacity="0.85"
             />
             <text x="12" y="20" fontSize="11" fill="#444">~</text>
+          </svg>
+        </div>
+      )}
+      
+      {/* Rainbow effect for clean unicorn */}
+      {isClean && showRainbow && (
+        <div 
+          className="absolute top-5 right-12 transform transition-all duration-700 ease-in-out"
+          style={{ 
+            transform: "scale(1.2)",
+            opacity: 0.8
+          }}
+        >
+          <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M10 60C10 35 35 10 60 10C85 10 110 35 110 60" 
+              stroke="#FF0000" 
+              strokeWidth="5"
+              strokeLinecap="round"
+            />
+            <path 
+              d="M20 60C20 40 40 20 60 20C80 20 100 40 100 60" 
+              stroke="#FF9900" 
+              strokeWidth="5"
+              strokeLinecap="round"
+            />
+            <path 
+              d="M30 60C30 45 45 30 60 30C75 30 90 45 90 60" 
+              stroke="#FFFF00" 
+              strokeWidth="5"
+              strokeLinecap="round"
+            />
+            <path 
+              d="M40 60C40 50 50 40 60 40C70 40 80 50 80 60" 
+              stroke="#33CC33" 
+              strokeWidth="5"
+              strokeLinecap="round"
+            />
+            <path 
+              d="M50 60C50 55 55 50 60 50C65 50 70 55 70 60" 
+              stroke="#3399FF" 
+              strokeWidth="5"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
       )}
