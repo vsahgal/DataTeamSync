@@ -555,69 +555,139 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-blue-100 to-purple-50">
-      {/* Timer at the top */}
-      <div className="absolute top-4 left-0 right-0 z-50">
-        <div className="mx-auto w-40 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full shadow-lg text-center">
+      {/* Timer moved to top-right to not block the shower head */}
+      <div className="absolute top-4 right-6 z-50">
+        <div className="w-40 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full shadow-lg text-center">
           <p className="text-3xl font-bold text-blue-600 font-mono">
             {formattedTime}
           </p>
         </div>
       </div>
       
-      {/* Water drops - only shown when water is flowing */}
+      {/* Water streams and drops - only shown when water is flowing */}
       <AnimatePresence>
         {waterFlowing && (
-          <motion.div 
-            className="absolute inset-0 overflow-hidden pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            {Array.from({ length: 20 }).map((_, index) => (
-              <motion.div
-                key={index}
-                className="absolute w-2 h-6 bg-blue-400 rounded-full opacity-70"
-                initial={{ 
-                  top: "-5%", 
-                  left: `${Math.random() * 100}%`,
-                  opacity: 0
-                }}
-                animate={{ 
-                  top: "100%",
-                  opacity: [0, 0.8, 0]
-                }}
-                transition={{ 
-                  duration: 1.5 + Math.random() * 0.8, 
-                  repeat: Infinity, 
-                  delay: Math.random() * 2,
-                  ease: "easeIn"
-                }}
-              />
-            ))}
-          </motion.div>
+          <>
+            {/* Main shower water streams */}
+            <motion.div 
+              className="absolute top-24 left-1/2 transform -translate-x-1/2 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {Array.from({ length: 12 }).map((_, i) => (
+                <motion.div
+                  key={`stream-${i}`}
+                  className="absolute top-0"
+                  style={{
+                    left: (i * 5) - 28, // spread out streams
+                    width: '3px',
+                    height: '120px',
+                    background: 'linear-gradient(to bottom, rgba(185, 220, 255, 0.9), rgba(145, 200, 255, 0.4))',
+                    borderRadius: '1px'
+                  }}
+                  animate={{
+                    scaleY: [0.95, 1.05, 0.95],
+                    opacity: [0.7, 0.9, 0.7]
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    delay: i * 0.05
+                  }}
+                />
+              ))}
+            </motion.div>
+            
+            {/* Random water drops throughout */}
+            <motion.div 
+              className="absolute inset-0 overflow-hidden pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+            >
+              {Array.from({ length: 25 }).map((_, index) => (
+                <motion.div
+                  key={`drop-${index}`}
+                  className="absolute w-2 h-6 bg-blue-400 rounded-full opacity-70"
+                  initial={{ 
+                    top: "-5%", 
+                    left: `${Math.random() * 100}%`,
+                    opacity: 0
+                  }}
+                  animate={{ 
+                    top: "100%",
+                    opacity: [0, 0.8, 0]
+                  }}
+                  transition={{ 
+                    duration: 1.5 + Math.random() * 0.8, 
+                    repeat: Infinity, 
+                    delay: Math.random() * 2,
+                    ease: "easeIn"
+                  }}
+                />
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
       
-      {/* Shower head with water startup animation */}
+      {/* Enhanced shower head with water startup animation */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
         <div className="relative">
-          <div className="w-20 h-5 bg-gray-300 rounded-b-lg" />
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-3 bg-gray-400 rounded-b-lg flex justify-around items-center">
-            {Array.from({ length: 6 }).map((_, i) => (
+          {/* Shower arm */}
+          <div className="w-4 h-12 bg-gray-400 absolute top-0 left-1/2 transform -translate-x-1/2" />
+          
+          {/* Shower head - larger and more visible */}
+          <motion.div 
+            className="w-32 h-10 bg-gradient-to-b from-gray-300 to-gray-400 rounded-b-lg mt-12"
+            animate={{
+              y: waterFlowing ? [0, -2, 0] : 0
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          {/* Shower holes with water animation */}
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-28 h-5 bg-gray-500 rounded-b-lg flex justify-around items-center">
+            {Array.from({ length: 10 }).map((_, i) => (
               <motion.div 
                 key={i}
-                className="w-1 h-1 bg-blue-200 rounded-full"
+                className="w-1.5 h-1.5 bg-blue-300 rounded-full"
                 animate={{ 
-                  opacity: waterFlowing ? [0.5, 1, 0.5] : 0 
+                  opacity: waterFlowing ? [0.7, 1, 0.7] : 0,
+                  scale: waterFlowing ? [1, 1.3, 1] : 1
                 }}
                 transition={{ 
-                  duration: 1, 
+                  duration: 0.8, 
                   repeat: Infinity,
                   delay: i * 0.1
                 }}
               />
             ))}
           </div>
+          
+          {/* Shower handle/knob */}
+          <motion.div 
+            className="absolute top-6 left-full ml-2 w-8 h-8 bg-blue-500 rounded-full border-2 border-gray-300"
+            animate={{
+              rotate: waterFlowing ? 45 : 0,
+              scale: waterFlowing ? [1, 1.05, 1] : 1
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut"
+            }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-4 h-1 bg-white rounded-full"></div>
+            </div>
+          </motion.div>
         </div>
       </div>
       
