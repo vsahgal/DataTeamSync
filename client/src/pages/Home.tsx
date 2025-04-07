@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import LevelDisplay from "@/components/LevelDisplay";
 import UnicornShower from "@/components/UnicornShower";
+import DirtyUnicorn from "@/components/DirtyUnicorn";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
@@ -65,14 +66,10 @@ export default function Home() {
               </h1>
             </div>
             
-            {/* Placeholder for non-showering state */}
+            {/* Animated dirty unicorn */}
             {!isShowering && (
-              <div className="text-center py-0">
-                <img 
-                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGVsbGlwc2UgY3g9IjE1MCIgY3k9IjE2MCIgcng9IjgwIiByeT0iNjAiIGZpbGw9IiNFRUNFRTciLz4KICA8IS0tIERpcnQgc3BvdHMgb24gYm9keSAtLT4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSIxNDAiIHI9IjE4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuOCIgLz4KICA8Y2lyY2xlIGN4PSIxNzAiIGN5PSIxODAiIHI9IjE1IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNzAiIHI9IjEyIiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNSIgLz4KICA8cmVjdCB4PSI5MCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRUVDRUU3IiAvPgogIDwhLS0gRGlydCBvbiBsZWdzIC0tPgogIDxjaXJjbGUgY3g9Ijk3IiBjeT0iMjIwIiByPSI4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KCiAgPHJlY3QgeD0iMTIwIiB5PSIyMDAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI1NSIgcng9IjciIGZpbGw9IiNFRUNFRTciIC8+CiAgPGNpcmNsZSBjeD0iMTI3IiBjeT0iMjMwIiByPSI5IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KCiAgPHJlY3QgeD0iMTY1IiB5PSIyMDAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI1NSIgcng9IjciIGZpbGw9IiNFRUNFRTciIC8+CiAgPGNpcmNsZSBjeD0iMTcyIiBjeT0iMjQwIiByPSI4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KCiAgPHJlY3QgeD0iMTk1IiB5PSIyMDAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI1MCIgcng9IjciIGZpbGw9IiNFRUNFRTciIC8+CiAgPGNpcmNsZSBjeD0iMjAyIiBjeT0iMjI1IiByPSI4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KCiAgPGVsbGlwc2UgY3g9IjIwMCIgY3k9IjEyMCIgcng9IjQwIiByeT0iMzAiIGZpbGw9IiNFRUNFRTciLz4KICA8IS0tIERpcnQgb24gZmFjZSAtLT4KICA8Y2lyY2xlIGN4PSIxODAiIGN5PSIxMTAiIHI9IjEwIiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KICA8Y2lyY2xlIGN4PSIyMTAiIGN5PSIxMTAiIHI9IjUiIGZpbGw9IndoaXRlIiAvPgogIDxjaXJjbGUgY3g9IjIxMCIgY3k9IjExMCIgcj0iMiIgZmlsbD0iIzMzMyIgLz4KCiAgPCEtLSBGcm93biAtLT4KICA8cGF0aCBkPSJNMTkwIDEzMCBRMjA1IDEyMCAyMjAgMTMwIiBzdHJva2U9IiMzMzMiIHN0cm9rZVdpZHRoPSIyIiBmaWxsPSJub25lIi8+CiAgPHBhdGggZD0iTTIwNSA5MCBMMjIwIDYwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSI4IiBzdHJva2VMaW5lY2FwPSJyb3VuZCIvPgogIDxlbGxpcHNlIGN4PSIxNjAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5IiAvPgogIDwhLS0gRGlydCBvbiBob3JuIC0tPgogIDxjaXJjbGUgY3g9IjE2MCIgY3k9IjExMCIgcj0iNyIgZmlsbD0iI0Q4QkFCNSIgZmlsbC1vcGFjaXR5PSIwLjciIC8+CgogIDxlbGxpcHNlIGN4PSIxNDUiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjQjVERUZGIi8+CiAgPGNpcmNsZSBjeD0iMTQ1IiBjeT0iMTEwIiByPSI2IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KCiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjEyMCIgcng9IjEyIiByeT0iMjAiIGZpbGw9IiNEOUI1RkYiLz4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSIxMTAiIHI9IjgiIGZpbGw9IiNEOEJBQjUiIGZpbGwtb3BhY2l0eT0iMC43IiAvPgoKICA8ZWxsaXBzZSBjeD0iMTE1IiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0I1RkZEOSIvPgogIDxjaXJjbGUgY3g9IjExNSIgY3k9IjExNSIgcj0iNyIgZmlsbD0iI0Q4QkFCNSIgZmlsbC1vcGFjaXR5PSIwLjgiIC8+CgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5Ii8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTEwIiByPSI2IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KCiAgPHBhdGggZD0iTTcwIDE2MCBRNTAgMTIwIDcwIDgwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSIxMCIgc3Ryb2tlTGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjEzMCIgcj0iMTAiIGZpbGw9IiNEOEJBQjUiIGZpbGwtb3BhY2l0eT0iMC43IiAvPgo8L3N2Zz4=" 
-                  alt="Dirty unicorn waiting for shower"
-                  className="mx-auto w-54 h-54 mt-0 mb-4" 
-                />
+              <div className="text-center py-0 mb-4">
+                <DirtyUnicorn />
               </div>
             )}
             
