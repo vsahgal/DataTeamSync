@@ -11,6 +11,8 @@ export default function useShowerState() {
   const [isWaterOn, setIsWaterOn] = useState(true);
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [waterToggleId, setWaterToggleId] = useState<number | null>(null);
+  const [didLevelUp, setDidLevelUp] = useState(false);
+  const [newLevel, setNewLevel] = useState<number | null>(null);
 
   // Start the shower
   const startShower = useCallback(() => {
@@ -81,18 +83,13 @@ export default function useShowerState() {
       lastShowerDate: new Date().toISOString()
     });
     
-    // Check and notify if there was a level-up
+    // Check if there was a level-up
     if (newLevel > currentLevel) {
       const newLevelInfo = LEVELS.find(l => l.level === newLevel);
       if (newLevelInfo) {
-        // Schedule the level-up toast to show after the completion toast
-        setTimeout(() => {
-          toast({
-            title: "🎉 Level Up!",
-            description: `You've reached Level ${newLevel}: ${newLevelInfo.name}`,
-            variant: "default",
-          });
-        }, 1500);
+        // Set level up state for animations
+        setDidLevelUp(true);
+        setNewLevel(newLevel);
       }
     }
     
@@ -107,6 +104,12 @@ export default function useShowerState() {
     };
   }, [intervalId, waterToggleId]);
   
+  // Reset level up animation state
+  const resetLevelUp = useCallback(() => {
+    setDidLevelUp(false);
+    setNewLevel(null);
+  }, []);
+
   return {
     isShowering,
     elapsedTime,
@@ -114,6 +117,9 @@ export default function useShowerState() {
     points: 10,
     isWaterOn,
     startShower,
-    stopShower
+    stopShower,
+    didLevelUp,
+    newLevel,
+    resetLevelUp
   };
 }

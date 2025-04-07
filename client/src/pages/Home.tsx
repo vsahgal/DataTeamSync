@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import LevelDisplay from "@/components/LevelDisplay";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
+import DancingUnicorn from "@/components/DancingUnicorn";
+import LevelUpAnimation from "@/components/LevelUpAnimation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
@@ -11,6 +13,7 @@ import { getShowerStats } from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart } from "lucide-react";
 import { ShowerStats } from "@shared/schema";
+import Confetti from "react-confetti";
 
 // Helper function to calculate days since last shower
 const getDaysSinceLastShower = (lastShowerDate: string): number => {
@@ -36,7 +39,10 @@ export default function Home() {
     points, 
     startShower, 
     stopShower, 
-    isWaterOn
+    isWaterOn,
+    didLevelUp,
+    newLevel,
+    resetLevelUp
   } = useShowerState();
   
   const [stats, setStats] = useState<ShowerStats>({
@@ -71,8 +77,66 @@ export default function Home() {
     });
   };
   
+  // States for managing the level-up celebration sequence
+  const [showLevelAnimation, setShowLevelAnimation] = useState(false);
+  const [showDancingUnicorn, setShowDancingUnicorn] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  
+  // Get current level information 
+  const currentLevelInfo = LEVELS.find(l => l.level === stats.level) || LEVELS[0];
+  
+  // Manage the level-up celebration sequence
+  useEffect(() => {
+    if (didLevelUp && newLevel) {
+      // Start the celebration sequence
+      setShowConfetti(true);
+      setShowLevelAnimation(true);
+      
+      // After level animation completes, show dancing unicorn
+      setTimeout(() => {
+        setShowDancingUnicorn(true);
+        // Hide level animation
+        setShowLevelAnimation(false);
+      }, 2000);
+      
+      // After dancing unicorn completes, end the celebration
+      setTimeout(() => {
+        setShowDancingUnicorn(false);
+        setShowConfetti(false);
+        resetLevelUp(); // Reset the level-up state
+      }, 5000);
+    }
+  }, [didLevelUp, newLevel, resetLevelUp]);
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 relative">
+      {/* Confetti effect for level-up */}
+      {showConfetti && (
+        <Confetti 
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={300}
+          gravity={0.2}
+        />
+      )}
+      
+      {/* Dancing unicorn animation */}
+      <DancingUnicorn 
+        isVisible={showDancingUnicorn} 
+        onAnimationComplete={() => setShowDancingUnicorn(false)}
+      />
+      
+      {/* Level-up animation */}
+      {newLevel && (
+        <LevelUpAnimation 
+          isVisible={showLevelAnimation}
+          level={newLevel}
+          color={LEVELS.find(l => l.level === newLevel)?.color || '#4299E1'}
+          onAnimationComplete={() => setShowLevelAnimation(false)}
+        />
+      )}
+      
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
           <div className="p-4 flex flex-col items-center justify-center relative z-10">
