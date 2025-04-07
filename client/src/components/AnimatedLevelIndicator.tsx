@@ -72,8 +72,8 @@ export default function AnimatedLevelIndicator({
     }
     
     let startTime: number | null = null;
-    const totalDuration = 2000; // 2 seconds for the entire animation
-    const levelUpTime = 1000; // At halfway through, level up
+    const totalDuration = 3000; // 3 seconds for the entire animation
+    const levelUpTime = 1500; // At halfway through, level up
     
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
@@ -84,9 +84,10 @@ export default function AnimatedLevelIndicator({
       if (progress < 0.5) {
         // First half: growing and glowing effect
         const firstHalfProgress = progress / 0.5;
-        setScale(1 + firstHalfProgress * 0.3); // Grow by 30%
-        setRotation(firstHalfProgress * -3); // Slight rotation
-        setGlow(firstHalfProgress * 10); // Increase glow
+        // More dramatic animation
+        setScale(1 + firstHalfProgress * 0.6); // Grow by 60%
+        setRotation(firstHalfProgress * -6); // More rotation
+        setGlow(firstHalfProgress * 20); // More glow
       } else {
         // Second half: decrease effect and update level
         const secondHalfProgress = (progress - 0.5) / 0.5;
@@ -94,11 +95,15 @@ export default function AnimatedLevelIndicator({
         // If we just crossed the 0.5 threshold, update the displayed level
         if (Math.floor(elapsed) === Math.floor(levelUpTime) && currentDisplayLevel !== targetLevel) {
           setCurrentDisplayLevel(targetLevel);
+          
+          // Add some extra effects at the moment of level-up
+          setScale(1.8); // Extra pulse at level change
+          setGlow(25); // Extra glow at level change
         }
         
-        setScale(1.3 - secondHalfProgress * 0.3); // Return to normal size
-        setRotation(-3 + secondHalfProgress * 3); // Return to no rotation
-        setGlow(10 - secondHalfProgress * 10); // Decrease glow
+        setScale(1.6 - secondHalfProgress * 0.6); // Return to normal size
+        setRotation(-6 + secondHalfProgress * 6); // Return to no rotation
+        setGlow(20 - secondHalfProgress * 20); // Decrease glow
       }
       
       if (progress < 1) {
@@ -130,27 +135,49 @@ export default function AnimatedLevelIndicator({
   }, [isAnimating, previousLevel, targetLevel, onAnimationComplete, currentDisplayLevel]);
   
   return (
-    <div className="flex items-center gap-2 mb-1">
+    <div className="flex items-center gap-2 mb-1 relative">
+      {/* LEVEL UP! text that appears momentarily during the level up */}
+      {isAnimating && currentDisplayLevel === targetLevel && (
+        <div 
+          className="absolute -top-8 left-1/2 transform -translate-x-1/2 font-bold text-xl"
+          style={{ 
+            color: currentLevelInfo.color,
+            opacity: Math.min(1, glow/20),
+            textShadow: `0 0 ${glow/2}px ${currentLevelInfo.color}`
+          }}
+        >
+          LEVEL UP!
+        </div>
+      )}
+      
+      {/* The level indicator */}
       <div 
-        className="bg-blue-100 px-3 py-1 rounded-full transition-all duration-200"
+        className="bg-blue-100 px-4 py-1.5 rounded-full transition-all duration-200"
         style={{ 
           transform: `scale(${scale}) rotate(${rotation}deg)`,
           boxShadow: `0 0 ${glow}px ${currentLevelInfo.color}`,
-          transition: 'transform 0.1s ease-out, box-shadow 0.1s ease-out'
+          borderColor: currentLevelInfo.color,
+          borderWidth: isAnimating ? '2px' : '0px',
+          transition: 'transform 0.1s ease-out, box-shadow 0.1s ease-out, border-color 0.3s'
         }}
       >
         <span 
-          className="text-lg font-bold transition-colors duration-200"
+          className="text-xl font-bold transition-colors duration-200"
           style={{ color: currentLevelInfo.color }}
         >
           Level {currentDisplayLevel}
         </span>
       </div>
+      
       <span className="text-lg font-medium text-blue-600 transition-all duration-200">•</span>
+      
+      {/* The level name */}
       <span 
-        className="text-lg font-medium text-blue-600 transition-colors duration-200"
+        className="text-lg font-medium transition-colors duration-200"
         style={{ 
-          color: currentDisplayLevel === targetLevel ? targetLevelInfo.color : previousLevelInfo.color 
+          color: currentDisplayLevel === targetLevel ? targetLevelInfo.color : previousLevelInfo.color,
+          transform: isAnimating ? `scale(${scale * 0.8})` : 'scale(1)',
+          transition: 'transform 0.1s ease-out, color 0.3s'
         }}
       >
         {currentDisplayLevel === targetLevel ? targetLevelInfo.name : previousLevelInfo.name}

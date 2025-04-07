@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
 import AnimatedLevelIndicator from "@/components/AnimatedLevelIndicator";
-import LevelUpAnimation from "@/components/LevelUpAnimation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
@@ -220,13 +219,7 @@ export default function Home() {
       
       {/* We've replaced the separate DancingUnicorn component with enhanced DirtyUnicorn */}
       
-      {/* Level up animation overlay */}
-      <LevelUpAnimation 
-        isVisible={showLevelAnimation}
-        level={newLevel || 2} // Provide a fallback level for testing
-        color={newLevel ? getLevelInfo(newLevel).color : "#4EADEA"} // Provide a fallback color
-        onAnimationComplete={() => setShowLevelAnimation(false)}
-      />
+      {/* We now use the enhanced AnimatedLevelIndicator instead of a separate animation */}
       
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
@@ -357,20 +350,28 @@ export default function Home() {
                 <Button 
                   onClick={() => {
                     console.log("Testing level animation");
+                    // Force a temporary level-up animation for testing
+                    const currentLevel = stats.level || 1;
                     setShowLevelAnimation(true);
                     setShowConfetti(true);
+                    
+                    // Set a fake level-up state to trigger the animation
+                    const fakeNewLevel = currentLevel + 1;
+                    setDidLevelUp(true);
+                    setNewLevel(fakeNewLevel);
                     
                     // After level animation completes, make the unicorn dance
                     setTimeout(() => {
                       setIsDancingUnicorn(true);
                       setShowLevelAnimation(false);
-                    }, 2000);
+                    }, 3000);
                     
                     // After dancing unicorn completes, end the celebration
                     setTimeout(() => {
                       setIsDancingUnicorn(false);
                       setShowConfetti(false);
-                    }, 5000);
+                      resetLevelUp(); // Reset the level-up state
+                    }, 6000);
                   }} 
                   className="w-full h-10 bg-blue-500 hover:bg-blue-600 mt-2 text-sm"
                 >
