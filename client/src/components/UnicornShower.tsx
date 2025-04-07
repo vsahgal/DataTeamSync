@@ -35,10 +35,11 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
     return diffDays;
   };
   
-  // Calculate initial dirtiness (0-7)
+  // For shower animation, always start with a dirty unicorn (level 3-5)
+  // We'll force a minimum of 3 even if they showered today, to make the cleaning effect more visible
   const initialDirtiness = stats.lastShowerDate ? 
-    (getDaysSinceLastShower(stats.lastShowerDate) === 0 ? 0 : Math.min(7, getDaysSinceLastShower(stats.lastShowerDate))) : 
-    3;
+    Math.max(3, Math.min(5, getDaysSinceLastShower(stats.lastShowerDate) + 3)) : 
+    4;
   
   // Format time as MM:SS
   const minutes = Math.floor(elapsedTime / 60);
@@ -179,11 +180,11 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   
   // Calculate dirt spots based on initial dirtiness and current cleaning stage
   const calculateDirtSpots = () => {
-    // Use a minimum of 3 dirt spots if the unicorn is dirty to make it more visible
-    const baseSpots = Math.max(3, initialDirtiness);
+    // Always start with plenty of dirt spots (at least 15) to make cleaning more dramatic
+    const baseSpots = Math.max(15, initialDirtiness * 4); 
     
-    // Scale up dirt spots for better visibility (3x as many dirt spots as days since shower)
-    const scaledBaseSpots = baseSpots * 3;
+    // Add even more dirt spots for better visibility - make it really dirty!
+    const scaledBaseSpots = baseSpots * 1.5;
     
     // Reduce dirt spots as cleaning progresses
     const reduction = cleaningStage * (scaledBaseSpots / 3); // Full cleaning (stage 3) removes all dirt
@@ -944,13 +945,13 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
           }}
         >
           <p className="text-lg font-medium">
-            {!waterFlowing ? "Starting shower... 🚿" :
-             showingSoap ? "Scrub-a-dub-dub! 🧼" : 
-             showingRinse ? (isDancing ? "Dancing clean unicorn! 💃 🦄" : "Rinse time! 💦") : 
-             cleaningStage === 0 ? "Let's get clean! 🚿" :
-             cleaningStage === 1 ? "Getting cleaner! ✨" :
-             cleaningStage === 2 ? "Almost sparkly clean! ✨" :
-             "Super clean unicorn! 🦄✨"}
+            {!waterFlowing ? "Oh no, dirty unicorn! Let's start the shower... 🚿" :
+             showingSoap ? "Scrub-a-dub-dub! Washing away the dirt! 🧼" : 
+             showingRinse ? (isDancing ? "Hooray! Clean unicorn is dancing! 💃 🦄" : "Rinse time! Washing away the soap! 💦") : 
+             cleaningStage === 0 ? "So dirty! Let's get clean! 🚿" :
+             cleaningStage === 1 ? "Getting cleaner! The dirt is washing away! ✨" :
+             cleaningStage === 2 ? "Almost sparkly clean! Just a bit more! ✨" :
+             "Super clean unicorn! No more dirt! 🦄✨"}
           </p>
         </motion.div>
       </div>
