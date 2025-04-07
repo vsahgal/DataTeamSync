@@ -89,17 +89,6 @@ export default function Home() {
               />
             )}
             
-            {/* Show timer when not showering */}
-            {!isShowering && (
-              <div className="flex items-center justify-center p-3 rounded-xl bg-gray-100 w-full mb-4 mt-4">
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-gray-700 font-mono">
-                    00:00
-                  </p>
-                </div>
-              </div>
-            )}
-            
             <div className="flex items-center justify-center my-4">
               <div className="text-center bg-indigo-100 p-3 rounded-lg w-40">
                 <p className="text-xs text-indigo-600 font-medium">Total Points</p>
