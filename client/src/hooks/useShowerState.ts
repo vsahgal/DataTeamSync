@@ -47,8 +47,9 @@ export default function useShowerState() {
     
     setIsShowering(false);
     
-    // Fixed points reward - always 10 points per shower
-    const finalPoints = 10;
+    // For testing purposes, award enough points to trigger a level-up
+    // Original: const finalPoints = 10;
+    const finalPoints = 50; // Temporary increase for testing
     
     // Save the session
     saveShowerSession({
@@ -113,8 +114,8 @@ export default function useShowerState() {
   return {
     isShowering,
     elapsedTime,
-    // Fixed reward of 10 points per shower
-    points: 10,
+    // For testing: showing 50 points instead of 10
+    points: 50,
     isWaterOn,
     startShower,
     stopShower,

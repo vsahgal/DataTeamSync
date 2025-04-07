@@ -63,7 +63,7 @@ export default function Home() {
     startShower();
     toast({
       title: "Shower started!",
-      description: "Let's get clean and earn 10 points!",
+      description: "Let's get clean and earn 50 points!",
       variant: "default",
     });
   };
@@ -231,7 +231,7 @@ export default function Home() {
               )}
               {isShowering && (
                 <div className="text-center text-sm text-green-600">
-                  +10 points when done
+                  +50 points when done
                 </div>
               )}
             </div>
