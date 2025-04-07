@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import ShowerTimer from "@/components/ShowerTimer";
-import CharacterDisplay from "@/components/CharacterDisplay";
-import WaterAnimation from "@/components/WaterAnimation";
 import LevelDisplay from "@/components/LevelDisplay";
+import UnicornShower from "@/components/UnicornShower";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import useShowerState from "@/hooks/useShowerState";
 import { getShowerStats } from "@/lib/storage";
-import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { Droplets, Zap, Award, BarChart } from "lucide-react";
 import { ShowerStats } from "@shared/schema";
 
@@ -69,18 +66,38 @@ export default function Home() {
               </div>
             </div>
             
-            <CharacterDisplay isShowering={isShowering} points={points} />
-            
-            {isShowering && (
-              <div className="w-full relative">
-                <WaterAnimation isWaterOn={isWaterOn} />
+            {/* Placeholder for non-showering state */}
+            {!isShowering && (
+              <div className="text-center py-8">
+                <img 
+                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGVsbGlwc2UgY3g9IjE1MCIgY3k9IjE2MCIgcng9IjgwIiByeT0iNjAiIGZpbGw9IiNGRkQ2RjYiLz4KICA8cmVjdCB4PSI5MCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjEyMCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTUiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjE2NSIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTUiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjE5NSIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxMjAiIHJ4PSI0MCIgcnk9IjMwIiBmaWxsPSIjRkZENkY2Ii8+CiAgPGNpcmNsZSBjeD0iMjEwIiBjeT0iMTEwIiByPSI1IiBmaWxsPSJ3aGl0ZSIgLz4KICA8Y2lyY2xlIGN4PSIyMTAiIGN5PSIxMTAiIHI9IjIiIGZpbGw9IiMzMzMiIC8+CiAgPHBhdGggZD0iTTE5MCAxMjUgUTIwNSAxMzUgMjIwIDEyNSIgc3Ryb2tlPSIjMzMzIiBzdHJva2VXaWR0aD0iMiIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik0yMDUgOTAgTDIyMCA2MCIgc3Ryb2tlPSIjRkZCNkQ5IiBzdHJva2VXaWR0aD0iOCIgc3Ryb2tlTGluZWNhcD0icm91bmQiLz4KICA8ZWxsaXBzZSBjeD0iMTYwIiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0ZGQjZEOSIvPgogIDxlbGxpcHNlIGN4PSIxNDUiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjQjVERUZGIi8+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjEyMCIgcng9IjEyIiByeT0iMjAiIGZpbGw9IiNEOUI1RkYiLz4KICA8ZWxsaXBzZSBjeD0iMTE1IiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0I1RkZEOSIvPgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5Ii8+CiAgPHBhdGggZD0iTTcwIDE2MCBRNTAgMTIwIDcwIDgwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSIxMCIgc3Ryb2tlTGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KPC9zdmc+" 
+                  alt="Unicorn waiting for shower"
+                  className="mx-auto w-48 h-48 mb-4" 
+                />
+                <p className="text-xl text-blue-600 font-medium">Ready for a shower?</p>
+                <p className="text-sm text-gray-500">Click Start Shower to begin!</p>
               </div>
             )}
             
-            <ShowerTimer
-              elapsedTime={elapsedTime}
-              isActive={isShowering}
-            />
+            {/* Full-screen unicorn shower animation */}
+            {isShowering && (
+              <UnicornShower 
+                isShowering={isShowering}
+                elapsedTime={elapsedTime}
+                isActive={isShowering}
+              />
+            )}
+            
+            {/* Show timer when not showering */}
+            {!isShowering && (
+              <div className="flex items-center justify-center p-3 rounded-xl bg-gray-100 w-full mb-4 mt-4">
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-gray-700 font-mono">
+                    00:00
+                  </p>
+                </div>
+              </div>
+            )}
             
             <div className="flex items-center justify-center my-4">
               <div className="text-center bg-indigo-100 p-3 rounded-lg w-40">
