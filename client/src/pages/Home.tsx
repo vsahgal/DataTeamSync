@@ -53,11 +53,11 @@ export default function Home() {
   };
   
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
-          <div className="p-6 flex flex-col items-center justify-center relative z-10">
-            <div className="flex justify-between items-center w-full mb-4">
+          <div className="p-4 flex flex-col items-center justify-center relative z-10">
+            <div className="flex justify-between items-center w-full mb-2">
               <h1 className="text-3xl font-bold text-blue-600">
                 Zoya's Shower Time
               </h1>
@@ -68,13 +68,13 @@ export default function Home() {
             
             {/* Placeholder for non-showering state */}
             {!isShowering && (
-              <div className="text-center py-8">
+              <div className="text-center py-2">
                 <img 
                   src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGVsbGlwc2UgY3g9IjE1MCIgY3k9IjE2MCIgcng9IjgwIiByeT0iNjAiIGZpbGw9IiNGRkQ2RjYiLz4KICA8cmVjdCB4PSI5MCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjEyMCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTUiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjE2NSIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTUiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjE5NSIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxMjAiIHJ4PSI0MCIgcnk9IjMwIiBmaWxsPSIjRkZENkY2Ii8+CiAgPGNpcmNsZSBjeD0iMjEwIiBjeT0iMTEwIiByPSI1IiBmaWxsPSJ3aGl0ZSIgLz4KICA8Y2lyY2xlIGN4PSIyMTAiIGN5PSIxMTAiIHI9IjIiIGZpbGw9IiMzMzMiIC8+CiAgPHBhdGggZD0iTTE5MCAxMjUgUTIwNSAxMzUgMjIwIDEyNSIgc3Ryb2tlPSIjMzMzIiBzdHJva2VXaWR0aD0iMiIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik0yMDUgOTAgTDIyMCA2MCIgc3Ryb2tlPSIjRkZCNkQ5IiBzdHJva2VXaWR0aD0iOCIgc3Ryb2tlTGluZWNhcD0icm91bmQiLz4KICA8ZWxsaXBzZSBjeD0iMTYwIiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0ZGQjZEOSIvPgogIDxlbGxpcHNlIGN4PSIxNDUiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjQjVERUZGIi8+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjEyMCIgcng9IjEyIiByeT0iMjAiIGZpbGw9IiNEOUI1RkYiLz4KICA8ZWxsaXBzZSBjeD0iMTE1IiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0I1RkZEOSIvPgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5Ii8+CiAgPHBhdGggZD0iTTcwIDE2MCBRNTAgMTIwIDcwIDgwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSIxMCIgc3Ryb2tlTGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KPC9zdmc+" 
                   alt="Unicorn waiting for shower"
-                  className="mx-auto w-48 h-48 mb-4" 
+                  className="mx-auto w-40 h-40 mb-1" 
                 />
-                <p className="text-xl text-blue-600 font-medium">Ready for a shower?</p>
+                <p className="text-xl text-blue-600 font-medium mb-0">Ready for a shower?</p>
                 <p className="text-sm text-gray-500">Click Start Shower to begin!</p>
               </div>
             )}
@@ -89,12 +89,12 @@ export default function Home() {
               />
             )}
             
-            <div className="flex items-center justify-center my-4">
-              <div className="text-center bg-indigo-100 p-3 rounded-lg w-40">
+            <div className="flex items-center justify-center mt-1 mb-3">
+              <div className="text-center bg-indigo-100 p-2 rounded-lg w-40">
                 <p className="text-xs text-indigo-600 font-medium">Total Points</p>
                 <p className="text-2xl font-bold text-indigo-700">{stats.totalPoints}</p>
                 {isShowering && (
-                  <div className="mt-1 text-xs text-green-600">+10 points when done</div>
+                  <div className="text-xs text-green-600">+10 points when done</div>
                 )}
               </div>
             </div>
@@ -102,7 +102,7 @@ export default function Home() {
             {!isShowering && (
               <Button 
                 onClick={handleStart} 
-                className="w-full h-16 bg-emerald-500 hover:bg-emerald-600 mb-2 rounded-full text-xl"
+                className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
               >
                 Start Shower
               </Button>
