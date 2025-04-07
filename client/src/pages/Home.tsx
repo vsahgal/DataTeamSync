@@ -85,6 +85,7 @@ export default function Home() {
                 isShowering={isShowering}
                 elapsedTime={elapsedTime}
                 isActive={isShowering}
+                onStopShower={handleStop}
               />
             )}
             
@@ -109,19 +110,12 @@ export default function Home() {
               </div>
             </div>
             
-            {!isShowering ? (
+            {!isShowering && (
               <Button 
                 onClick={handleStart} 
                 className="w-full h-16 bg-emerald-500 hover:bg-emerald-600 mb-2 rounded-full text-xl"
               >
                 Start Shower
-              </Button>
-            ) : (
-              <Button 
-                onClick={handleStop} 
-                className="w-full h-16 bg-red-500 hover:bg-red-600 mb-2 rounded-full text-xl"
-              >
-                Stop Shower
               </Button>
             )}
           </div>

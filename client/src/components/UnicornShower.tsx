@@ -5,9 +5,10 @@ interface UnicornShowerProps {
   isShowering: boolean;
   elapsedTime: number;
   isActive: boolean;
+  onStopShower: () => void;
 }
 
-export default function UnicornShower({ isShowering, elapsedTime, isActive }: UnicornShowerProps) {
+export default function UnicornShower({ isShowering, elapsedTime, isActive, onStopShower }: UnicornShowerProps) {
   const [showingSoap, setShowingSoap] = useState(false);
   const [showingRinse, setShowingRinse] = useState(false);
   
@@ -335,6 +336,28 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive }: Un
             />
           ))}
         </div>
+      </div>
+      
+      {/* Done Showering Button */}
+      <div className="absolute top-20 right-6 z-50">
+        <motion.button
+          onClick={onStopShower}
+          className="bg-red-500 hover:bg-red-600 text-white text-xl font-bold py-3 px-6 rounded-full shadow-lg border-4 border-white"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          animate={{
+            y: [0, -3, 0],
+          }}
+          transition={{
+            y: {
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }
+          }}
+        >
+          Done Showering!
+        </motion.button>
       </div>
       
       {/* Status message */}
