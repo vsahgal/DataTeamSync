@@ -291,47 +291,51 @@ export default function DirtyUnicorn({
       )}
       
       {/* Smell cloud 1 - gets bigger and darker with dirtiness */}
-      <div 
-        className={`absolute top-10 right-8 transform transition-all duration-700 ease-in-out ${
-          showSmell1 ? 'opacity-80 translate-y-[-10px]' : 'opacity-0 translate-y-0'
-        }`}
-        style={{ 
-          transform: `scale(${1 + Math.min(0.4, dirtiness * 0.05)})`,
-          opacity: dirtiness >= 6 ? 0.9 : 0.8
-        }}
-      >
-        <svg width="40" height="30" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            d="M5 25C2.5 25 1 23.5 1 20.5C1 17.5 3 16 5 16C5 13 7 10 10 10C13 10 15 12 16 14C17 12 19 11 21 11C24 11 26 13 26 16C28 16 30 18 30 21C30 24 28 25 26 25C25.5 25 5.5 25 5 25Z" 
-            fill={dirtiness >= 6 ? "#888888" : "#AAAAAA"} 
-            fillOpacity={0.6 + Math.min(0.3, dirtiness * 0.05)}
-          />
-          <text x="15" y="20" fontSize={dirtiness >= 6 ? "10" : "8"} fill="#555">~</text>
-        </svg>
-      </div>
+      {!isClean && dirtiness >= 2 && (
+        <div 
+          className={`absolute top-10 right-8 transform transition-all duration-700 ease-in-out ${
+            showSmell1 ? 'opacity-80 translate-y-[-10px]' : 'opacity-0 translate-y-0'
+          }`}
+          style={{ 
+            transform: `scale(${1 + Math.min(0.4, dirtiness * 0.05)})`,
+            opacity: dirtiness >= 6 ? 0.9 : 0.8
+          }}
+        >
+          <svg width="40" height="30" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M5 25C2.5 25 1 23.5 1 20.5C1 17.5 3 16 5 16C5 13 7 10 10 10C13 10 15 12 16 14C17 12 19 11 21 11C24 11 26 13 26 16C28 16 30 18 30 21C30 24 28 25 26 25C25.5 25 5.5 25 5 25Z" 
+              fill={dirtiness >= 6 ? "#888888" : "#AAAAAA"} 
+              fillOpacity={0.6 + Math.min(0.3, dirtiness * 0.05)}
+            />
+            <text x="15" y="20" fontSize={dirtiness >= 6 ? "10" : "8"} fill="#555">~</text>
+          </svg>
+        </div>
+      )}
       
       {/* Smell cloud 2 - gets bigger and darker with dirtiness */}
-      <div 
-        className={`absolute top-5 left-10 transform transition-all duration-700 ease-in-out ${
-          showSmell2 ? 'opacity-80 translate-y-[-8px]' : 'opacity-0 translate-y-0'
-        }`}
-        style={{ 
-          transform: `scale(${1 + Math.min(0.5, dirtiness * 0.06)})`,
-          opacity: dirtiness >= 6 ? 0.9 : 0.8
-        }}
-      >
-        <svg width="30" height="25" viewBox="0 0 30 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            d="M3 20C1.5 20 1 18.5 1 16.5C1 14.5 2 13 3.5 13C3.5 11 5 8 7.5 8C10 8 11.5 10 12 11.5C12.5 10 14 9 15.5 9C17.5 9 19 10.5 19 13C20.5 13 22 14.5 22 17C22 19.5 20.5 20 19 20C18.5 20 3.5 20 3 20Z" 
-            fill={dirtiness >= 6 ? "#888888" : "#AAAAAA"} 
-            fillOpacity={0.6 + Math.min(0.3, dirtiness * 0.05)}
-          />
-          <text x="11" y="16" fontSize={dirtiness >= 6 ? "8" : "6"} fill="#555">~</text>
-        </svg>
-      </div>
+      {!isClean && dirtiness >= 3 && (
+        <div 
+          className={`absolute top-5 left-10 transform transition-all duration-700 ease-in-out ${
+            showSmell2 ? 'opacity-80 translate-y-[-8px]' : 'opacity-0 translate-y-0'
+          }`}
+          style={{ 
+            transform: `scale(${1 + Math.min(0.5, dirtiness * 0.06)})`,
+            opacity: dirtiness >= 6 ? 0.9 : 0.8
+          }}
+        >
+          <svg width="30" height="25" viewBox="0 0 30 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M3 20C1.5 20 1 18.5 1 16.5C1 14.5 2 13 3.5 13C3.5 11 5 8 7.5 8C10 8 11.5 10 12 11.5C12.5 10 14 9 15.5 9C17.5 9 19 10.5 19 13C20.5 13 22 14.5 22 17C22 19.5 20.5 20 19 20C18.5 20 3.5 20 3 20Z" 
+              fill={dirtiness >= 6 ? "#888888" : "#AAAAAA"} 
+              fillOpacity={0.6 + Math.min(0.3, dirtiness * 0.05)}
+            />
+            <text x="11" y="16" fontSize={dirtiness >= 6 ? "8" : "6"} fill="#555">~</text>
+          </svg>
+        </div>
+      )}
       
       {/* Smell cloud 3 - only appears for very dirty unicorn (level 5+), gets bigger for day 7 */}
-      {dirtiness >= 5 && (
+      {!isClean && dirtiness >= 5 && (
         <div 
           className={`absolute top-12 left-32 transform transition-all duration-700 ease-in-out ${
             showSmell3 ? 'opacity-80 translate-y-[-12px]' : 'opacity-0 translate-y-0'
@@ -353,7 +357,7 @@ export default function DirtyUnicorn({
       )}
       
       {/* Extra smell cloud 4 - only appears for extremely dirty unicorn (level 7) */}
-      {dirtiness >= 7 && (
+      {!isClean && dirtiness >= 7 && (
         <div 
           className={`absolute top-8 right-28 transform transition-all duration-700 ease-in-out ${
             showSmell1 ? 'opacity-90 translate-y-[-15px]' : 'opacity-0 translate-y-0'
@@ -421,7 +425,7 @@ export default function DirtyUnicorn({
       )}
       
       {/* Tears for very dirty unicorn (days 6-7) */}
-      {dirtiness >= 6 && isCrying && (
+      {!isClean && dirtiness >= 6 && isCrying && (
         <>
           {/* Left tear - bigger for dirtiness 7 */}
           <div className="absolute left-[185px] top-[115px] animate-drip">
