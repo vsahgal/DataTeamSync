@@ -59,22 +59,19 @@ export default function Home() {
       <Card className="overflow-hidden border-4 border-blue-300 bg-white">
         <CardContent className="p-0 relative">
           <div className="p-4 flex flex-col items-center justify-center relative z-10">
-            <div className="flex justify-between items-center w-full mb-2">
+            <div className="flex justify-center items-center w-full mb-2">
               <h1 className="text-3xl font-bold text-blue-600">
                 Zoya's Shower Time
               </h1>
-              <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                Level {stats.level || 1}
-              </div>
             </div>
             
             {/* Placeholder for non-showering state */}
             {!isShowering && (
               <div className="text-center py-0">
                 <img 
-                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGVsbGlwc2UgY3g9IjE1MCIgY3k9IjE2MCIgcng9IjgwIiByeT0iNjAiIGZpbGw9IiNGRkQ2RjYiLz4KICA8cmVjdCB4PSI5MCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjEyMCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTUiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjE2NSIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTUiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxyZWN0IHg9IjE5NSIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRkZENkY2IiAvPgogIDxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxMjAiIHJ4PSI0MCIgcnk9IjMwIiBmaWxsPSIjRkZENkY2Ii8+CiAgPGNpcmNsZSBjeD0iMjEwIiBjeT0iMTEwIiByPSI1IiBmaWxsPSJ3aGl0ZSIgLz4KICA8Y2lyY2xlIGN4PSIyMTAiIGN5PSIxMTAiIHI9IjIiIGZpbGw9IiMzMzMiIC8+CiAgPHBhdGggZD0iTTE5MCAxMjUgUTIwNSAxMzUgMjIwIDEyNSIgc3Ryb2tlPSIjMzMzIiBzdHJva2VXaWR0aD0iMiIgZmlsbD0ibm9uZSIvPgogIDxwYXRoIGQ9Ik0yMDUgOTAgTDIyMCA2MCIgc3Ryb2tlPSIjRkZCNkQ5IiBzdHJva2VXaWR0aD0iOCIgc3Ryb2tlTGluZWNhcD0icm91bmQiLz4KICA8ZWxsaXBzZSBjeD0iMTYwIiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0ZGQjZEOSIvPgogIDxlbGxpcHNlIGN4PSIxNDUiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjQjVERUZGIi8+CiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjEyMCIgcng9IjEyIiByeT0iMjAiIGZpbGw9IiNEOUI1RkYiLz4KICA8ZWxsaXBzZSBjeD0iMTE1IiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0I1RkZEOSIvPgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5Ii8+CiAgPHBhdGggZD0iTTcwIDE2MCBRNTAgMTIwIDcwIDgwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSIxMCIgc3Ryb2tlTGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KPC9zdmc+" 
-                  alt="Unicorn waiting for shower"
-                  className="mx-auto w-36 h-36 mt-0 mb-4" 
+                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGVsbGlwc2UgY3g9IjE1MCIgY3k9IjE2MCIgcng9IjgwIiByeT0iNjAiIGZpbGw9IiNFRUNFRTciLz4KICA8IS0tIERpcnQgc3BvdHMgb24gYm9keSAtLT4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSIxNDAiIHI9IjE4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuOCIgLz4KICA8Y2lyY2xlIGN4PSIxNzAiIGN5PSIxODAiIHI9IjE1IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxNzAiIHI9IjEyIiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNSIgLz4KICA8cmVjdCB4PSI5MCIgeT0iMjAwIiB3aWR0aD0iMTUiIGhlaWdodD0iNTAiIHJ4PSI3IiBmaWxsPSIjRUVDRUU3IiAvPgogIDwhLS0gRGlydCBvbiBsZWdzIC0tPgogIDxjaXJjbGUgY3g9Ijk3IiBjeT0iMjIwIiByPSI4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KCiAgPHJlY3QgeD0iMTIwIiB5PSIyMDAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI1NSIgcng9IjciIGZpbGw9IiNFRUNFRTciIC8+CiAgPGNpcmNsZSBjeD0iMTI3IiBjeT0iMjMwIiByPSI5IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KCiAgPHJlY3QgeD0iMTY1IiB5PSIyMDAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI1NSIgcng9IjciIGZpbGw9IiNFRUNFRTciIC8+CiAgPGNpcmNsZSBjeD0iMTcyIiBjeT0iMjQwIiByPSI4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KCiAgPHJlY3QgeD0iMTk1IiB5PSIyMDAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI1MCIgcng9IjciIGZpbGw9IiNFRUNFRTciIC8+CiAgPGNpcmNsZSBjeD0iMjAyIiBjeT0iMjI1IiByPSI4IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KCiAgPGVsbGlwc2UgY3g9IjIwMCIgY3k9IjEyMCIgcng9IjQwIiByeT0iMzAiIGZpbGw9IiNFRUNFRTciLz4KICA8IS0tIERpcnQgb24gZmFjZSAtLT4KICA8Y2lyY2xlIGN4PSIxODAiIGN5PSIxMTAiIHI9IjEwIiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KICA8Y2lyY2xlIGN4PSIyMTAiIGN5PSIxMTAiIHI9IjUiIGZpbGw9IndoaXRlIiAvPgogIDxjaXJjbGUgY3g9IjIxMCIgY3k9IjExMCIgcj0iMiIgZmlsbD0iIzMzMyIgLz4KCiAgPCEtLSBGcm93biAtLT4KICA8cGF0aCBkPSJNMTkwIDEzMCBRMjA1IDEyMCAyMjAgMTMwIiBzdHJva2U9IiMzMzMiIHN0cm9rZVdpZHRoPSIyIiBmaWxsPSJub25lIi8+CiAgPHBhdGggZD0iTTIwNSA5MCBMMjIwIDYwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSI4IiBzdHJva2VMaW5lY2FwPSJyb3VuZCIvPgogIDxlbGxpcHNlIGN4PSIxNjAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5IiAvPgogIDwhLS0gRGlydCBvbiBob3JuIC0tPgogIDxjaXJjbGUgY3g9IjE2MCIgY3k9IjExMCIgcj0iNyIgZmlsbD0iI0Q4QkFCNSIgZmlsbC1vcGFjaXR5PSIwLjciIC8+CgogIDxlbGxpcHNlIGN4PSIxNDUiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjQjVERUZGIi8+CiAgPGNpcmNsZSBjeD0iMTQ1IiBjeT0iMTEwIiByPSI2IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNiIgLz4KCiAgPGVsbGlwc2UgY3g9IjEzMCIgY3k9IjEyMCIgcng9IjEyIiByeT0iMjAiIGZpbGw9IiNEOUI1RkYiLz4KICA8Y2lyY2xlIGN4PSIxMzAiIGN5PSIxMTAiIHI9IjgiIGZpbGw9IiNEOEJBQjUiIGZpbGwtb3BhY2l0eT0iMC43IiAvPgoKICA8ZWxsaXBzZSBjeD0iMTE1IiBjeT0iMTIwIiByeD0iMTIiIHJ5PSIyMCIgZmlsbD0iI0I1RkZEOSIvPgogIDxjaXJjbGUgY3g9IjExNSIgY3k9IjExNSIgcj0iNyIgZmlsbD0iI0Q4QkFCNSIgZmlsbC1vcGFjaXR5PSIwLjgiIC8+CgogIDxlbGxpcHNlIGN4PSIxMDAiIGN5PSIxMjAiIHJ4PSIxMiIgcnk9IjIwIiBmaWxsPSIjRkZCNkQ5Ii8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTEwIiByPSI2IiBmaWxsPSIjRDhCQUI1IiBmaWxsLW9wYWNpdHk9IjAuNyIgLz4KCiAgPHBhdGggZD0iTTcwIDE2MCBRNTAgMTIwIDcwIDgwIiBzdHJva2U9IiNGRkI2RDkiIHN0cm9rZVdpZHRoPSIxMCIgc3Ryb2tlTGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjEzMCIgcj0iMTAiIGZpbGw9IiNEOEJBQjUiIGZpbGwtb3BhY2l0eT0iMC43IiAvPgo8L3N2Zz4=" 
+                  alt="Dirty unicorn waiting for shower"
+                  className="mx-auto w-54 h-54 mt-0 mb-4" 
                 />
               </div>
             )}
@@ -114,8 +111,21 @@ export default function Home() {
                     
                     return (
                       <>
-                        <div className="text-center text-sm text-blue-600 mb-1">
-                          {pointsNeeded} points to Level {currentLevel + 1}
+                        <div className="flex flex-col items-center justify-center mb-2">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="bg-blue-100 px-3 py-1 rounded-full">
+                              <span className="text-lg font-bold" style={{ color: currentLevelInfo.color }}>
+                                Level {currentLevel}
+                              </span>
+                            </div>
+                            <span className="text-lg font-medium text-blue-600">•</span>
+                            <span className="text-lg font-medium text-blue-600">
+                              {currentLevelInfo.name}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-500 mb-1">
+                            {pointsNeeded} points to Level {currentLevel + 1}
+                          </div>
                         </div>
                         <ProgressIndicator 
                           value={progress} 
