@@ -83,4 +83,6 @@ export type ShowerStats = {
   longestShower: number;
   streakDays: number;
   lastShowerDate: string | null;
+  level?: number;
+  lastLevelUp?: string | null;
 };

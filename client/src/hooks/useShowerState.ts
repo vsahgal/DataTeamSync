@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import { saveShowerSession, getShowerStats, updateShowerStats } from '@/lib/storage';
-import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL } from '@/lib/constants';
+import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
+import { useToast } from '@/hooks/use-toast';
 
 export default function useShowerState() {
+  const { toast } = useToast();
   const [isShowering, setIsShowering] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isWaterOn, setIsWaterOn] = useState(true);
@@ -55,18 +57,47 @@ export default function useShowerState() {
       createdAt: new Date().toISOString()
     });
     
+    // Get current stats before update
+    const currentStats = getShowerStats();
+    
+    // Check if this update will cause a level-up
+    const currentLevel = currentStats.level || 1;
+    const newTotalPoints = currentStats.totalPoints + finalPoints;
+    
+    // Find potential new level
+    let newLevel = currentLevel;
+    for (const level of LEVELS) {
+      if (newTotalPoints >= level.pointsNeeded && level.level > newLevel) {
+        newLevel = level.level;
+      }
+    }
+    
     // Update stats
-    const stats = getShowerStats();
     updateShowerStats({
-      ...stats,
-      totalSessions: stats.totalSessions + 1,
-      totalPoints: stats.totalPoints + finalPoints,
-      longestShower: Math.max(stats.longestShower, elapsedTime),
+      ...currentStats,
+      totalSessions: currentStats.totalSessions + 1,
+      totalPoints: newTotalPoints,
+      longestShower: Math.max(currentStats.longestShower, elapsedTime),
       lastShowerDate: new Date().toISOString()
     });
     
+    // Check and notify if there was a level-up
+    if (newLevel > currentLevel) {
+      const newLevelInfo = LEVELS.find(l => l.level === newLevel);
+      if (newLevelInfo) {
+        // Schedule the level-up toast to show after the completion toast
+        setTimeout(() => {
+          toast({
+            title: "🎉 Level Up!",
+            description: `You've reached Level ${newLevel}: ${newLevelInfo.name}`,
+            variant: "default",
+          });
+        }, 1500);
+      }
+    }
+    
     return finalPoints;
-  }, [intervalId, waterToggleId, elapsedTime]);
+  }, [intervalId, waterToggleId, elapsedTime, toast]);
   
   // Clean up on unmount
   useEffect(() => {

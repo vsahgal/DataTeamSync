@@ -9,8 +9,8 @@ interface ProgressIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const ProgressIndicator = React.forwardRef<HTMLDivElement, ProgressIndicatorProps>(
   ({ value, label, color, className, ...props }, ref) => {
-    const percentage = Math.max(0, Math.min(100, value * 100));
-    const clampedValue = Math.max(0, Math.min(1, value));
+    // value is expected to be 0-100
+    const percentage = Math.max(0, Math.min(100, value));
     
     return (
       <div 

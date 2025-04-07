@@ -3,7 +3,7 @@ import {
   LocalReward, 
   ShowerStats 
 } from '@shared/schema';
-import { initialRewards } from './constants';
+import { initialRewards, LEVELS } from './constants';
 
 const STORAGE_KEYS = {
   SESSIONS: 'shower_sessions',
@@ -27,7 +27,9 @@ const initializeStorage = () => {
       totalPoints: 0,
       longestShower: 0,
       streakDays: 0,
-      lastShowerDate: null
+      lastShowerDate: null,
+      level: 1,
+      lastLevelUp: null
     };
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(initialStats));
   }
@@ -108,7 +110,9 @@ export const getShowerStats = (): ShowerStats => {
         totalPoints: 0,
         longestShower: 0,
         streakDays: 0,
-        lastShowerDate: null
+        lastShowerDate: null,
+        level: 1,
+        lastLevelUp: null
       };
       return initialStats;
     }
@@ -144,7 +148,9 @@ export const getShowerStats = (): ShowerStats => {
       totalPoints: 0,
       longestShower: 0,
       streakDays: 0,
-      lastShowerDate: null
+      lastShowerDate: null,
+      level: 1,
+      lastLevelUp: null
     };
   }
 };
@@ -173,9 +179,42 @@ export const updateShowerStats = (stats: ShowerStats): void => {
       stats.streakDays = 1;
     }
     
+    // Check level progression
+    const currentLevel = currentStats.level || 1;
+    stats.level = currentLevel; // Ensure level is carried over if not provided
+    
+    // Find next level based on points
+    const nextLevel = checkLevelProgression(stats);
+    if (nextLevel > currentLevel) {
+      stats.level = nextLevel;
+      stats.lastLevelUp = new Date().toISOString();
+    }
+    
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
   } catch (error) {
     console.error('Error updating shower stats:', error);
+  }
+};
+
+// Check if the user has earned enough points to level up
+const checkLevelProgression = (stats: ShowerStats): number => {
+  try {
+    // If no current level, default to 1
+    const currentLevel = stats.level || 1;
+    let newLevel = currentLevel;
+    
+    // Check if points are enough for next level
+    for (let i = 0; i < LEVELS.length; i++) {
+      const level = LEVELS[i];
+      if (stats.totalPoints >= level.pointsNeeded && level.level > newLevel) {
+        newLevel = level.level;
+      }
+    }
+    
+    return newLevel;
+  } catch (error) {
+    console.error('Error checking level progression:', error);
+    return stats.level || 1;
   }
 };
 

@@ -7,6 +7,20 @@ export const MAX_SHOWER_TIME = 300; // 5 minutes
 export const OPTIMAL_SHOWER_TIME = 240; // 4 minutes
 export const WATER_TOGGLE_INTERVAL = 300; // Water animation toggle interval in ms
 
+// Level system
+export const LEVELS = [
+  { level: 1, name: "Bubble Beginner", pointsNeeded: 0, color: "#4EADEA" },
+  { level: 2, name: "Splash Starter", pointsNeeded: 50, color: "#4EA0EA" },
+  { level: 3, name: "Clean Cadet", pointsNeeded: 120, color: "#4E93EA" },
+  { level: 4, name: "Shower Scout", pointsNeeded: 200, color: "#4E86EA" },
+  { level: 5, name: "Bath Buddy", pointsNeeded: 300, color: "#4E79EA" },
+  { level: 6, name: "Rinse Ranger", pointsNeeded: 450, color: "#4E6CEA" },
+  { level: 7, name: "Washcloth Wizard", pointsNeeded: 600, color: "#4E5FEA" },
+  { level: 8, name: "Soap Superstar", pointsNeeded: 800, color: "#574EEA" },
+  { level: 9, name: "Hygiene Hero", pointsNeeded: 1000, color: "#644EEA" },
+  { level: 10, name: "Shower Champion", pointsNeeded: 1500, color: "#714EEA" }
+];
+
 // Initial rewards
 export const initialRewards: LocalReward[] = [
   {

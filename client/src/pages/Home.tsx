@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ShowerTimer from "@/components/ShowerTimer";
 import CharacterDisplay from "@/components/CharacterDisplay";
 import WaterAnimation from "@/components/WaterAnimation";
+import LevelDisplay from "@/components/LevelDisplay";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -27,7 +28,9 @@ export default function Home() {
     totalPoints: 0,
     longestShower: 0,
     streakDays: 0,
-    lastShowerDate: null
+    lastShowerDate: null,
+    level: 1,
+    lastLevelUp: null
   });
   
   useEffect(() => {
@@ -103,6 +106,9 @@ export default function Home() {
         </CardContent>
       </Card>
       
+      {/* Level Display */}
+      <LevelDisplay stats={stats} />
+
       <Card className="overflow-hidden border-2 border-indigo-200">
         <CardContent className="pt-6">
           <h2 className="text-xl font-bold mb-4 text-indigo-700">Your Progress</h2>
@@ -147,14 +153,6 @@ export default function Home() {
                 <p className="font-medium">{Math.floor(stats.longestShower / 60)}:{(stats.longestShower % 60).toString().padStart(2, '0')}</p>
               </div>
             </div>
-          </div>
-          
-          <div className="mt-6">
-            <p className="text-sm font-medium mb-2">Progress to next reward</p>
-            <ProgressIndicator 
-              value={(stats.totalPoints % 100) / 100} 
-              label={`${stats.totalPoints % 100}/100 points`} 
-            />
           </div>
         </CardContent>
       </Card>
