@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getShowerStats } from "@/lib/storage";
-import newUnicornImage from "../assets/new-unicorn.png";
+import newUnicornImage from "../assets/unicorn-with-wings.png";
 
 interface UnicornShowerProps {
   isShowering: boolean;

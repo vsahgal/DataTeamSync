@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import newUnicornImage from "../assets/new-unicorn.png";
+import newUnicornImage from "../assets/unicorn-with-wings.png";
 
 interface DirtyUnicornProps {
   dirtiness: number; // Scale of 0-7, where 0 is clean and 7 is the dirtiest
