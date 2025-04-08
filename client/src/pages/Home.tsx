@@ -516,24 +516,27 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Gift box for loot rewards - using a direct approach */}
+      {/* Simple gift box - just the gift itself */}
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
-          <div className="relative bg-white p-6 rounded-lg shadow-xl max-w-md w-full flex flex-col items-center">
-            <h2 className="text-xl font-bold mb-4 text-center">You found a reward!</h2>
-            <div 
-              className="w-48 h-48 bg-amber-300 rounded-xl shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 relative"
-              onClick={() => handleOpenGift(pendingLoot)}
-            >
-              {/* Simplified gift box */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="absolute top-0 left-0 w-full h-1/4 bg-amber-400 rounded-t-xl"></div>
-                <div className="absolute top-0 left-1/2 w-8 h-full bg-red-500 transform -translate-x-1/2"></div>
-                <div className="absolute top-1/2 left-0 w-full h-8 bg-red-500 transform -translate-y-1/2"></div>
-                <div className="text-6xl text-center mt-4">{pendingLoot.emoji}</div>
-              </div>
+          <div 
+            className="w-52 h-52 bg-amber-300 rounded-xl shadow-xl flex items-center justify-center cursor-pointer hover:scale-105 relative transition-transform"
+            onClick={() => handleOpenGift(pendingLoot)}
+          >
+            {/* Simplified gift box */}
+            <div className="absolute top-0 left-0 w-full h-1/4 bg-amber-400 rounded-t-xl"></div>
+            <div className="absolute top-0 left-1/2 w-8 h-full bg-red-500 transform -translate-x-1/2"></div>
+            <div className="absolute top-1/2 left-0 w-full h-8 bg-red-500 transform -translate-y-1/2"></div>
+            
+            {/* Bow */}
+            <div className="absolute top-0 left-1/2 w-16 h-12 transform -translate-x-1/2 -translate-y-3 z-10">
+              <div className="absolute top-1/2 left-0 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 rotate-[-30deg] origin-right"></div>
+              <div className="absolute top-1/2 right-0 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 rotate-[30deg] origin-left"></div>
+              <div className="absolute top-1/2 left-1/2 w-6 h-6 bg-red-600 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
             </div>
-            <p className="text-sm text-gray-500 mt-4 animate-pulse">Tap the gift to open it!</p>
+            
+            {/* Emoji inside */}
+            <div className="text-7xl mt-2 z-10">{pendingLoot.emoji}</div>
           </div>
         </div>
       )}
