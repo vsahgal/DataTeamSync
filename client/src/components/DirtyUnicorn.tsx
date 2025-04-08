@@ -426,9 +426,7 @@ export default function DirtyUnicorn({
             >
               <path
                 d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
-                fill="transparent"
-                stroke="rgba(255, 255, 255, 0.8)"
-                strokeWidth="0.5"
+                fill="#89CFF0"
                 fillOpacity={dirtiness >= 7 ? "0.9" : "0.8"}
               />
             </svg>
@@ -446,9 +444,7 @@ export default function DirtyUnicorn({
             >
               <path
                 d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
-                fill="transparent"
-                stroke="rgba(255, 255, 255, 0.8)"
-                strokeWidth="0.5"
+                fill="#89CFF0"
                 fillOpacity={dirtiness >= 7 ? "0.9" : "0.8"}
               />
             </svg>
@@ -461,9 +457,7 @@ export default function DirtyUnicorn({
                 <svg width="10" height="18" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
-                    fill="transparent"
-                    stroke="rgba(255, 255, 255, 0.8)"
-                    strokeWidth="0.5"
+                    fill="#89CFF0"
                     fillOpacity="0.85"
                   />
                 </svg>
