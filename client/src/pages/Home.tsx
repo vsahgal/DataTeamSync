@@ -512,10 +512,14 @@ export default function Home() {
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
           <GiftBox 
-            visible={!!pendingLoot} 
+            visible={true} 
             onOpen={handleOpenGift} 
             lootItem={pendingLoot} 
           />
+          {/* Debug info */}
+          <div className="absolute top-2 left-2 text-xs text-white bg-black/50 p-1 rounded">
+            Debug: Gift visible with {pendingLoot.name}
+          </div>
         </div>
       )}
       

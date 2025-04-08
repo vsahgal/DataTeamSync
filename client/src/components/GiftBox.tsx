@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LootItem } from '@/lib/lootItems';
 import { Button } from '@/components/ui/button';
-import giftBoxImage from '../assets/gift-box.png';
+// Using direct URL path to access the image
+const giftBoxImage = "/gift-box.png";
+console.log("Gift box image path:", giftBoxImage);
 
 interface GiftBoxProps {
   visible: boolean;
@@ -13,22 +15,31 @@ interface GiftBoxProps {
 export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
   const [isOpening, setIsOpening] = useState(false);
   const [showItem, setShowItem] = useState(false);
+
+  // Debug logging
+  console.log("GiftBox rendering", { visible, lootItem, isOpening, showItem });
   
   const handleOpen = () => {
+    console.log("GiftBox: handleOpen called");
     setIsOpening(true);
     
     // After longer animation, show the item inside
     setTimeout(() => {
+      console.log("GiftBox: showing item inside");
       setShowItem(true);
       
       // Then after showing item for a longer moment, complete the sequence
       setTimeout(() => {
+        console.log("GiftBox: animation complete, calling onOpen");
         onOpen(lootItem);
       }, 4000); // Increased from 2000ms to 4000ms for more time to see the item
     }, 1500); // Increased from 1000ms to 1500ms for slower opening
   };
   
-  if (!visible) return null;
+  if (!visible) {
+    console.log("GiftBox: not visible, returning null");
+    return null;
+  }
   
   return (
     <AnimatePresence>
