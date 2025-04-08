@@ -156,7 +156,7 @@ export default function DirtyUnicorn({
   
   return (
     <div 
-      className="relative w-54 h-54 mx-auto"
+      className="relative w-48 h-48 mx-auto"
       style={{
         transform: isDancing ? `translateY(${position}px) rotate(${rotation}deg) scale(${scale})` : 'none',
         transition: 'transform 0.1s ease-out'
@@ -168,7 +168,7 @@ export default function DirtyUnicorn({
         <img 
           src={newUnicornImage} 
           alt="Unicorn" 
-          className="w-full h-full object-contain"
+          className="w-4/5 h-4/5 object-contain mx-auto"
         />
         
         {/* Overlay dirt spots if the unicorn is dirty */}
