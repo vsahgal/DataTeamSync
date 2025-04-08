@@ -62,9 +62,12 @@ export default function LootCollection({ items, isOpen, onClose }: LootCollectio
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={e => e.stopPropagation()}
           >
-            <div className="p-4 bg-gradient-to-r from-purple-600 to-pink-500">
-              <h2 className="text-xl font-bold text-white text-center">
-                Your Collection <span className="text-sm">({items.length}/{50})</span>
+            <div className="p-4 bg-gradient-to-r from-purple-600 to-pink-500 rounded-t-xl">
+              <h2 className="text-2xl font-bold text-white text-center flex flex-col items-center">
+                <span className="mb-1">Zoya's Treasures!</span>
+                <span className="text-sm bg-white/30 px-3 py-1 rounded-full">
+                  {items.length} out of 50 treasures found
+                </span>
               </h2>
             </div>
             
@@ -97,21 +100,45 @@ export default function LootCollection({ items, isOpen, onClose }: LootCollectio
                   <CarouselContent>
                     {filteredItems.map(item => (
                       <CarouselItem key={item.id}>
-                        <Card className="p-4 flex flex-col items-center justify-center h-64 border-2 text-center">
-                          <div className="text-5xl mb-3">{item.emoji}</div>
-                          <h3 className="text-lg font-bold mb-1">{item.name}</h3>
+                        <Card className="p-4 flex flex-col items-center justify-center h-64 border-2 text-center overflow-hidden relative">
+                          {/* Add background color based on rarity */}
+                          <div className={`absolute inset-0 opacity-10 ${
+                            item.rarity === 'rare' 
+                              ? 'bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200' 
+                              : item.rarity === 'uncommon'
+                              ? 'bg-gradient-to-br from-blue-300 to-teal-200'
+                              : 'bg-gradient-to-br from-gray-200 to-gray-100'
+                          }`}></div>
+                          
+                          {/* Emoji with animation */}
+                          <div className="text-6xl mb-3 animate-bounce-slow">{item.emoji}</div>
+                          
+                          {/* Item name with larger font */}
+                          <h3 className="text-xl font-bold mb-1">{item.name}</h3>
+                          
+                          {/* Badges with more colorful variants */}
                           <div className="flex items-center justify-center gap-2 mb-1">
                             <Badge variant={
                               item.rarity === 'rare' ? 'default' :
                               item.rarity === 'uncommon' ? 'secondary' : 'outline'
+                            } className={
+                              item.rarity === 'rare' ? 'bg-purple-600' :
+                              item.rarity === 'uncommon' ? 'bg-blue-500' : ''
                             }>
                               {item.rarity}
                             </Badge>
-                            <Badge variant="outline">
+                            <Badge variant="outline" className="bg-white/70">
                               ×{item.count}
                             </Badge>
                           </div>
+                          
+                          {/* Description */}
                           <p className="text-sm text-gray-600 mt-1 max-w-[200px]">{item.description}</p>
+                          
+                          {/* First collected info */}
+                          <div className="text-xs text-gray-400 mt-2 absolute bottom-2">
+                            First found: {new Date(item.firstCollectedAt).toLocaleDateString()}
+                          </div>
                         </Card>
                       </CarouselItem>
                     ))}
@@ -130,12 +157,12 @@ export default function LootCollection({ items, isOpen, onClose }: LootCollectio
               )}
             </div>
             
-            <div className="p-4 bg-gray-100 flex justify-center">
+            <div className="p-4 bg-gradient-to-r from-blue-100 to-purple-100 flex justify-center rounded-b-xl">
               <button 
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 font-medium"
+                className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full hover:from-pink-600 hover:to-purple-600 font-bold text-lg shadow-md"
                 onClick={onClose}
               >
-                Close
+                Done Looking!
               </button>
             </div>
           </motion.div>

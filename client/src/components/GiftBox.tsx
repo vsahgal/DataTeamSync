@@ -16,15 +16,15 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
   const handleOpen = () => {
     setIsOpening(true);
     
-    // After short animation, show the item inside
+    // After longer animation, show the item inside
     setTimeout(() => {
       setShowItem(true);
       
-      // Then after showing item for a moment, complete the sequence
+      // Then after showing item for a longer moment, complete the sequence
       setTimeout(() => {
         onOpen(lootItem);
-      }, 2000);
-    }, 1000);
+      }, 4000); // Increased from 2000ms to 4000ms for more time to see the item
+    }, 1500); // Increased from 1000ms to 1500ms for slower opening
   };
   
   if (!visible) return null;
