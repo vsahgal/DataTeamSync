@@ -132,6 +132,9 @@ export default function Home() {
     });
   };
   
+  const [hasReward, setHasReward] = useState(false);
+  const [waitingReward, setWaitingReward] = useState<LootItem | null>(null);
+
   const handleStop = () => {
     const earnedPoints = stopShower();
     
@@ -142,39 +145,31 @@ export default function Home() {
     const newLoot = getRandomLootItem();
     console.log("Generated new loot item:", newLoot);
     
-    // Clear the flag after a delay to allow time for UI updates and animations
+    // Store it temporarily but don't show yet
+    setWaitingReward(newLoot);
+    
+    // Show the "collect reward" button after a short delay to allow animations to finish
     setTimeout(() => {
       setJustCompletedShower(false);
-      
-      // If there's no level-up in progress, show it right away
-      if (!didLevelUp) {
-        console.log("No level up - showing loot right away");
-        
-        // Store in local storage and update state
-        storageSavePendingLoot(newLoot);
-        setPendingLootState(newLoot);
-        
-        // Double check after brief delay
-        setTimeout(() => {
-          const pendingFromStorage = getPendingLoot();
-          console.log("Local storage loot check:", pendingFromStorage);
-          if (!pendingLoot && pendingFromStorage) {
-            console.log("State was empty but storage had loot - fixing");
-            setPendingLootState(pendingFromStorage);
-          }
-        }, 300);
-      } else {
-        // If there's a level-up, store the loot for later
-        console.log("Level up - delaying loot until animations finish");
-        setDelayedLoot(newLoot);
-      }
-    }, 2000); // Reduced delay for better experience
+      setHasReward(true);
+    }, 2000);
     
     toast({
       title: "Shower completed!",
       description: `Great job! You earned ${earnedPoints} points.`,
       variant: "default",
     });
+  };
+  
+  // Function to handle collecting the reward
+  const handleCollectReward = () => {
+    if (waitingReward) {
+      console.log("Collecting reward", waitingReward);
+      storageSavePendingLoot(waitingReward);
+      setPendingLootState(waitingReward);
+      setWaitingReward(null);
+      setHasReward(false);
+    }
   };
   
   // Handle opening the gift box and collecting the loot
@@ -463,12 +458,22 @@ export default function Home() {
               )}
             </div>
             
-            {!isShowering && (
+            {!isShowering && !hasReward && (
               <Button 
                 onClick={handleStart} 
                 className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
               >
                 Start Shower
+              </Button>
+            )}
+            
+            {/* Reward button after shower */}
+            {!isShowering && hasReward && waitingReward && (
+              <Button 
+                onClick={handleCollectReward} 
+                className="w-full h-14 bg-amber-500 hover:bg-amber-600 mb-1 rounded-full text-xl flex items-center justify-center"
+              >
+                <span className="mr-2 text-2xl">{waitingReward.emoji}</span> Collect Reward!
               </Button>
             )}
           </div>
