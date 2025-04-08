@@ -58,7 +58,7 @@
   animation: drip-delayed 2s ease-in-out infinite;
 }
 
-/* Gift box animation */
+/* Gift box animations */
 @keyframes bounce-slow {
   0%, 100% {
     transform: translateY(0);
@@ -70,4 +70,19 @@
 
 .animate-bounce-slow {
   animation: bounce-slow 2.5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(-10deg);
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.15));
+  }
+  50% {
+    transform: translateY(-15px) rotate(-5deg);
+    filter: drop-shadow(0 25px 15px rgba(0,0,0,0.1));
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
