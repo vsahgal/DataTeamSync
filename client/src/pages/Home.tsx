@@ -157,8 +157,14 @@ export default function Home() {
     });
   };
   
+  // State to manage the opened box with revealed item before showing treasures
+  const [openedItem, setOpenedItem] = useState<LootItem | null>(null);
+  
   // Handle opening the gift box and collecting the loot
   const handleOpenGift = (item: LootItem) => {
+    // Show the opened box with the item inside first
+    setOpenedItem(item);
+    
     // Add the item to the collection
     const collectedItem = addCollectedLoot(item);
     
@@ -169,10 +175,11 @@ export default function Home() {
     storageSavePendingLoot(null);
     setPendingLootState(null);
     
-    // Show the collection after a short delay so user can see what they got
+    // Show the collection after a delay so user can see what they got
     setTimeout(() => {
+      setOpenedItem(null); // Hide the opened box
       setShowLootCollection(true);
-    }, 1000);
+    }, 2500);
     
     // Show a celebration toast
     toast({
@@ -517,7 +524,7 @@ export default function Home() {
       </Card>
       
       {/* Simple gift box - just the gift itself - no content visible */}
-      {pendingLoot && !isShowering && (
+      {pendingLoot && !isShowering && !openedItem && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
           <div 
             className="w-56 h-56 bg-amber-300 rounded-xl shadow-xl cursor-pointer hover:scale-105 relative transition-transform animate-bounce-slow"
@@ -538,6 +545,25 @@ export default function Home() {
             {/* Small stars around the gift to make it more appealing */}
             <div className="absolute -top-3 -left-3 text-xl text-cyan-400">✨</div>
             <div className="absolute -bottom-2 -right-3 text-xl text-yellow-400">✨</div>
+          </div>
+        </div>
+      )}
+      
+      {/* Opened gift box showing the treasure inside */}
+      {openedItem && !isShowering && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
+          <div className="flex flex-col items-center justify-center bg-gradient-to-b from-purple-100 to-pink-100 p-8 rounded-2xl shadow-2xl animate-bounce-slow">
+            <div className="text-9xl mb-4">{openedItem.emoji}</div>
+            <h3 className="text-2xl font-bold text-purple-800 mb-1">{openedItem.name}</h3>
+            <div className="inline-block px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-medium mb-3 uppercase text-xs tracking-wider">
+              {openedItem.rarity}
+            </div>
+            <p className="text-center text-purple-600 mb-2">{openedItem.description}</p>
+            <div className="mt-4 flex gap-3">
+              <span className="text-2xl">✨</span>
+              <span className="text-2xl">🎉</span>
+              <span className="text-2xl">✨</span>
+            </div>
           </div>
         </div>
       )}
