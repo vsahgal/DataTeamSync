@@ -19,9 +19,12 @@ import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
 import { ShowerStats, LocalShowerSession } from "@shared/schema";
 import Confetti from "react-confetti";
-import { getRandomLootItem, LootItem } from "@/lib/lootItems";
+import { getRandomLootItem, LootItem, lootItems } from "@/lib/lootItems";
 import GiftBox from "@/components/GiftBox";
 import LootCollection from "@/components/LootCollection";
+
+// Create a test loot item for debugging
+const TEST_LOOT = lootItems[0];
 
 // Helper function to calculate days since last shower
 // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
@@ -516,6 +519,23 @@ export default function Home() {
             onOpen={handleOpenGift} 
             lootItem={pendingLoot} 
           />
+        </div>
+      )}
+      
+      {/* Test gift box for debugging - always visible */}
+      {!isShowering && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Button 
+            onClick={() => {
+              // Show a test gift box 
+              const testLoot = TEST_LOOT;
+              storageSavePendingLoot(testLoot);
+              setPendingLootState(testLoot);
+            }}
+            className="bg-purple-500 hover:bg-purple-600"
+          >
+            Show Test Gift Box
+          </Button>
         </div>
       )}
       
