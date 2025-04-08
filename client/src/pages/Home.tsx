@@ -139,15 +139,17 @@ export default function Home() {
     setTimeout(() => {
       setJustCompletedShower(false);
       
-      // Only show loot if we're not in the middle of a level-up animation
+      // Always generate a loot item when a shower is completed
+      const newLoot = getRandomLootItem();
+      
+      // If there's no level-up in progress, show it right away
       if (!didLevelUp) {
-        // Generate a random loot item as a reward for completing the shower
-        const newLoot = getRandomLootItem();
+        console.log("No level up - showing loot right away");
         storageSavePendingLoot(newLoot);
         setPendingLootState(newLoot);
       } else {
         // If there's a level-up, store the loot for later
-        const newLoot = getRandomLootItem();
+        console.log("Level up - delaying loot until animations finish");
         setDelayedLoot(newLoot);
       }
     }, 3000);
