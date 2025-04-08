@@ -11,7 +11,7 @@ import {
   getShowerStats, 
   getShowerSessions, 
   getPendingLoot, 
-  setPendingLoot, 
+  setPendingLoot as storageSavePendingLoot, 
   addCollectedLoot, 
   getCollectedLoot 
 } from "@/lib/storage";
@@ -138,12 +138,19 @@ export default function Home() {
     // Clear the flag after a delay to allow time for UI updates and animations
     setTimeout(() => {
       setJustCompletedShower(false);
+      
+      // Only show loot if we're not in the middle of a level-up animation
+      if (!didLevelUp) {
+        // Generate a random loot item as a reward for completing the shower
+        const newLoot = getRandomLootItem();
+        storageSavePendingLoot(newLoot);
+        setPendingLootState(newLoot);
+      } else {
+        // If there's a level-up, store the loot for later
+        const newLoot = getRandomLootItem();
+        setDelayedLoot(newLoot);
+      }
     }, 3000);
-    
-    // Generate a random loot item as a reward for completing the shower
-    const newLoot = getRandomLootItem();
-    setPendingLoot(newLoot);
-    setPendingLootState(newLoot);
     
     toast({
       title: "Shower completed!",
@@ -161,7 +168,7 @@ export default function Home() {
     setCollectedItems(getCollectedLoot());
     
     // Clear the pending loot
-    setPendingLoot(null);
+    storageSavePendingLoot(null);
     setPendingLootState(null);
     
     // Show the collection after a short delay so user can see what they got
@@ -187,6 +194,7 @@ export default function Home() {
   const [pendingLoot, setPendingLootState] = useState<LootItem | null>(getPendingLoot());
   const [showLootCollection, setShowLootCollection] = useState(false);
   const [collectedItems, setCollectedItems] = useState(getCollectedLoot());
+  const [delayedLoot, setDelayedLoot] = useState<LootItem | null>(null);
   
   // We've removed the testing state variables since they're no longer needed
   
@@ -247,9 +255,16 @@ export default function Home() {
         setIsDancingUnicorn(false);
         setShowConfetti(false);
         resetLevelUp(); // Reset the level-up state
+        
+        // If we had a delayed loot item, show it now
+        if (delayedLoot) {
+          storageSavePendingLoot(delayedLoot);
+          setPendingLootState(delayedLoot);
+          setDelayedLoot(null);
+        }
       }, 5000);
     }
-  }, [didLevelUp, newLevel, resetLevelUp]);
+  }, [didLevelUp, newLevel, resetLevelUp, delayedLoot]);
 
   return (
     <div className="flex flex-col gap-4 relative">
