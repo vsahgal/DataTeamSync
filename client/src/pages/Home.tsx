@@ -516,27 +516,28 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Simple gift box - just the gift itself */}
+      {/* Simple gift box - just the gift itself - no content visible */}
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
           <div 
-            className="w-52 h-52 bg-amber-300 rounded-xl shadow-xl flex items-center justify-center cursor-pointer hover:scale-105 relative transition-transform"
+            className="w-56 h-56 bg-amber-300 rounded-xl shadow-xl cursor-pointer hover:scale-105 relative transition-transform animate-bounce-slow"
             onClick={() => handleOpenGift(pendingLoot)}
           >
-            {/* Simplified gift box */}
+            {/* Gift box with no visible content until opened */}
             <div className="absolute top-0 left-0 w-full h-1/4 bg-amber-400 rounded-t-xl"></div>
             <div className="absolute top-0 left-1/2 w-8 h-full bg-red-500 transform -translate-x-1/2"></div>
             <div className="absolute top-1/2 left-0 w-full h-8 bg-red-500 transform -translate-y-1/2"></div>
             
             {/* Bow */}
-            <div className="absolute top-0 left-1/2 w-16 h-12 transform -translate-x-1/2 -translate-y-3 z-10">
-              <div className="absolute top-1/2 left-0 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 rotate-[-30deg] origin-right"></div>
-              <div className="absolute top-1/2 right-0 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 rotate-[30deg] origin-left"></div>
-              <div className="absolute top-1/2 left-1/2 w-6 h-6 bg-red-600 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute top-0 left-1/2 w-20 h-16 transform -translate-x-1/2 -translate-y-4 z-10">
+              <div className="absolute top-1/2 left-0 w-10 h-12 bg-red-500 rounded-full transform -translate-y-1/2 rotate-[-30deg] origin-right"></div>
+              <div className="absolute top-1/2 right-0 w-10 h-12 bg-red-500 rounded-full transform -translate-y-1/2 rotate-[30deg] origin-left"></div>
+              <div className="absolute top-1/2 left-1/2 w-8 h-8 bg-red-600 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
             </div>
             
-            {/* Emoji inside */}
-            <div className="text-7xl mt-2 z-10">{pendingLoot.emoji}</div>
+            {/* Small stars around the gift to make it more appealing */}
+            <div className="absolute -top-3 -left-3 text-xl text-cyan-400">✨</div>
+            <div className="absolute -bottom-2 -right-3 text-xl text-yellow-400">✨</div>
           </div>
         </div>
       )}
