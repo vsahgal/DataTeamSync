@@ -508,24 +508,15 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Gift box for loot rewards */}
+      {/* Gift box for loot rewards - simplified and centered */}
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
-          <div className="text-center bg-gradient-to-b from-white to-blue-50 p-8 rounded-2xl shadow-lg max-w-md border-4 border-pink-300">
-            <h2 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
-              Yay! You earned a treasure!
-            </h2>
-            <div className="mb-6 bg-pink-100 p-3 rounded-full text-lg font-medium text-pink-700">
-              Tap the present to see what's inside!
-            </div>
+          <div className="text-center bg-gradient-to-b from-white to-blue-50 p-6 rounded-2xl shadow-lg border-4 border-pink-300">
             <GiftBox 
               visible={!!pendingLoot} 
               onOpen={handleOpenGift} 
               lootItem={pendingLoot} 
             />
-            <div className="mt-6 text-gray-500 text-sm">
-              The present will be added to your collection!
-            </div>
           </div>
         </div>
       )}

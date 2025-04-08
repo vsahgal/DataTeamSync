@@ -33,16 +33,16 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
     <AnimatePresence>
       {visible && (
         <motion.div 
-          className="fixed bottom-24 left-1/2 z-50"
-          initial={{ opacity: 0, y: 50, x: "-50%" }}
-          animate={{ opacity: 1, y: 0, x: "-50%" }}
-          exit={{ opacity: 0, y: 50, x: "-50%" }}
+          className="flex flex-col items-center justify-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
           transition={{ type: "spring", bounce: 0.5 }}
         >
           <div className="relative flex flex-col items-center">
-            {/* The gift box */}
+            {/* The gift box - increased size */}
             <motion.div 
-              className={`w-28 h-28 relative cursor-pointer ${!isOpening && 'animate-bounce-slow'}`}
+              className={`w-40 h-40 relative cursor-pointer ${!isOpening && 'animate-bounce-slow'}`}
               onClick={!isOpening ? handleOpen : undefined}
               whileHover={!isOpening ? { scale: 1.05 } : {}}
               whileTap={!isOpening ? { scale: 0.95 } : {}}
@@ -52,17 +52,17 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
                 className="absolute inset-0 bg-pink-400 rounded-md shadow-lg flex items-center justify-center"
                 animate={isOpening ? { 
                   scaleY: 0.5, 
-                  y: 50,
-                  transition: { delay: 0.5, duration: 0.3 } 
+                  y: 60,
+                  transition: { delay: 0.5, duration: 0.4 } 
                 } : {}}
               >
                 {!showItem && (
                   <motion.div 
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-4xl font-bold"
-                    animate={{ rotate: [0, 10, -10, 0] }}
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-5xl font-bold"
+                    animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
                     transition={{ 
                       repeat: Infinity, 
-                      duration: 1.5,
+                      duration: 1.8,
                       repeatType: "reverse" 
                     }}
                   >
@@ -82,50 +82,53 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
                 } : {}}
               />
               
-              {/* Gift ribbon */}
-              <motion.div className="absolute top-0 left-1/2 w-4 h-full bg-purple-500 transform -translate-x-1/2"
+              {/* Gift ribbon - enhanced */}
+              <motion.div className="absolute top-0 left-1/2 w-6 h-full bg-purple-500 transform -translate-x-1/2"
                 animate={isOpening ? {
                   opacity: 0,
                   transition: { delay: 0.3, duration: 0.3 }
                 } : {}}
               />
-              <motion.div className="absolute top-1/2 left-0 w-full h-4 bg-purple-500 transform -translate-y-1/2"
+              <motion.div className="absolute top-1/2 left-0 w-full h-6 bg-purple-500 transform -translate-y-1/2"
                 animate={isOpening ? {
                   opacity: 0,
                   transition: { delay: 0.3, duration: 0.3 }
                 } : {}}
               />
-              <motion.div className="absolute top-0 left-1/2 w-8 h-8 bg-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10"
+              <motion.div className="absolute top-0 left-1/2 w-12 h-12 bg-purple-400 rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10 shadow-md"
                 animate={isOpening ? {
                   scale: 0,
                   transition: { delay: 0.2, duration: 0.3 }
                 } : {}}
-              />
+              >
+                <motion.div 
+                  className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold"
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  !
+                </motion.div>
+              </motion.div>
               
-              {/* The revealed item */}
+              {/* The revealed item - enhanced */}
               {showItem && (
                 <motion.div 
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center bg-white bg-opacity-80 p-3 rounded-full"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1.3, opacity: 1 }}
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center bg-white bg-opacity-90 p-5 rounded-full shadow-lg"
+                  initial={{ scale: 0, opacity: 0, rotate: -10 }}
+                  animate={{ 
+                    scale: 1.5, 
+                    opacity: 1, 
+                    rotate: 0,
+                    y: -10 
+                  }}
                   transition={{ type: "spring", bounce: 0.6, delay: 0.8 }}
                 >
-                  <div className="text-4xl">{lootItem.emoji}</div>
+                  <div className="text-6xl">{lootItem.emoji}</div>
                 </motion.div>
               )}
             </motion.div>
             
-            {/* Tap hint */}
-            {!isOpening && (
-              <motion.div 
-                className="text-center mt-2 text-sm font-medium text-gray-700 bg-white bg-opacity-80 px-3 py-1 rounded-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                Tap to open!
-              </motion.div>
-            )}
+            {/* Tap hint removed as requested */}
             
             {/* Item name and info - appears after opening */}
             {showItem && (
