@@ -272,15 +272,7 @@ export default function DirtyUnicorn({
                 </>
               )}
               
-              {/* Sad mouth - gets progressively sadder with dirtiness */}
-              <path 
-                d={`M130 165 Q150 ${180 + dirtiness * 3} 170 165`} 
-                stroke="#333" 
-                strokeWidth="3.5" 
-                strokeLinecap="round"
-                fill="none"
-                style={{ opacity: Math.min(1, dirtiness * 0.35 + 0.2) }}
-              />
+
             </svg>
           </div>
         )}
