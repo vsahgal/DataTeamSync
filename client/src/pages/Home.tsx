@@ -189,6 +189,8 @@ export default function Home() {
   const [isDancingUnicorn, setIsDancingUnicorn] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [justCompletedShower, setJustCompletedShower] = useState(false);
+  const [levelUpComplete, setLevelUpComplete] = useState(false);
+  const [pauseTimerActive, setPauseTimerActive] = useState(false);
   
   // States for loot system
   const [pendingLoot, setPendingLootState] = useState<LootItem | null>(getPendingLoot());
@@ -236,38 +238,63 @@ export default function Home() {
   // Get current level information
   const currentLevelInfo = getLevelInfo(stats.level || 1);
   
-  // Manage the level-up celebration sequence
+  // State-based animation sequence for level up
+  // Step 1: Start level-up animation when the level up is detected
   useEffect(() => {
     if (didLevelUp && newLevel) {
-      // Start the celebration sequence
+      console.log("Starting level-up animation sequence");
       setShowConfetti(true);
       setShowLevelAnimation(true);
-      
-      // After level animation completes, make the unicorn dance
-      setTimeout(() => {
+      setLevelUpComplete(false);
+      setPauseTimerActive(false);
+    }
+  }, [didLevelUp, newLevel]);
+
+  // Step 2: Start unicorn dancing after level number animation
+  useEffect(() => {
+    if (showLevelAnimation) {
+      const timer = setTimeout(() => {
+        console.log("Starting unicorn dance");
         setIsDancingUnicorn(true);
-        // Hide level animation
         setShowLevelAnimation(false);
       }, 2000);
-      
-      // After dancing unicorn completes, end the celebration
-      setTimeout(() => {
+      return () => clearTimeout(timer);
+    }
+  }, [showLevelAnimation]);
+  
+  // Step 3: End dancing and start the pause before showing reward
+  useEffect(() => {
+    if (isDancingUnicorn) {
+      const timer = setTimeout(() => {
+        console.log("Ending unicorn dance");
         setIsDancingUnicorn(false);
         setShowConfetti(false);
+        setLevelUpComplete(true);
         resetLevelUp(); // Reset the level-up state
-        
-        // Wait an additional 5 seconds before showing the gift to give the player time to enjoy the achievement
-        setTimeout(() => {
-          // If we had a delayed loot item, show it now
-          if (delayedLoot) {
-            storageSavePendingLoot(delayedLoot);
-            setPendingLootState(delayedLoot);
-            setDelayedLoot(null);
-          }
-        }, 5000); // 5 second extra pause before showing the gift
+        setPauseTimerActive(true); // Start the pause timer
       }, 5000);
+      return () => clearTimeout(timer);
     }
-  }, [didLevelUp, newLevel, resetLevelUp, delayedLoot]);
+  }, [isDancingUnicorn, resetLevelUp]);
+  
+  // Step 4: After pause, show the loot (if any)
+  useEffect(() => {
+    if (pauseTimerActive) {
+      console.log("Starting 5-second pause before showing gift");
+      const timer = setTimeout(() => {
+        console.log("Pause complete, showing gift");
+        setPauseTimerActive(false);
+        
+        // If we had a delayed loot item, show it now
+        if (delayedLoot) {
+          storageSavePendingLoot(delayedLoot);
+          setPendingLootState(delayedLoot);
+          setDelayedLoot(null);
+        }
+      }, 5000); // 5 second pause before showing the gift
+      return () => clearTimeout(timer);
+    }
+  }, [pauseTimerActive, delayedLoot]);
 
   return (
     <div className="flex flex-col gap-4 relative">
