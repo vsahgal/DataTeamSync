@@ -12,31 +12,22 @@ interface GiftBoxProps {
 export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
   const [isOpening, setIsOpening] = useState(false);
   const [showItem, setShowItem] = useState(false);
-
-  // Debug logging
-  console.log("GiftBox rendering", { visible, lootItem, isOpening, showItem });
   
   const handleOpen = () => {
-    console.log("GiftBox: handleOpen called");
     setIsOpening(true);
     
-    // After longer animation, show the item inside
+    // After animation, show the item inside
     setTimeout(() => {
-      console.log("GiftBox: showing item inside");
       setShowItem(true);
       
-      // Then after showing item for a longer moment, complete the sequence
+      // Then after showing item for a moment, complete the sequence
       setTimeout(() => {
-        console.log("GiftBox: animation complete, calling onOpen");
         onOpen(lootItem);
-      }, 4000); // Increased from 2000ms to 4000ms for more time to see the item
-    }, 1500); // Increased from 1000ms to 1500ms for slower opening
+      }, 2000);
+    }, 1000);
   };
   
-  if (!visible) {
-    console.log("GiftBox: not visible, returning null");
-    return null;
-  }
+  if (!visible) return null;
   
   return (
     <AnimatePresence>
@@ -49,136 +40,101 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
           transition={{ type: "spring", bounce: 0.5 }}
         >
           <div className="relative flex flex-col items-center">
-            {/* The gift box - using the provided image */}
+            {/* The gift box - styled to match reference image */}
             <motion.div 
-              className="relative cursor-pointer"
+              className={`w-52 h-52 relative cursor-pointer ${!isOpening && 'animate-float'}`}
               onClick={!isOpening ? handleOpen : undefined}
-              whileHover={!isOpening ? { scale: 1.05 } : {}}
+              whileHover={!isOpening ? { scale: 1.05, rotate: "5deg" } : {}}
               whileTap={!isOpening ? { scale: 0.95 } : {}}
-              animate={isOpening ? 
-                { y: 50, scale: 0.7, opacity: 0, rotate: 10 } : 
-                { 
-                  y: [0, -12, 0], 
-                  opacity: 1,
-                  rotate: [-5, 5, -5]
-                }
-              }
-              transition={{
-                y: {
-                  duration: 3,
-                  repeat: !isOpening ? Infinity : 0,
-                  repeatType: "reverse",
-                  ease: "easeInOut"
-                },
-                rotate: {
-                  duration: 6,
-                  repeat: !isOpening ? Infinity : 0,
-                  repeatType: "reverse",
-                  ease: "easeInOut"
-                },
-                opacity: {
-                  duration: isOpening ? 0.8 : 0,
-                  delay: isOpening ? 0.3 : 0
-                },
-                scale: {
-                  duration: isOpening ? 0.8 : 0,
-                  delay: isOpening ? 0.3 : 0
+              initial={{ rotate: "-10deg" }}
+              animate={{ rotate: !isOpening ? ["-10deg", "-5deg", "-10deg"] : "-10deg" }}
+              transition={{ 
+                rotate: { 
+                  duration: 6, 
+                  repeat: Infinity,
+                  repeatType: "reverse", 
+                  ease: "easeInOut" 
                 }
               }}
             >
-              {/* Yellow gift box with red ribbon (CSS version) */}
-              <div className="relative w-60 h-60">
-                {/* Gift box base - bright yellow like in the image */}
+              {/* Gift box body - yellow/gold */}
+              <motion.div 
+                className="absolute inset-0 bg-amber-300 rounded-xl shadow-lg"
+                animate={isOpening ? { 
+                  scaleY: 0.5, 
+                  y: 60,
+                  transition: { delay: 0.5, duration: 0.4 } 
+                } : {}}
+                style={{ 
+                  boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+                  transform: "rotate(-10deg)"
+                }}
+                whileHover={{ rotate: 0 }}
+              />
+              
+              {/* Gift box lid - yellow/gold */}
+              <motion.div 
+                className="absolute inset-x-0 top-0 h-1/4 bg-amber-400 rounded-t-xl"
+                animate={isOpening ? {
+                  y: -60,
+                  rotateX: 60,
+                  opacity: 0,
+                  transition: { duration: 0.5 }
+                } : {}}
+                style={{ 
+                  boxShadow: "0 -5px 15px -5px rgba(0,0,0,0.05)",
+                  transform: "rotate(-10deg)"
+                }}
+                whileHover={{ rotate: 0 }}
+              />
+              
+              {/* Gift ribbon - red vertical */}
+              <motion.div className="absolute top-0 left-1/2 w-8 h-full bg-red-500 transform -translate-x-1/2"
+                animate={isOpening ? {
+                  opacity: 0,
+                  transition: { delay: 0.3, duration: 0.3 }
+                } : {}}
+                style={{ transform: "translateX(-50%) rotate(-10deg)" }}
+                whileHover={{ rotate: 0 }}
+              />
+              
+              {/* Gift ribbon - red horizontal */}
+              <motion.div className="absolute top-1/2 left-0 w-full h-8 bg-red-500 transform -translate-y-1/2"
+                animate={isOpening ? {
+                  opacity: 0,
+                  transition: { delay: 0.3, duration: 0.3 }
+                } : {}}
+                style={{ transform: "translateY(-50%) rotate(-10deg)" }}
+                whileHover={{ rotate: 0 }}
+              />
+              
+              {/* Bow at the top */}
+              <motion.div 
+                className="absolute top-0 left-1/2 w-20 h-10 transform -translate-x-1/2 -translate-y-4 z-10"
+                animate={isOpening ? {
+                  scale: 0,
+                  transition: { delay: 0.2, duration: 0.3 }
+                } : {}}
+                style={{ transform: "translate(-50%, -50%) rotate(-10deg)" }}
+                whileHover={{ rotate: 0 }}
+              >
+                {/* Left bow loop */}
                 <motion.div 
-                  className="absolute w-48 h-48 bg-[#FFD800] rounded-md shadow-lg"
-                  animate={isOpening ? { 
-                    scaleY: 0.5, 
-                    y: 60,
-                    transition: { delay: 0.5, duration: 0.4 } 
-                  } : {}}
-                  style={{ 
-                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.2)",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)"
-                  }}
+                  className="absolute top-1/2 left-0 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 origin-right"
+                  style={{ transform: "translateY(-50%) rotate(-30deg)" }}
                 />
                 
-                {/* Gift box lid - same yellow */}
+                {/* Right bow loop */}
                 <motion.div 
-                  className="absolute w-52 h-12 bg-[#FFD800] rounded-t-md shadow-sm top-[-10px]"
-                  animate={isOpening ? {
-                    y: -60,
-                    rotateX: 60,
-                    opacity: 0,
-                    transition: { duration: 0.5 }
-                  } : {}}
-                  style={{ 
-                    boxShadow: "0 -5px 15px -5px rgba(0,0,0,0.05)",
-                    left: "50%",
-                    transform: "translateX(-50%)"
-                  }}
+                  className="absolute top-1/2 right-0 w-8 h-10 bg-red-500 rounded-full transform -translate-y-1/2 origin-left"
+                  style={{ transform: "translateY(-50%) rotate(30deg)" }}
                 />
                 
-                {/* Gift ribbon - bright red vertical */}
+                {/* Center knot */}
                 <motion.div 
-                  className="absolute h-full w-8 bg-[#FF2E4A] top-0 rounded-b-sm"
-                  animate={isOpening ? {
-                    opacity: 0,
-                    transition: { delay: 0.3, duration: 0.3 }
-                  } : {}}
-                  style={{ 
-                    left: "50%",
-                    transform: "translateX(-50%)"
-                  }}
+                  className="absolute top-1/2 left-1/2 w-6 h-6 bg-red-600 rounded-full transform -translate-x-1/2 -translate-y-1/2"
                 />
-                
-                {/* Gift ribbon - bright red horizontal */}
-                <motion.div 
-                  className="absolute w-48 h-8 bg-[#FF2E4A] rounded-r-sm"
-                  animate={isOpening ? {
-                    opacity: 0,
-                    transition: { delay: 0.3, duration: 0.3 }
-                  } : {}}
-                  style={{ 
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)"
-                  }}
-                />
-                
-                {/* Bow at the top - larger and more prominent */}
-                <motion.div 
-                  className="absolute top-[-40px] z-10"
-                  animate={isOpening ? {
-                    scale: 0,
-                    transition: { delay: 0.2, duration: 0.3 }
-                  } : {}}
-                  style={{ 
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "80px",
-                    height: "40px"
-                  }}
-                >
-                  {/* Left bow loop */}
-                  <motion.div 
-                    className="absolute top-1/2 left-0 w-12 h-16 bg-[#FF2E4A] rounded-full transform -translate-y-1/2 origin-right"
-                    style={{ transform: "translateY(-50%) rotate(-30deg)" }}
-                  />
-                  
-                  {/* Right bow loop */}
-                  <motion.div 
-                    className="absolute top-1/2 right-0 w-12 h-16 bg-[#FF2E4A] rounded-full transform -translate-y-1/2 origin-left"
-                    style={{ transform: "translateY(-50%) rotate(30deg)" }}
-                  />
-                  
-                  {/* Center knot */}
-                  <motion.div 
-                    className="absolute top-1/2 left-1/2 w-10 h-10 bg-[#FF2E4A] rounded-full transform -translate-x-1/2 -translate-y-1/2"
-                  />
-                </motion.div>
-              </div>
+              </motion.div>
               
               {/* Decorative stars */}
               <motion.div
@@ -246,8 +202,6 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
                 </motion.div>
               )}
             </motion.div>
-            
-            {/* Tap hint removed as requested */}
             
             {/* Item name and info - appears after opening */}
             {showItem && (
