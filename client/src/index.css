@@ -51,9 +51,9 @@
 }
 
 .animate-drip {
-  animation: drip 2s ease-in-out;
+  animation: drip 2s ease-in-out infinite;
 }
 
 .animate-drip-delayed {
-  animation: drip-delayed 2s ease-in-out;
+  animation: drip-delayed 2s ease-in-out infinite;
 }
