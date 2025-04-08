@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getShowerStats } from "@/lib/storage";
+import newUnicornImage from "../assets/new-unicorn.png";
 
 interface UnicornShowerProps {
   isShowering: boolean;
@@ -18,7 +19,7 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   const [unicornJumping, setUnicornJumping] = useState(false);
   const [initialized, setInitialized] = useState(false);
   
-  // Dancing animation states (same as in DirtyUnicorn component)
+  // Dancing animation states
   const [position, setPosition] = useState(0);
   const [rotation, setRotation] = useState(0);
   const [scale, setScale] = useState(1);
@@ -55,12 +56,10 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
       setShowingSoap(false);
       setShowingRinse(false);
       setInitialized(true);
-      
-      console.log("Initial dirt level:", initialDirtiness);
     }
   }, [isShowering, initialized, initialDirtiness]);
   
-  // Handle dancing animation (same as in DirtyUnicorn component)
+  // Handle dancing animation
   useEffect(() => {
     if (isDancing) {
       // Dancing animation sequence
@@ -148,7 +147,7 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
         setShowingRinse(true);
         setCleaningStage(3);
         
-        // Celebration dance (like in Home screen) instead of just a jump
+        // Celebration dance (like in Home screen)
         setIsDancing(true);
         
         // Set a timer to start a final excited jump after dancing
@@ -178,381 +177,132 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   
   if (!isShowering) return null;
   
-  // Calculate dirt spots based on initial dirtiness and current cleaning stage
-  const calculateDirtSpots = () => {
-    // Always start with plenty of dirt spots (at least 15) to make cleaning more dramatic
-    const baseSpots = Math.max(15, initialDirtiness * 4); 
+  // Rainbow colors for clean unicorn
+  const rainbowColors = ["#FFB6D9", "#B5DEFF", "#D9B5FF", "#B5FFD9"];
+
+  // Function to generate dirt spots for overlay on the unicorn
+  const generateDirtOverlay = () => {
+    // Reduce dirt based on cleaning stage
+    const dirtOpacity = 0.7 - (cleaningStage * 0.2);
     
-    // Add even more dirt spots for better visibility - make it really dirty!
-    const scaledBaseSpots = baseSpots * 1.5;
+    if (cleaningStage === 3) return null; // No dirt when fully clean
     
-    // Reduce dirt spots as cleaning progresses
-    const reduction = cleaningStage * (scaledBaseSpots / 3); // Full cleaning (stage 3) removes all dirt
-    const currentSpots = Math.max(0, Math.floor(scaledBaseSpots - reduction));
-    
-    return currentSpots;
+    return (
+      <div 
+        className="absolute inset-0 rounded-full bg-brown-500" 
+        style={{ 
+          backgroundColor: '#A67F75',
+          opacity: dirtOpacity,
+          mixBlendMode: 'multiply',
+          filter: 'blur(3px)',
+          clipPath: 'ellipse(65% 60% at 50% 50%)'
+        }}
+      />
+    );
   };
   
-  // Generate dirt spots for the unicorn - using same style as DirtyUnicorn component
-  const generateDirtSpots = () => {
-    const spots = [];
-    const totalSpots = calculateDirtSpots();
-    
-    // Base dirt opacity calculation similar to DirtyUnicorn component
-    const baseOpacity = 0.3;
-    const dirtOpacity = baseOpacity + (initialDirtiness * 0.35);
-    // Reduce opacity based on cleaning stage
-    const currentOpacity = dirtOpacity - (cleaningStage * 0.25);
-    
-    // Add dirt spots in consistent locations as in the DirtyUnicorn component
-    if (initialDirtiness > 0 && totalSpots > 0) {
-      // Main body dirt spots - same positions as DirtyUnicorn
-      spots.push(
-        <motion.circle 
-          key="dirt-body-1"
-          cx="130" cy="140" 
-          r={16 + Math.min(4, initialDirtiness) * 3} 
-          fill="#A67F75" 
-          fillOpacity={currentOpacity}
-          animate={{
-            opacity: [currentOpacity, currentOpacity * 0.7, currentOpacity],
-            scale: [1, 0.95, 1]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-      );
-      
-      spots.push(
-        <motion.circle 
-          key="dirt-body-2"
-          cx="170" cy="180" 
-          r={13 + Math.min(5, initialDirtiness) * 3} 
-          fill="#A67F75" 
-          fillOpacity={currentOpacity - 0.05}
-          animate={{
-            opacity: [(currentOpacity - 0.05), (currentOpacity - 0.05) * 0.7, (currentOpacity - 0.05)],
-            scale: [1, 0.97, 1]
-          }}
-          transition={{
-            duration: 2.2,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: 0.3
-          }}
-        />
-      );
-      
-      spots.push(
-        <motion.circle 
-          key="dirt-body-3"
-          cx="100" cy="170" 
-          r={10 + Math.min(6, initialDirtiness) * 3} 
-          fill="#A67F75" 
-          fillOpacity={currentOpacity - 0.1}
-          animate={{
-            opacity: [(currentOpacity - 0.1), (currentOpacity - 0.1) * 0.7, (currentOpacity - 0.1)],
-            scale: [1, 0.93, 1]
-          }}
-          transition={{
-            duration: 1.8,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: 0.5
-          }}
-        />
-      );
-      
-      // Extra dirt spots for dirtier unicorns
-      if (initialDirtiness >= 4 && totalSpots >= 12) {
-        spots.push(
-          <motion.circle 
-            key="dirt-body-4"
-            cx="150" cy="150" 
-            r={10 + (initialDirtiness - 4) * 6} 
-            fill="#A67F75" 
-            fillOpacity={currentOpacity}
-            animate={{
-              opacity: [currentOpacity, currentOpacity * 0.6, currentOpacity],
-              scale: [1, 0.92, 1]
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.2
-            }}
-          />
-        );
-        
-        spots.push(
-          <motion.circle 
-            key="dirt-body-5"
-            cx="190" cy="150" 
-            r={8 + (initialDirtiness - 4) * 6} 
-            fill="#A67F75" 
-            fillOpacity={currentOpacity - 0.1}
-            animate={{
-              opacity: [(currentOpacity - 0.1), (currentOpacity - 0.1) * 0.6, (currentOpacity - 0.1)],
-              scale: [1, 0.94, 1]
-            }}
-            transition={{
-              duration: 2.3,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.4
-            }}
-          />
-        );
-      }
-      
-      // Even more dirt spots for very dirty unicorns
-      if (initialDirtiness >= 5 && totalSpots >= 18) {
-        spots.push(
-          <motion.circle 
-            key="dirt-body-6"
-            cx="140" cy="160" 
-            r={7 + (initialDirtiness - 5) * 8} 
-            fill="#896058" 
-            fillOpacity={currentOpacity + 0.15}
-            animate={{
-              opacity: [(currentOpacity + 0.15), (currentOpacity + 0.15) * 0.7, (currentOpacity + 0.15)],
-              scale: [1, 0.96, 1]
-            }}
-            transition={{
-              duration: 2.1,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.3
-            }}
-          />
-        );
-        
-        spots.push(
-          <motion.circle 
-            key="dirt-body-7"
-            cx="180" cy="140" 
-            r={6 + (initialDirtiness - 5) * 8} 
-            fill="#896058" 
-            fillOpacity={currentOpacity + 0.15}
-            animate={{
-              opacity: [(currentOpacity + 0.15), (currentOpacity + 0.15) * 0.7, (currentOpacity + 0.15)],
-              scale: [1, 0.95, 1]
-            }}
-            transition={{
-              duration: 1.9,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.1
-            }}
-          />
-        );
-        
-        // Add dirt on legs - just like in DirtyUnicorn
-        spots.push(
-          <motion.circle 
-            key="dirt-leg-1"
-            cx="97" cy="220" 
-            r={8 + Math.min(4, initialDirtiness) * 2} 
-            fill="#896058" 
-            fillOpacity={currentOpacity}
-            animate={{
-              opacity: [currentOpacity, currentOpacity * 0.7, currentOpacity],
-              scale: [1, 0.93, 1]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.2
-            }}
-          />
-        );
-        
-        spots.push(
-          <motion.circle 
-            key="dirt-leg-2"
-            cx="127" cy="230" 
-            r={9 + Math.min(4, initialDirtiness) * 2} 
-            fill="#896058" 
-            fillOpacity={currentOpacity - 0.05}
-            animate={{
-              opacity: [(currentOpacity - 0.05), (currentOpacity - 0.05) * 0.7, (currentOpacity - 0.05)],
-              scale: [1, 0.94, 1]
-            }}
-            transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.6
-            }}
-          />
-        );
-        
-        // Add dirt on face - matching DirtyUnicorn
-        spots.push(
-          <motion.circle 
-            key="dirt-face-1"
-            cx="180" cy="110" 
-            r={8 + Math.min(4, initialDirtiness) * 3} 
-            fill="#896058" 
-            fillOpacity={currentOpacity}
-            animate={{
-              opacity: [currentOpacity, currentOpacity * 0.7, currentOpacity],
-              scale: [1, 0.92, 1]
-            }}
-            transition={{
-              duration: 2.3,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.3
-            }}
-          />
-        );
-      }
-    }
-    
-    return spots;
-  };
-  
-  // Generate sparkles for clean unicorn - matching DirtyUnicorn component's star style
+  // Generate sparkles around the unicorn
   const generateSparkles = () => {
     if (cleaningStage < 2) return null;
     
-    const sparkles = [];
-    
-    // Only show sparkles in later cleaning stages
-    if (cleaningStage >= 2) {
-      // Main sparkles around the unicorn - matching DirtyUnicorn placement
-      sparkles.push(
-        <g key="sparkle-1" className="transition-all duration-500 ease-in-out">
-          <motion.path 
-            d="M12 3L13.5 9H19.5L14.5 13L16 19L12 15L8 19L9.5 13L4.5 9H10.5L12 3Z" 
-            transform="translate(190, 80) scale(0.9)"
-            fill="#FFD700"
+    return (
+      <div className="absolute inset-0 overflow-hidden">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <motion.div
+            key={`sparkle-${i}`}
+            className="absolute w-4 h-4 bg-yellow-300"
+            style={{
+              top: `${20 + Math.random() * 60}%`,
+              left: `${10 + Math.random() * 80}%`,
+              borderRadius: '50%',
+              boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.6)'
+            }}
             animate={{
-              opacity: [0.9, 0.5, 0.9],
-              scale: [1, 1.1, 1]
+              scale: [0.8, 1.2, 0.8],
+              opacity: [0.6, 1, 0.6]
             }}
             transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-        </g>
-      );
-      
-      sparkles.push(
-        <g key="sparkle-2" className="transition-all duration-500 ease-in-out">
-          <motion.path 
-            d="M12 3L13.5 9H19.5L14.5 13L16 19L12 15L8 19L9.5 13L4.5 9H10.5L12 3Z" 
-            transform="translate(100, 140) scale(0.7)"
-            fill="#FFD700"
-            animate={{
-              opacity: [0.7, 0.4, 0.7],
-              scale: [1, 0.9, 1]
-            }}
-            transition={{
-              duration: 2,
+              duration: 1.5 + Math.random(),
               repeat: Infinity,
               repeatType: "reverse",
-              delay: 0.3
+              delay: Math.random() * 0.5
             }}
           />
-        </g>
-      );
-      
-      sparkles.push(
-        <g key="sparkle-3" className="transition-all duration-600 ease-in-out">
-          <motion.path 
-            d="M12 3L13.5 9H19.5L14.5 13L16 19L12 15L8 19L9.5 13L4.5 9H10.5L12 3Z" 
-            transform="translate(160, 190) scale(0.6)"
-            fill="#FFD700"
-            animate={{
-              opacity: [0.6, 0.4, 0.6],
-              scale: [1, 0.95, 1]
-            }}
-            transition={{
-              duration: 1.8,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.5
-            }}
-          />
-        </g>
-      );
-    }
-    
-    // Extra sparkles for the final cleaning stage
-    if (cleaningStage >= 3) {
-      sparkles.push(
-        <g key="sparkle-4" className="transition-all duration-500 ease-in-out">
-          <motion.path 
-            d="M12 3L13.5 9H19.5L14.5 13L16 19L12 15L8 19L9.5 13L4.5 9H10.5L12 3Z" 
-            transform="translate(220, 130) scale(0.65)"
-            fill="#FFD700"
-            animate={{
-              opacity: [0.8, 0.5, 0.8],
-              scale: [1, 1.05, 1]
-            }}
-            transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.2
-            }}
-          />
-        </g>
-      );
-      
-      sparkles.push(
-        <g key="sparkle-5" className="transition-all duration-500 ease-in-out">
-          <motion.path 
-            d="M12 3L13.5 9H19.5L14.5 13L16 19L12 15L8 19L9.5 13L4.5 9H10.5L12 3Z" 
-            transform="translate(130, 100) scale(0.55)"
-            fill="#FFD700"
-            animate={{
-              opacity: [0.7, 0.4, 0.7],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{
-              duration: 1.9,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.6
-            }}
-          />
-        </g>
-      );
-      
-      sparkles.push(
-        <g key="sparkle-6" className="transition-all duration-600 ease-in-out">
-          <motion.path 
-            d="M12 3L13.5 9H19.5L14.5 13L16 19L12 15L8 19L9.5 13L4.5 9H10.5L12 3Z" 
-            transform="translate(80, 170) scale(0.5)"
-            fill="#FFD700"
-            animate={{
-              opacity: [0.6, 0.3, 0.6],
-              scale: [1, 0.9, 1]
-            }}
-            transition={{
-              duration: 2.3,
-              repeat: Infinity,
-              repeatType: "reverse",
-              delay: 0.4
-            }}
-          />
-        </g>
-      );
-    }
-    
-    return sparkles;
+        ))}
+      </div>
+    );
   };
   
+  // Generate soap bubbles when soaping
+  const generateSoapBubbles = () => {
+    if (!showingSoap) return null;
+    
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <motion.div
+            key={`bubble-${i}`}
+            className="absolute bg-white rounded-full"
+            style={{
+              width: `${10 + Math.random() * 15}px`,
+              height: `${10 + Math.random() * 15}px`,
+              top: `${20 + Math.random() * 60}%`,
+              left: `${10 + Math.random() * 80}%`,
+              opacity: 0.8,
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              boxShadow: 'inset -2px -2px 4px rgba(0, 0, 0, 0.1)'
+            }}
+            animate={{
+              y: [0, -20, 0],
+              x: [0, Math.random() * 10 - 5, 0],
+              opacity: [0.6, 0.9, 0.6]
+            }}
+            transition={{
+              duration: 2 + Math.random(),
+              repeat: Infinity,
+              repeatType: "reverse",
+              delay: Math.random()
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
+  
+  // Generate rinse water streams
+  const generateRinseStreams = () => {
+    if (!showingRinse) return null;
+    
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <motion.div
+            key={`rinse-${i}`}
+            className="absolute bg-blue-300"
+            style={{
+              width: '3px',
+              height: '40px',
+              top: `${30 + (i % 3) * 20}%`,
+              left: `${20 + (i * 8)}%`,
+              opacity: 0.7,
+              borderRadius: '999px'
+            }}
+            animate={{
+              height: ['40px', '60px', '40px'],
+              opacity: [0.5, 0.8, 0.5]
+            }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              repeatType: "reverse",
+              delay: i * 0.1
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-blue-100 to-purple-50">
       {/* Timer moved to top-right to not block the shower head */}
@@ -649,51 +399,46 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
               repeat: Infinity,
               repeatType: "reverse"
             }}
-          />
+          >
+            {/* Shower holes with water animation */}
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-28 h-5 bg-gray-500 rounded-b-lg flex justify-around items-center">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <motion.div 
+                  key={i}
+                  className="w-1.5 h-1.5 bg-blue-300 rounded-full"
+                  animate={{ 
+                    opacity: waterFlowing ? [0.7, 1, 0.7] : 0,
+                    scale: waterFlowing ? [1, 1.3, 1] : 1
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    repeat: Infinity,
+                    delay: i * 0.1
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
           
-          {/* Shower holes with water animation */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-28 h-5 bg-gray-500 rounded-b-lg flex justify-around items-center">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <motion.div 
-                key={i}
-                className="w-1.5 h-1.5 bg-blue-300 rounded-full"
-                animate={{ 
-                  opacity: waterFlowing ? [0.7, 1, 0.7] : 0,
-                  scale: waterFlowing ? [1, 1.3, 1] : 1
-                }}
-                transition={{ 
-                  duration: 0.8, 
-                  repeat: Infinity,
-                  delay: i * 0.1
-                }}
-              />
-            ))}
-          </div>
-          
-          {/* Shower handle/knob */}
+          {/* Shower handle/knob that turns when water starts flowing */}
           <motion.div 
-            className="absolute top-6 left-full ml-2 w-8 h-8 bg-blue-500 rounded-full border-2 border-gray-300"
+            className="absolute top-5 right-1 w-6 h-6 bg-gray-400 rounded-full border-2 border-gray-500"
             animate={{
-              rotate: waterFlowing ? 45 : 0,
-              scale: waterFlowing ? [1, 1.05, 1] : 1
+              rotate: waterFlowing ? 180 : 0
             }}
             transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
+              duration: 1,
               ease: "easeInOut"
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-4 h-1 bg-white rounded-full"></div>
-            </div>
+            <div className="absolute top-1/2 left-1 right-1 h-0.5 bg-gray-600 transform -translate-y-1/2" />
           </motion.div>
         </div>
       </div>
       
       {/* Unicorn with cleaning animation */}
       <motion.div
-        className="relative z-10"
+        className="relative z-10 w-64 h-64"
         style={{
           transform: isDancing ? `translateY(${position}px) rotate(${rotation}deg) scale(${scale})` : 'none',
           transition: 'transform 0.1s ease-out'
@@ -715,221 +460,47 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
           ease: unicornJumping ? "easeOut" : "easeInOut"
         }}
       >
-        <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Unicorn Body */}
-          <motion.ellipse 
-            cx="150" 
-            cy="160" 
-            rx="80" 
-            ry="60" 
-            fill="#FFD6F6"
-            animate={{ scale: [1, 1.03, 1] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
+        {/* Rainbow effect for clean unicorn (appears at cleaning stage 2+) */}
+        {cleaningStage >= 2 && (
+          <motion.div 
+            className="absolute inset-0 -z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div 
+              className="absolute inset-0 transform -translate-x-1/2 -translate-y-1/4 scale-150"
+              style={{
+                background: `linear-gradient(to right, ${rainbowColors.join(', ')})`,
+                opacity: 0.4,
+                filter: 'blur(8px)',
+                borderRadius: '50%',
+                zIndex: -1
+              }}
+            />
+          </motion.div>
+        )}
+        
+        {/* Unicorn image */}
+        <div className="relative w-full h-full">
+          <img 
+            src={newUnicornImage} 
+            alt="Unicorn" 
+            className="w-full h-full object-contain"
           />
           
-          {/* Dirt spots that gradually disappear during cleaning */}
-          {generateDirtSpots()}
+          {/* Dirt overlay */}
+          {generateDirtOverlay()}
           
-          {/* Sparkles that appear when clean */}
+          {/* Sparkles */}
           {generateSparkles()}
           
-          {/* Legs */}
-          <rect x="90" y="200" width="15" height="50" rx="7" fill="#FFD6F6" />
-          <rect x="120" y="200" width="15" height="55" rx="7" fill="#FFD6F6" />
-          <rect x="165" y="200" width="15" height="55" rx="7" fill="#FFD6F6" />
-          <rect x="195" y="200" width="15" height="50" rx="7" fill="#FFD6F6" />
+          {/* Soap bubbles */}
+          {generateSoapBubbles()}
           
-          {/* Head */}
-          <motion.ellipse 
-            cx="200" 
-            cy="120" 
-            rx="40" 
-            ry="30" 
-            fill="#FFD6F6"
-            animate={{ rotate: [0, 5, 0, -5, 0] }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              repeatType: "loop"
-            }}
-          />
-          
-          {/* Eyes - more excited as cleaning progresses - now with two eyes */}
-          <circle cx="210" cy="110" r={5 + (cleaningStage * 0.5)} fill="white" />
-          <circle cx="210" cy="110" r={2 + (cleaningStage * 0.3)} fill="#333" />
-          <circle cx="190" cy="110" r={5 + (cleaningStage * 0.5)} fill="white" />
-          <circle cx="190" cy="110" r={2 + (cleaningStage * 0.3)} fill="#333" />
-          
-          {/* Smile - gets bigger as cleaning progresses */}
-          <motion.path 
-            d={
-              cleaningStage === 0 
-                ? "M190 125 Q205 130 220 125" // neutral
-                : cleaningStage === 1 
-                ? "M190 125 Q205 135 220 125" // small smile
-                : cleaningStage === 2
-                ? "M190 128 Q205 140 220 128" // bigger smile
-                : "M190 130 Q205 145 220 130" // biggest smile
-            }
-            stroke="#333" 
-            strokeWidth="2" 
-            fill="none"
-          />
-          
-          {/* Horn */}
-          <motion.path 
-            d="M205 90 L220 60" 
-            stroke={cleaningStage >= 2 ? "#FFB6D9" : "#e2a3c7"}
-            strokeWidth="8" 
-            strokeLinecap="round"
-            animate={{ 
-              stroke: cleaningStage >= 2 
-                ? ["#FFB6D9", "#FFD6F6", "#FFB6D9"] 
-                : ["#e2a3c7", "#d589b8", "#e2a3c7"]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          {/* Mane - gets more vibrant as cleaning progresses */}
-          {Array.from({ length: 8 }).map((_, i) => {
-            // Adjust colors based on cleaning stage
-            const colorOptions = [
-              ["#d898bc", "#a5b6d2", "#bca5d2", "#a5d2b6"], // Duller colors when dirty
-              ["#e6a6ca", "#b5c9e6", "#c6b5e6", "#b5e6c9"], // Slightly brighter
-              ["#f7b3d9", "#c2d6f7", "#d3c2f7", "#c2f7d6"], // Even brighter
-              ["#FFB6D9", "#B5DEFF", "#D9B5FF", "#B5FFD9"]  // Brightest when clean
-            ];
-            
-            const currentColors = colorOptions[cleaningStage];
-            
-            return (
-              <motion.ellipse
-                key={i}
-                cx={160 - i * 15}
-                cy={120 + Math.sin(i) * 10}
-                rx="12"
-                ry="20"
-                fill={currentColors[i % 4]}
-                animate={{ 
-                  y: [0, Math.sin(i) * 8, 0],
-                  rotate: [0, 10, 0]
-                }}
-                transition={{
-                  duration: 2 + i * 0.2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: i * 0.1
-                }}
-              />
-            );
-          })}
-          
-          {/* Tail */}
-          <motion.path 
-            d="M70 160 Q50 120 70 80" 
-            stroke={cleaningStage >= 2 ? "#FFB6D9" : "#e2a3c7"}
-            strokeWidth="10" 
-            strokeLinecap="round"
-            fill="none"
-            animate={{ 
-              d: ["M70 160 Q50 120 70 80", "M70 160 Q40 120 60 80", "M70 160 Q50 120 70 80"] 
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatType: "loop"
-            }}
-          />
-          
-          {/* Soap bubbles - only show when soaping */}
-          {showingSoap && (
-            <>
-              <motion.circle 
-                cx="120" 
-                cy="140" 
-                r="15" 
-                fill="white" 
-                fillOpacity="0.8"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.7, 0.9, 0.7]
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-              />
-              <motion.circle 
-                cx="160" 
-                cy="170" 
-                r="20" 
-                fill="white" 
-                fillOpacity="0.8"
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.6, 0.9, 0.6]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: 0.3
-                }}
-              />
-              <motion.circle 
-                cx="180" 
-                cy="130" 
-                r="12" 
-                fill="white" 
-                fillOpacity="0.8"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.7, 0.9, 0.7]
-                }}
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: 0.6
-                }}
-              />
-            </>
-          )}
-          
-          {/* Rinse water streams - only show when rinsing */}
-          {showingRinse && (
-            <>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <motion.path
-                  key={i}
-                  d={`M${100 + i * 20} ${130 + (i % 3) * 10} Q${95 + i * 20} ${150 + (i % 3) * 10} ${90 + i * 20} ${170 + (i % 3) * 10}`}
-                  stroke="#B5DEFF"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: [0, 0.8, 0],
-                    pathLength: [0, 1]
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    delay: i * 0.1
-                  }}
-                />
-              ))}
-            </>
-          )}
-        </svg>
+          {/* Rinse streams */}
+          {generateRinseStreams()}
+        </div>
       </motion.div>
       
       {/* Water splash at bottom - only when water is flowing */}

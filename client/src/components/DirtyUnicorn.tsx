@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import newUnicornImage from "../assets/new-unicorn.png";
 
 interface DirtyUnicornProps {
   dirtiness: number; // Scale of 0-7, where 0 is clean and 7 is the dirtiest
@@ -160,137 +162,119 @@ export default function DirtyUnicorn({
         transition: 'transform 0.1s ease-out'
       }}
     >
-      {isClean ? (
-        // Clean unicorn SVG
-        <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <ellipse cx="150" cy="160" rx="80" ry="60" fill="#EECEE7"/>
-          
-          <rect x="90" y="200" width="15" height="50" rx="7" fill="#EECEE7" />
-          <rect x="120" y="200" width="15" height="55" rx="7" fill="#EECEE7" />
-          <rect x="165" y="200" width="15" height="55" rx="7" fill="#EECEE7" />
-          <rect x="195" y="200" width="15" height="50" rx="7" fill="#EECEE7" />
-          
-          <ellipse cx="200" cy="120" rx="40" ry="30" fill="#EECEE7"/>
-          
-          {/* Happy eyes */}
-          <circle cx="210" cy="110" r="5" fill="white" />
-          <circle cx="210" cy="110" r="2" fill="#333" />
-          <circle cx="180" cy="110" r="5" fill="white" />
-          <circle cx="180" cy="110" r="2" fill="#333" />
-          
-          {/* Happy smile */}
-          <path 
-            d="M190 125 Q205 135 220 125" 
-            stroke="#333" 
-            strokeWidth="2" 
-            fill="none"
-            className="transition-all duration-300 ease-in-out"
-          />
-          
-          <path d="M205 90 L220 60" stroke="#FFB6D9" strokeWidth="8" strokeLinecap="round"/>
-          <ellipse cx="160" cy="120" rx="12" ry="20" fill="#FFB6D9" />
-          <ellipse cx="145" cy="120" rx="12" ry="20" fill="#B5DEFF"/>
-          <ellipse cx="130" cy="120" rx="12" ry="20" fill="#D9B5FF"/>
-          <ellipse cx="115" cy="120" rx="12" ry="20" fill="#B5FFD9"/>
-          <ellipse cx="100" cy="120" rx="12" ry="20" fill="#FFB6D9"/>
-          <path d="M70 160 Q50 120 70 80" stroke="#FFB6D9" strokeWidth="10" strokeLinecap="round" fill="none"/>
-        </svg>
-      ) : (
-        // Dirty unicorn SVG
-        <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <ellipse cx="150" cy="160" rx="80" ry="60" fill="#EECEE7"/>
-          
-          {/* Dirt spots on body - dynamically scaled with dirtiness */}
-          <circle cx="130" cy="140" r={16 + Math.min(4, dirtiness) * 3} fill="#A67F75" fillOpacity={dirtOpacity} />
-          <circle cx="170" cy="180" r={13 + Math.min(5, dirtiness) * 3} fill="#A67F75" fillOpacity={dirtOpacity - 0.05} />
-          <circle cx="100" cy="170" r={10 + Math.min(6, dirtiness) * 3} fill="#A67F75" fillOpacity={dirtOpacity - 0.1} />
-          
-          {/* Extra dirt spots for very dirty unicorns */}
-          {dirtiness >= 4 && (
-            <>
-              <circle cx="150" cy="150" r={10 + (dirtiness - 4) * 6} fill="#A67F75" fillOpacity={dirtOpacity} />
-              <circle cx="190" cy="150" r={8 + (dirtiness - 4) * 6} fill="#A67F75" fillOpacity={dirtOpacity - 0.1} />
-            </>
-          )}
-          
-          {/* Even more dirt spots for extremely dirty unicorns (days 5-7) */}
-          {dirtiness >= 5 && (
-            <>
-              <circle cx="140" cy="160" r={7 + (dirtiness - 5) * 8} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
-              <circle cx="180" cy="140" r={6 + (dirtiness - 5) * 8} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
-              <circle cx="110" cy="150" r={8 + (dirtiness - 5) * 6} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
-              <circle cx="165" cy="170" r={7 + (dirtiness - 5) * 6} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
+      {/* Use the new unicorn image */}
+      <div className="relative w-full h-full">
+        {/* Base unicorn image */}
+        <img 
+          src={newUnicornImage} 
+          alt="Unicorn" 
+          className="w-full h-full object-contain"
+        />
+        
+        {/* Overlay dirt spots if the unicorn is dirty */}
+        {!isClean && (
+          <div className="absolute inset-0 w-full h-full">
+            {/* Apply dirt spots dynamically based on dirtiness level */}
+            <svg width="100%" height="100%" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
+              {/* Dirt spots on body - dynamically scaled with dirtiness */}
+              <circle cx="150" cy="150" r={16 + Math.min(4, dirtiness) * 3} fill="#A67F75" fillOpacity={dirtOpacity} />
+              <circle cx="180" cy="180" r={13 + Math.min(5, dirtiness) * 3} fill="#A67F75" fillOpacity={dirtOpacity - 0.05} />
+              <circle cx="120" cy="170" r={10 + Math.min(6, dirtiness) * 3} fill="#A67F75" fillOpacity={dirtOpacity - 0.1} />
               
-              {/* Additional dirt spots for extremely dirty unicorn */}
-              <circle cx="120" cy="180" r={9 + (dirtiness - 5) * 5} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
-              <circle cx="160" cy="175" r={8 + (dirtiness - 5) * 5} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
-            </>
-          )}
-          
-          <rect x="90" y="200" width="15" height="50" rx="7" fill="#EECEE7" />
-          {/* Dirt on legs - dramatically increased with dirtiness */}
-          <circle cx="97" cy="220" r={8 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
-          <rect x="120" y="200" width="15" height="55" rx="7" fill="#EECEE7" />
-          <circle cx="127" cy="230" r={9 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity - 0.05} />
-          <rect x="165" y="200" width="15" height="55" rx="7" fill="#EECEE7" />
-          <circle cx="172" cy="240" r={8 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
-          <rect x="195" y="200" width="15" height="50" rx="7" fill="#EECEE7" />
-          <circle cx="202" cy="225" r={8 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity - 0.05} />
-          
-          <ellipse cx="200" cy="120" rx="40" ry="30" fill="#EECEE7"/>
-          {/* Dirt on face - dramatically scaled with dirtiness */}
-          <circle cx="180" cy="110" r={8 + Math.min(4, dirtiness) * 3} fill="#896058" fillOpacity={dirtOpacity} />
-          {dirtiness >= 5 && (
-            <>
-              <circle cx="195" cy="105" r={7 + (dirtiness - 5) * 3} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
-              <circle cx="190" cy="130" r={6 + (dirtiness - 5) * 2} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
-            </>
-          )}
-
-          {/* Eyes appearance changes with dirtiness - now with two eyes */}
-          <circle cx="210" cy="110" r="5" fill={dirtiness >= 6 ? "#f0f0f0" : "white"} />
-          <circle cx="210" cy="110" r="2" fill="#333" />
-          <circle cx="190" cy="110" r="5" fill={dirtiness >= 6 ? "#f0f0f0" : "white"} />
-          <circle cx="190" cy="110" r="2" fill="#333" />
-
-          {/* Sad eyes - gets even sadder with dirtiness */}
-          <path 
-            d={sigh 
-               ? "M190 135 Q205 125 220 135" 
-               : dirtiness >= 6 
-                 ? `M185 ${132 + dirtiness} Q205 ${118 + dirtiness * 1.5} 225 ${132 + dirtiness}`
-                 : `M190 ${130 + dirtiness} Q205 ${120 + dirtiness} 220 ${130 + dirtiness}`
-              } 
-            stroke="#333" 
-            strokeWidth="2" 
-            fill="none"
-            className="transition-all duration-300 ease-in-out"
-          />
-          
-          <path d="M205 90 L220 60" stroke="#FFB6D9" strokeWidth="8" strokeLinecap="round"/>
-          <ellipse cx="160" cy="120" rx="12" ry="20" fill="#FFB6D9" />
-          {/* Dirt on horn - dramatically increased */}
-          <circle cx="160" cy="110" r={5 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
-          <ellipse cx="145" cy="120" rx="12" ry="20" fill="#B5DEFF"/>
-          <circle cx="145" cy="110" r={4 + Math.min(3, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity - 0.05} />
-          <ellipse cx="130" cy="120" rx="12" ry="20" fill="#D9B5FF"/>
-          <circle cx="130" cy="110" r={6 + Math.min(3, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
-          <ellipse cx="115" cy="120" rx="12" ry="20" fill="#B5FFD9"/>
-          <circle cx="115" cy="115" r={5 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
-          <ellipse cx="100" cy="120" rx="12" ry="20" fill="#FFB6D9"/>
-          <circle cx="100" cy="110" r={4 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
-          <path d="M70 160 Q50 120 70 80" stroke="#FFB6D9" strokeWidth="10" strokeLinecap="round" fill="none"/>
-          <circle cx="60" cy="130" r={8 + Math.min(5, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
-          
-          {/* Extra dirt spots for extremely dirty unicorn tail (days 6-7) */}
-          {dirtiness >= 6 && (
-            <>
-              <circle cx="65" cy="100" r={10 + (dirtiness - 6) * 4} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
-              <circle cx="75" cy="120" r={8 + (dirtiness - 6) * 3} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
-            </>
-          )}
-        </svg>
-      )}
+              {/* Extra dirt spots for very dirty unicorns */}
+              {dirtiness >= 4 && (
+                <>
+                  <circle cx="160" cy="160" r={10 + (dirtiness - 4) * 6} fill="#A67F75" fillOpacity={dirtOpacity} />
+                  <circle cx="200" cy="150" r={8 + (dirtiness - 4) * 6} fill="#A67F75" fillOpacity={dirtOpacity - 0.1} />
+                </>
+              )}
+              
+              {/* Even more dirt spots for extremely dirty unicorns (days 5-7) */}
+              {dirtiness >= 5 && (
+                <>
+                  <circle cx="140" cy="140" r={7 + (dirtiness - 5) * 8} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
+                  <circle cx="180" cy="130" r={6 + (dirtiness - 5) * 8} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
+                  <circle cx="110" cy="155" r={8 + (dirtiness - 5) * 6} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
+                  
+                  {/* Additional dirt spots for extremely dirty unicorn */}
+                  <circle cx="130" cy="190" r={9 + (dirtiness - 5) * 5} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
+                  <circle cx="175" cy="170" r={8 + (dirtiness - 5) * 5} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
+                </>
+              )}
+              
+              {/* Dirt on face, focused on unicorn's head area */}
+              {dirtiness >= 3 && (
+                <>
+                  <circle cx="140" cy="80" r={8 + Math.min(4, dirtiness) * 2} fill="#896058" fillOpacity={dirtOpacity} />
+                </>
+              )}
+              
+              {dirtiness >= 5 && (
+                <>
+                  <circle cx="160" cy="70" r={7 + (dirtiness - 5) * 3} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
+                  <circle cx="130" cy="90" r={6 + (dirtiness - 5) * 2} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
+                </>
+              )}
+              
+              {/* Extra dirt spots for extremely dirty unicorn (days 6-7) */}
+              {dirtiness >= 6 && (
+                <>
+                  <circle cx="150" cy="60" r={10 + (dirtiness - 6) * 4} fill="#896058" fillOpacity={dirtOpacity + 0.15} />
+                  <circle cx="170" cy="85" r={8 + (dirtiness - 6) * 3} fill="#896058" fillOpacity={dirtOpacity + 0.1} />
+                </>
+              )}
+            </svg>
+          </div>
+        )}
+        
+        {/* Show sad face overlay for dirty unicorn */}
+        {!isClean && (
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <svg width="100%" height="100%" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Sad eyes expression - only visible for dirtier unicorns */}
+              {dirtiness >= 4 && (
+                <>
+                  {/* Sad eyebrows */}
+                  <path 
+                    d="M120 70 L135 80" 
+                    stroke="#333" 
+                    strokeWidth="2" 
+                    strokeLinecap="round"
+                    style={{ opacity: Math.min(1, (dirtiness - 3) * 0.3) }}
+                  />
+                  <path 
+                    d="M160 80 L145 70" 
+                    stroke="#333" 
+                    strokeWidth="2" 
+                    strokeLinecap="round"
+                    style={{ opacity: Math.min(1, (dirtiness - 3) * 0.3) }}
+                  />
+                </>
+              )}
+              
+              {/* Tears for very dirty unicorn */}
+              {isCrying && dirtiness >= 6 && (
+                <>
+                  <path 
+                    d="M125 85 C125 95, 125 105, 125 115" 
+                    stroke="#8CDBFF" 
+                    strokeWidth="3" 
+                    strokeLinecap="round"
+                    style={{ opacity: 0.8 }}
+                  />
+                  <path 
+                    d="M155 85 C155 95, 155 105, 155 120" 
+                    stroke="#8CDBFF" 
+                    strokeWidth="3" 
+                    strokeLinecap="round"
+                    style={{ opacity: 0.8 }}
+                  />
+                </>
+              )}
+            </svg>
+          </div>
+        )}
+      </div>
       
       {/* Smell cloud 1 - gets bigger and darker with dirtiness */}
       {!isClean && dirtiness >= 2 && (
