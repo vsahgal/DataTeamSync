@@ -183,21 +183,45 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
   // Function to generate dirt spots for overlay on the unicorn
   const generateDirtOverlay = () => {
     // Reduce dirt based on cleaning stage
-    const dirtOpacity = 0.7 - (cleaningStage * 0.2);
+    const baseOpacity = 0.7;
+    const dirtOpacity = baseOpacity - (cleaningStage * 0.2);
     
     if (cleaningStage === 3) return null; // No dirt when fully clean
     
     return (
-      <div 
-        className="absolute inset-0 rounded-full bg-brown-500" 
-        style={{ 
-          backgroundColor: '#A67F75',
-          opacity: dirtOpacity,
-          mixBlendMode: 'multiply',
-          filter: 'blur(3px)',
-          clipPath: 'ellipse(65% 60% at 50% 50%)'
-        }}
-      />
+      <div className="absolute inset-0 w-full h-full">
+        {/* Apply dirt spots dynamically based on cleaning stage */}
+        <svg width="100%" height="100%" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
+          {/* Main dirt spots on body - fade out as cleaning progresses */}
+          <circle cx="150" cy="150" r={20} fill="#A67F75" fillOpacity={dirtOpacity} />
+          <circle cx="180" cy="180" r={18} fill="#A67F75" fillOpacity={dirtOpacity - 0.05} />
+          <circle cx="120" cy="170" r={15} fill="#A67F75" fillOpacity={dirtOpacity - 0.1} />
+          <circle cx="160" cy="160" r={16} fill="#A67F75" fillOpacity={dirtOpacity} />
+          <circle cx="200" cy="150" r={14} fill="#A67F75" fillOpacity={dirtOpacity - 0.1} />
+          
+          {/* Additional dirt spots - only visible in dirtier stages */}
+          {cleaningStage < 2 && (
+            <>
+              <circle cx="140" cy="140" r={12} fill="#896058" fillOpacity={dirtOpacity + 0.05} />
+              <circle cx="180" cy="130" r={10} fill="#896058" fillOpacity={dirtOpacity + 0.05} />
+              <circle cx="110" cy="155" r={13} fill="#896058" fillOpacity={dirtOpacity} />
+              <circle cx="130" cy="190" r={14} fill="#896058" fillOpacity={dirtOpacity + 0.05} />
+              <circle cx="175" cy="170" r={12} fill="#896058" fillOpacity={dirtOpacity} />
+            </>
+          )}
+          
+          {/* Dirt on face, only visible when very dirty */}
+          {cleaningStage < 1 && (
+            <>
+              <circle cx="140" cy="80" r={10} fill="#896058" fillOpacity={dirtOpacity} />
+              <circle cx="160" cy="70" r={9} fill="#896058" fillOpacity={dirtOpacity + 0.05} />
+              <circle cx="130" cy="90" r={8} fill="#896058" fillOpacity={dirtOpacity} />
+              <circle cx="150" cy="60" r={11} fill="#896058" fillOpacity={dirtOpacity + 0.05} />
+              <circle cx="170" cy="85" r={10} fill="#896058" fillOpacity={dirtOpacity} />
+            </>
+          )}
+        </svg>
+      </div>
     );
   };
   
