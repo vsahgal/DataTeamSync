@@ -256,7 +256,7 @@ export default function Home() {
         setShowConfetti(false);
         resetLevelUp(); // Reset the level-up state
         
-        // Wait an additional 2 seconds before showing the gift to give the player time to enjoy the achievement
+        // Wait an additional 5 seconds before showing the gift to give the player time to enjoy the achievement
         setTimeout(() => {
           // If we had a delayed loot item, show it now
           if (delayedLoot) {
@@ -264,7 +264,7 @@ export default function Home() {
             setPendingLootState(delayedLoot);
             setDelayedLoot(null);
           }
-        }, 2000); // 2 second extra pause before showing the gift
+        }, 5000); // 5 second extra pause before showing the gift
       }, 5000);
     }
   }, [didLevelUp, newLevel, resetLevelUp, delayedLoot]);
