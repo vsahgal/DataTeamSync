@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LootItem } from '@/lib/lootItems';
 import { Button } from '@/components/ui/button';
-// Using direct URL path to access the image
-const giftBoxImage = "/gift-box.png";
-console.log("Gift box image path:", giftBoxImage);
 
 interface GiftBoxProps {
   visible: boolean;
@@ -89,15 +86,99 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
                 }
               }}
             >
-              {/* Yellow gift box with red ribbon image */}
-              <motion.img 
-                src={giftBoxImage} 
-                alt="Gift Box"
-                className="w-52 h-52 object-contain"
-                style={{
-                  filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.15))"
-                }}
-              />
+              {/* Yellow gift box with red ribbon (CSS version) */}
+              <div className="relative w-60 h-60">
+                {/* Gift box base - bright yellow like in the image */}
+                <motion.div 
+                  className="absolute w-48 h-48 bg-[#FFD800] rounded-md shadow-lg"
+                  animate={isOpening ? { 
+                    scaleY: 0.5, 
+                    y: 60,
+                    transition: { delay: 0.5, duration: 0.4 } 
+                  } : {}}
+                  style={{ 
+                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.2)",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)"
+                  }}
+                />
+                
+                {/* Gift box lid - same yellow */}
+                <motion.div 
+                  className="absolute w-52 h-12 bg-[#FFD800] rounded-t-md shadow-sm top-[-10px]"
+                  animate={isOpening ? {
+                    y: -60,
+                    rotateX: 60,
+                    opacity: 0,
+                    transition: { duration: 0.5 }
+                  } : {}}
+                  style={{ 
+                    boxShadow: "0 -5px 15px -5px rgba(0,0,0,0.05)",
+                    left: "50%",
+                    transform: "translateX(-50%)"
+                  }}
+                />
+                
+                {/* Gift ribbon - bright red vertical */}
+                <motion.div 
+                  className="absolute h-full w-8 bg-[#FF2E4A] top-0 rounded-b-sm"
+                  animate={isOpening ? {
+                    opacity: 0,
+                    transition: { delay: 0.3, duration: 0.3 }
+                  } : {}}
+                  style={{ 
+                    left: "50%",
+                    transform: "translateX(-50%)"
+                  }}
+                />
+                
+                {/* Gift ribbon - bright red horizontal */}
+                <motion.div 
+                  className="absolute w-48 h-8 bg-[#FF2E4A] rounded-r-sm"
+                  animate={isOpening ? {
+                    opacity: 0,
+                    transition: { delay: 0.3, duration: 0.3 }
+                  } : {}}
+                  style={{ 
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)"
+                  }}
+                />
+                
+                {/* Bow at the top - larger and more prominent */}
+                <motion.div 
+                  className="absolute top-[-40px] z-10"
+                  animate={isOpening ? {
+                    scale: 0,
+                    transition: { delay: 0.2, duration: 0.3 }
+                  } : {}}
+                  style={{ 
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "80px",
+                    height: "40px"
+                  }}
+                >
+                  {/* Left bow loop */}
+                  <motion.div 
+                    className="absolute top-1/2 left-0 w-12 h-16 bg-[#FF2E4A] rounded-full transform -translate-y-1/2 origin-right"
+                    style={{ transform: "translateY(-50%) rotate(-30deg)" }}
+                  />
+                  
+                  {/* Right bow loop */}
+                  <motion.div 
+                    className="absolute top-1/2 right-0 w-12 h-16 bg-[#FF2E4A] rounded-full transform -translate-y-1/2 origin-left"
+                    style={{ transform: "translateY(-50%) rotate(30deg)" }}
+                  />
+                  
+                  {/* Center knot */}
+                  <motion.div 
+                    className="absolute top-1/2 left-1/2 w-10 h-10 bg-[#FF2E4A] rounded-full transform -translate-x-1/2 -translate-y-1/2"
+                  />
+                </motion.div>
+              </div>
               
               {/* Decorative stars */}
               <motion.div
