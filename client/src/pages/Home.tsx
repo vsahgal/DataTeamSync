@@ -138,24 +138,37 @@ export default function Home() {
     // Set the justCompletedShower flag to trigger progress animation
     setJustCompletedShower(true);
     
+    // Always generate a loot item when a shower is completed
+    const newLoot = getRandomLootItem();
+    console.log("Generated new loot item:", newLoot);
+    
     // Clear the flag after a delay to allow time for UI updates and animations
     setTimeout(() => {
       setJustCompletedShower(false);
       
-      // Always generate a loot item when a shower is completed
-      const newLoot = getRandomLootItem();
-      
       // If there's no level-up in progress, show it right away
       if (!didLevelUp) {
         console.log("No level up - showing loot right away");
+        
+        // Store in local storage and update state
         storageSavePendingLoot(newLoot);
         setPendingLootState(newLoot);
+        
+        // Double check after brief delay
+        setTimeout(() => {
+          const pendingFromStorage = getPendingLoot();
+          console.log("Local storage loot check:", pendingFromStorage);
+          if (!pendingLoot && pendingFromStorage) {
+            console.log("State was empty but storage had loot - fixing");
+            setPendingLootState(pendingFromStorage);
+          }
+        }, 300);
       } else {
         // If there's a level-up, store the loot for later
         console.log("Level up - delaying loot until animations finish");
         setDelayedLoot(newLoot);
       }
-    }, 3000);
+    }, 2000); // Reduced delay for better experience
     
     toast({
       title: "Shower completed!",
@@ -285,18 +298,30 @@ export default function Home() {
   // Step 4: After pause, show the loot (if any)
   useEffect(() => {
     if (pauseTimerActive) {
-      console.log("Starting 5-second pause before showing gift");
+      console.log("Starting 3-second pause before showing gift");
       const timer = setTimeout(() => {
         console.log("Pause complete, showing gift");
         setPauseTimerActive(false);
         
         // If we had a delayed loot item, show it now
         if (delayedLoot) {
+          console.log("Processing delayed loot item:", delayedLoot);
           storageSavePendingLoot(delayedLoot);
           setPendingLootState(delayedLoot);
           setDelayedLoot(null);
+          
+          // Double-check that the loot is showing with a separate timeout
+          setTimeout(() => {
+            // If for some reason the loot didn't show, force it to show
+            if (!pendingLoot) {
+              console.log("Forcing loot to show after delay");
+              setPendingLootState(delayedLoot);
+            }
+          }, 500);
+        } else {
+          console.log("No delayed loot to show after animation sequence");
         }
-      }, 5000); // 5 second pause before showing the gift
+      }, 3000); // Reduced to 3 seconds for better user experience
       return () => clearTimeout(timer);
     }
   }, [pauseTimerActive, delayedLoot]);
@@ -511,14 +536,25 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Gift box for loot rewards - simpler implementation */}
+      {/* Gift box for loot rewards - using a direct approach */}
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
-          <GiftBox 
-            visible={true} // Always set true when component is rendered
-            onOpen={handleOpenGift} 
-            lootItem={pendingLoot} 
-          />
+          <div className="relative bg-white p-6 rounded-lg shadow-xl max-w-md w-full flex flex-col items-center">
+            <h2 className="text-xl font-bold mb-4 text-center">You found a reward!</h2>
+            <div 
+              className="w-48 h-48 bg-amber-300 rounded-xl shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-105 relative"
+              onClick={() => handleOpenGift(pendingLoot)}
+            >
+              {/* Simplified gift box */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute top-0 left-0 w-full h-1/4 bg-amber-400 rounded-t-xl"></div>
+                <div className="absolute top-0 left-1/2 w-8 h-full bg-red-500 transform -translate-x-1/2"></div>
+                <div className="absolute top-1/2 left-0 w-full h-8 bg-red-500 transform -translate-y-1/2"></div>
+                <div className="text-6xl text-center mt-4">{pendingLoot.emoji}</div>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 mt-4 animate-pulse">Tap the gift to open it!</p>
+          </div>
         </div>
       )}
       
