@@ -508,16 +508,14 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Gift box for loot rewards - simplified and centered */}
+      {/* Gift box for loot rewards - no container, just the gift */}
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
-          <div className="text-center bg-gradient-to-b from-white to-blue-50 p-6 rounded-2xl shadow-lg border-4 border-pink-300">
-            <GiftBox 
-              visible={!!pendingLoot} 
-              onOpen={handleOpenGift} 
-              lootItem={pendingLoot} 
-            />
-          </div>
+          <GiftBox 
+            visible={!!pendingLoot} 
+            onOpen={handleOpenGift} 
+            lootItem={pendingLoot} 
+          />
         </div>
       )}
       
