@@ -132,44 +132,29 @@ export default function Home() {
     });
   };
   
-  const [hasReward, setHasReward] = useState(false);
-  const [waitingReward, setWaitingReward] = useState<LootItem | null>(null);
-
   const handleStop = () => {
     const earnedPoints = stopShower();
     
     // Set the justCompletedShower flag to trigger progress animation
     setJustCompletedShower(true);
     
-    // Always generate a loot item when a shower is completed
-    const newLoot = getRandomLootItem();
-    console.log("Generated new loot item:", newLoot);
-    
-    // Store it temporarily but don't show yet
-    setWaitingReward(newLoot);
-    
-    // Show the "collect reward" button after a short delay to allow animations to finish
+    // Clear the flag after a delay to allow time for UI updates and animations
     setTimeout(() => {
       setJustCompletedShower(false);
-      setHasReward(true);
-    }, 2000);
+      
+      // Always generate a loot item when a shower is completed
+      const newLoot = getRandomLootItem();
+      
+      // Directly set the loot item to show
+      storageSavePendingLoot(newLoot);
+      setPendingLootState(newLoot);
+    }, 2500);
     
     toast({
       title: "Shower completed!",
       description: `Great job! You earned ${earnedPoints} points.`,
       variant: "default",
     });
-  };
-  
-  // Function to handle collecting the reward
-  const handleCollectReward = () => {
-    if (waitingReward) {
-      console.log("Collecting reward", waitingReward);
-      storageSavePendingLoot(waitingReward);
-      setPendingLootState(waitingReward);
-      setWaitingReward(null);
-      setHasReward(false);
-    }
   };
   
   // Handle opening the gift box and collecting the loot
@@ -458,22 +443,12 @@ export default function Home() {
               )}
             </div>
             
-            {!isShowering && !hasReward && (
+            {!isShowering && (
               <Button 
                 onClick={handleStart} 
                 className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
               >
                 Start Shower
-              </Button>
-            )}
-            
-            {/* Reward button after shower */}
-            {!isShowering && hasReward && waitingReward && (
-              <Button 
-                onClick={handleCollectReward} 
-                className="w-full h-14 bg-amber-500 hover:bg-amber-600 mb-1 rounded-full text-xl flex items-center justify-center"
-              >
-                <span className="mr-2 text-2xl">{waitingReward.emoji}</span> Collect Reward!
               </Button>
             )}
           </div>
