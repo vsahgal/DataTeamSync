@@ -289,9 +289,17 @@ export default function Home() {
         
         // If we had a delayed loot item, show it now
         if (delayedLoot) {
+          console.log("Showing delayed loot:", delayedLoot);
           storageSavePendingLoot(delayedLoot);
           setPendingLootState(delayedLoot);
           setDelayedLoot(null);
+          
+          // Force visibility check - log current state
+          setTimeout(() => {
+            console.log("Gift should be visible now - pendingLoot state:", pendingLoot);
+          }, 100);
+        } else {
+          console.log("No delayed loot to show");
         }
       }, 5000); // 5 second pause before showing the gift
       return () => clearTimeout(timer);
@@ -508,11 +516,11 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      {/* Gift box for loot rewards - no container, just the gift */}
+      {/* Gift box for loot rewards - simpler implementation */}
       {pendingLoot && !isShowering && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60">
           <GiftBox 
-            visible={!!pendingLoot} 
+            visible={true} // Always set true when component is rendered
             onOpen={handleOpenGift} 
             lootItem={pendingLoot} 
           />
