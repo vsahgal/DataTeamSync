@@ -414,8 +414,8 @@ export default function DirtyUnicorn({
       {/* Tears for very dirty unicorn (days 6-7) */}
       {!isClean && dirtiness >= 6 && isCrying && (
         <>
-          {/* Left tear - coming from left eye */}
-          <div className="absolute left-[100px] top-[88px] animate-drip">
+          {/* Primary tear from the visible eye (under the horn) */}
+          <div className="absolute left-[80px] top-[65px] animate-drip">
             <svg 
               width={dirtiness >= 7 ? "15" : "12"} 
               height={dirtiness >= 7 ? "30" : "22"} 
@@ -432,15 +432,15 @@ export default function DirtyUnicorn({
             </svg>
           </div>
           
-          {/* Right tear - coming from right eye */}
-          <div className="absolute left-[140px] top-[88px] animate-drip-delayed">
+          {/* Secondary tear from same eye */}
+          <div className="absolute left-[78px] top-[67px] animate-drip-delayed">
             <svg 
-              width={dirtiness >= 7 ? "15" : "12"} 
-              height={dirtiness >= 7 ? "30" : "22"} 
+              width={dirtiness >= 7 ? "14" : "11"} 
+              height={dirtiness >= 7 ? "28" : "20"} 
               viewBox="0 0 15 25" 
               fill="none" 
               xmlns="http://www.w3.org/2000/svg"
-              style={{ transform: dirtiness >= 7 ? "scale(1.2)" : "scale(1)" }}
+              style={{ transform: dirtiness >= 7 ? "scale(1.1)" : "scale(0.95)" }}
             >
               <path
                 d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
@@ -453,7 +453,7 @@ export default function DirtyUnicorn({
           {/* Extra tears for extremely dirty unicorn (day 7) */}
           {dirtiness >= 7 && (
             <>
-              <div className="absolute left-[103px] top-[91px] animate-drip" style={{ animationDelay: "300ms" }}>
+              <div className="absolute left-[83px] top-[70px] animate-drip" style={{ animationDelay: "300ms" }}>
                 <svg width="10" height="18" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
@@ -463,8 +463,8 @@ export default function DirtyUnicorn({
                 </svg>
               </div>
               
-              <div className="absolute left-[143px] top-[91px] animate-drip-delayed" style={{ animationDelay: "500ms" }}>
-                <svg width="10" height="16" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="absolute left-[75px] top-[71px] animate-drip-delayed" style={{ animationDelay: "500ms" }}>
+                <svg width="8" height="16" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
                     fill="#89CFF0"
@@ -473,9 +473,9 @@ export default function DirtyUnicorn({
                 </svg>
               </div>
               
-              {/* Another pair of tears for day 7 */}
-              <div className="absolute left-[97px] top-[94px] animate-drip-delayed" style={{ animationDelay: "800ms" }}>
-                <svg width="8" height="14" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Additional tears falling */}
+              <div className="absolute left-[80px] top-[73px] animate-drip-delayed" style={{ animationDelay: "800ms" }}>
+                <svg width="7" height="14" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
                     fill="#89CFF0"
@@ -484,8 +484,8 @@ export default function DirtyUnicorn({
                 </svg>
               </div>
               
-              <div className="absolute left-[138px] top-[94px] animate-drip" style={{ animationDelay: "1000ms" }}>
-                <svg width="8" height="12" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="absolute left-[78px] top-[75px] animate-drip" style={{ animationDelay: "1000ms" }}>
+                <svg width="6" height="12" viewBox="0 0 15 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.5 0C7.5 0 0 15 0 20C0 22.7614 3.35786 25 7.5 25C11.6421 25 15 22.7614 15 20C15 15 7.5 0 7.5 0Z"
                     fill="#89CFF0"
