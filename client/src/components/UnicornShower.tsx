@@ -438,7 +438,7 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
       
       {/* Unicorn with cleaning animation */}
       <motion.div
-        className="relative z-10 w-64 h-64"
+        className="relative z-10 w-72 h-72"
         style={{
           transform: isDancing ? `translateY(${position}px) rotate(${rotation}deg) scale(${scale})` : 'none',
           transition: 'transform 0.1s ease-out'
@@ -486,7 +486,7 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
           <img 
             src={newUnicornImage} 
             alt="Unicorn" 
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain p-2"
           />
           
           {/* Dirt overlay */}
