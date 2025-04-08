@@ -48,33 +48,43 @@ export default function GiftBox({ visible, onOpen, lootItem }: GiftBoxProps) {
               whileHover={!isOpening ? { scale: 1.05 } : {}}
               whileTap={!isOpening ? { scale: 0.95 } : {}}
               animate={isOpening ? 
-                { y: 20, scale: 0.8, opacity: 0.5 } : 
-                { y: [0, -10, 0], opacity: 1 }
+                { y: 50, scale: 0.7, opacity: 0, rotate: 10 } : 
+                { 
+                  y: [0, -12, 0], 
+                  opacity: 1,
+                  rotate: [-5, 5, -5]
+                }
               }
               transition={{
                 y: {
-                  duration: 2.5,
+                  duration: 3,
+                  repeat: !isOpening ? Infinity : 0,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
+                },
+                rotate: {
+                  duration: 6,
                   repeat: !isOpening ? Infinity : 0,
                   repeatType: "reverse",
                   ease: "easeInOut"
                 },
                 opacity: {
-                  duration: isOpening ? 0.5 : 0,
-                  delay: isOpening ? 0.5 : 0
+                  duration: isOpening ? 0.8 : 0,
+                  delay: isOpening ? 0.3 : 0
                 },
                 scale: {
-                  duration: isOpening ? 0.5 : 0,
-                  delay: isOpening ? 0.5 : 0
+                  duration: isOpening ? 0.8 : 0,
+                  delay: isOpening ? 0.3 : 0
                 }
               }}
             >
-              {/* Real gift box image */}
+              {/* Yellow gift box with red ribbon image */}
               <motion.img 
                 src={giftBoxImage} 
                 alt="Gift Box"
-                className="w-44 h-44 object-contain"
+                className="w-52 h-52 object-contain"
                 style={{
-                  filter: "drop-shadow(0 10px 8px rgba(0,0,0,0.1))"
+                  filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.15))"
                 }}
               />
               
