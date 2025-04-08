@@ -4,11 +4,14 @@ import {
   ShowerStats 
 } from '@shared/schema';
 import { initialRewards, LEVELS } from './constants';
+import { CollectedItem, LootItem } from './lootItems';
 
 const STORAGE_KEYS = {
   SESSIONS: 'shower_sessions',
   REWARDS: 'shower_rewards',
-  STATS: 'shower_stats'
+  STATS: 'shower_stats',
+  COLLECTED_LOOT: 'collected_loot',
+  PENDING_LOOT: 'pending_loot'
 };
 
 // Initialize local storage with default values if empty
@@ -36,6 +39,14 @@ const initializeStorage = () => {
       lastLevelUp: null
     };
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(initialStats));
+  }
+  
+  if (!localStorage.getItem(STORAGE_KEYS.COLLECTED_LOOT)) {
+    localStorage.setItem(STORAGE_KEYS.COLLECTED_LOOT, JSON.stringify([]));
+  }
+  
+  if (!localStorage.getItem(STORAGE_KEYS.PENDING_LOOT)) {
+    localStorage.setItem(STORAGE_KEYS.PENDING_LOOT, JSON.stringify(null));
   }
 };
 
@@ -322,5 +333,79 @@ const checkAndUnlockRewards = (): void => {
     }
   } catch (error) {
     console.error('Error checking rewards:', error);
+  }
+};
+
+// Loot system
+export const getCollectedLoot = (): CollectedItem[] => {
+  try {
+    const loot = localStorage.getItem(STORAGE_KEYS.COLLECTED_LOOT);
+    return loot ? JSON.parse(loot) : [];
+  } catch (error) {
+    console.error('Error getting collected loot:', error);
+    return [];
+  }
+};
+
+export const saveCollectedLoot = (items: CollectedItem[]): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.COLLECTED_LOOT, JSON.stringify(items));
+  } catch (error) {
+    console.error('Error saving collected loot:', error);
+  }
+};
+
+export const addCollectedLoot = (item: LootItem): CollectedItem => {
+  try {
+    const collectedItems = getCollectedLoot();
+    const existingItemIndex = collectedItems.findIndex(existing => existing.id === item.id);
+    
+    if (existingItemIndex !== -1) {
+      // Item already exists, increment count
+      collectedItems[existingItemIndex].count += 1;
+      saveCollectedLoot(collectedItems);
+      return collectedItems[existingItemIndex];
+    } else {
+      // New item, add to collection
+      const newCollectedItem: CollectedItem = {
+        ...item,
+        count: 1,
+        firstCollectedAt: new Date().toISOString()
+      };
+      collectedItems.push(newCollectedItem);
+      saveCollectedLoot(collectedItems);
+      return newCollectedItem;
+    }
+  } catch (error) {
+    console.error('Error adding collected loot:', error);
+    // Return a default in case of error
+    return {
+      ...item,
+      count: 1,
+      firstCollectedAt: new Date().toISOString()
+    };
+  }
+};
+
+// Handle pending loot
+export const getPendingLoot = (): LootItem | null => {
+  try {
+    const loot = localStorage.getItem(STORAGE_KEYS.PENDING_LOOT);
+    return loot && loot !== "null" ? JSON.parse(loot) : null;
+  } catch (error) {
+    console.error('Error getting pending loot:', error);
+    return null;
+  }
+};
+
+export const setPendingLoot = (item: LootItem | null): void => {
+  try {
+    if (item) {
+      localStorage.setItem(STORAGE_KEYS.PENDING_LOOT, JSON.stringify(item));
+    } else {
+      localStorage.setItem(STORAGE_KEYS.PENDING_LOOT, JSON.stringify(null));
+    }
+  } catch (error) {
+    console.error('Error setting pending loot:', error);
   }
 };

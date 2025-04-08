@@ -7,11 +7,21 @@ import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { useToast } from "@/hooks/use-toast";
 import useShowerState from "@/hooks/useShowerState";
-import { getShowerStats, getShowerSessions } from "@/lib/storage";
+import { 
+  getShowerStats, 
+  getShowerSessions, 
+  getPendingLoot, 
+  setPendingLoot, 
+  addCollectedLoot, 
+  getCollectedLoot 
+} from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
-import { Droplets, Zap, Award, BarChart } from "lucide-react";
+import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
 import { ShowerStats, LocalShowerSession } from "@shared/schema";
 import Confetti from "react-confetti";
+import { getRandomLootItem, LootItem } from "@/lib/lootItems";
+import GiftBox from "@/components/GiftBox";
+import LootCollection from "@/components/LootCollection";
 
 // Helper function to calculate days since last shower
 // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
@@ -130,9 +140,34 @@ export default function Home() {
       setJustCompletedShower(false);
     }, 3000);
     
+    // Generate a random loot item as a reward for completing the shower
+    const newLoot = getRandomLootItem();
+    setPendingLoot(newLoot);
+    setPendingLootState(newLoot);
+    
     toast({
       title: "Shower completed!",
       description: `Great job! You earned ${earnedPoints} points.`,
+      variant: "default",
+    });
+  };
+  
+  // Handle opening the gift box and collecting the loot
+  const handleOpenGift = (item: LootItem) => {
+    // Add the item to the collection
+    const collectedItem = addCollectedLoot(item);
+    
+    // Update the state with the refreshed collection
+    setCollectedItems(getCollectedLoot());
+    
+    // Clear the pending loot
+    setPendingLoot(null);
+    setPendingLootState(null);
+    
+    // Show a celebration toast
+    toast({
+      title: `You found a ${item.rarity} item!`,
+      description: `${item.name} ${item.emoji} has been added to your collection!`,
       variant: "default",
     });
   };
@@ -142,6 +177,11 @@ export default function Home() {
   const [isDancingUnicorn, setIsDancingUnicorn] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [justCompletedShower, setJustCompletedShower] = useState(false);
+  
+  // States for loot system
+  const [pendingLoot, setPendingLootState] = useState<LootItem | null>(getPendingLoot());
+  const [showLootCollection, setShowLootCollection] = useState(false);
+  const [collectedItems, setCollectedItems] = useState(getCollectedLoot());
   
   // We've removed the testing state variables since they're no longer needed
   
@@ -401,8 +441,42 @@ export default function Home() {
               </div>
             </div>
           </div>
+          
+          {collectedItems.length > 0 && (
+            <div className="mt-4">
+              <Button 
+                onClick={() => setShowLootCollection(true)} 
+                variant="outline" 
+                className="w-full"
+              >
+                <Gift className="mr-2 h-4 w-4" /> View Collection ({collectedItems.length})
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
+      
+      {/* Gift box for loot rewards */}
+      {pendingLoot && !isShowering && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="text-center bg-white p-6 rounded-xl shadow-lg max-w-md">
+            <h2 className="text-2xl font-bold mb-4 text-purple-600">You earned a reward!</h2>
+            <p className="mb-6">Open the gift box to see what you got!</p>
+            <GiftBox 
+              visible={!!pendingLoot} 
+              onOpen={handleOpenGift} 
+              lootItem={pendingLoot} 
+            />
+          </div>
+        </div>
+      )}
+      
+      {/* Loot collection modal */}
+      <LootCollection
+        items={collectedItems}
+        isOpen={showLootCollection}
+        onClose={() => setShowLootCollection(false)}
+      />
     </div>
   );
 }

@@ -57,3 +57,17 @@
 .animate-drip-delayed {
   animation: drip-delayed 2s ease-in-out infinite;
 }
+
+/* Gift box animation */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2.5s ease-in-out infinite;
+}
