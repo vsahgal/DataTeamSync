@@ -469,55 +469,7 @@ export default function Home() {
       </Card>
       
 
-      <Card className="overflow-hidden border-2 border-indigo-200">
-        <CardContent className="pt-6">
-          <h2 className="text-xl font-bold mb-4 text-indigo-700">Your Progress</h2>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <div className="bg-blue-100 p-2 rounded-full">
-                <Droplets className="text-blue-600 h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Showers</p>
-                <p className="font-medium">{stats.totalSessions}</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="bg-purple-100 p-2 rounded-full">
-                <Award className="text-purple-600 h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Streak</p>
-                <p className="font-medium">{stats.streakDays} days</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="bg-yellow-100 p-2 rounded-full">
-                <Zap className="text-yellow-600 h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Points</p>
-                <p className="font-medium">{stats.totalPoints}</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="bg-emerald-100 p-2 rounded-full">
-                <BarChart className="text-emerald-600 h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Longest</p>
-                <p className="font-medium">{Math.floor(stats.longestShower / 60)}:{(stats.longestShower % 60).toString().padStart(2, '0')}</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* We don't need the View Collection button anymore since we have the carousel */}
-        </CardContent>
-      </Card>
+      {/* Removed "Your Progress" card as requested */}
       
       {/* Simple gift box - just the gift itself - no content visible */}
       {pendingLoot && !isShowering && !openedItem && (
@@ -581,29 +533,21 @@ export default function Home() {
         </div>
       )}
       
-      {/* Treasures carousel */}
+      {/* Simplified Treasures carousel - just emojis */}
       {collectedItems.length > 0 && !isShowering && (
         <Card className="overflow-hidden border-2 border-pink-200">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-bold mb-4 text-center text-pink-700">
-              <Gift className="inline-block mr-2 h-5 w-5" /> Zoya's Treasures ({collectedItems.length})
-            </h2>
-            
+          <CardContent className="p-4">
             <Carousel className="w-full">
               <CarouselContent>
                 {collectedItems.map((item, index) => (
-                  <CarouselItem key={item.id + "-" + index} className="basis-1/4 sm:basis-1/5 md:basis-1/6">
-                    <div className="flex flex-col items-center p-2 bg-white rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow">
-                      <div className="text-3xl mb-1">{item.emoji}</div>
-                      <p className="text-xs font-medium text-center text-pink-800 truncate w-full">{item.name}</p>
-                      <div className="text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full mt-1 uppercase">
-                        {item.rarity}
-                      </div>
+                  <CarouselItem key={item.id + "-" + index} className="basis-1/5 sm:basis-1/6 md:basis-1/8">
+                    <div className="flex items-center justify-center p-3 bg-white rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="text-4xl">{item.emoji}</div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <div className="flex items-center justify-center mt-4">
+              <div className="flex items-center justify-center mt-3">
                 <CarouselPrevious className="relative mr-2" />
                 <CarouselNext className="relative ml-2" />
               </div>
