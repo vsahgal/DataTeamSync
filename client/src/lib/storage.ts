@@ -11,7 +11,9 @@ const STORAGE_KEYS = {
   REWARDS: 'shower_rewards',
   STATS: 'shower_stats',
   COLLECTED_LOOT: 'collected_loot',
-  PENDING_LOOT: 'pending_loot'
+  PENDING_LOOT: 'pending_loot',
+  CHILD_NAME: 'child_name',
+  ONBOARDING_COMPLETED: 'onboarding_completed'
 };
 
 // Initialize local storage with default values if empty
@@ -47,6 +49,11 @@ const initializeStorage = () => {
   
   if (!localStorage.getItem(STORAGE_KEYS.PENDING_LOOT)) {
     localStorage.setItem(STORAGE_KEYS.PENDING_LOOT, JSON.stringify(null));
+  }
+  
+  // Initialize onboarding status if not set
+  if (localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED) === null) {
+    localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, JSON.stringify(false));
   }
 };
 
@@ -410,6 +417,51 @@ export const setPendingLoot = (item: LootItem | null): void => {
   }
 };
 
+// Child name and onboarding functions
+export const getChildName = (): string => {
+  try {
+    const name = localStorage.getItem(STORAGE_KEYS.CHILD_NAME);
+    return name ? JSON.parse(name) : "Zoya"; // Default to Zoya if not set
+  } catch (error) {
+    console.error('Error getting child name:', error);
+    return "Zoya"; // Default to Zoya in case of error
+  }
+};
+
+export const setChildName = (name: string): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.CHILD_NAME, JSON.stringify(name));
+  } catch (error) {
+    console.error('Error setting child name:', error);
+  }
+};
+
+export const isOnboardingCompleted = (): boolean => {
+  try {
+    const completed = localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+    return completed ? JSON.parse(completed) : false;
+  } catch (error) {
+    console.error('Error checking onboarding status:', error);
+    return false;
+  }
+};
+
+export const completeOnboarding = (): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, JSON.stringify(true));
+  } catch (error) {
+    console.error('Error completing onboarding:', error);
+  }
+};
+
+export const resetOnboarding = (): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, JSON.stringify(false));
+  } catch (error) {
+    console.error('Error resetting onboarding:', error);
+  }
+};
+
 // Reset all user data in storage
 export const resetAllUserData = (): void => {
   try {
@@ -419,6 +471,8 @@ export const resetAllUserData = (): void => {
     localStorage.removeItem(STORAGE_KEYS.STATS);
     localStorage.removeItem(STORAGE_KEYS.COLLECTED_LOOT);
     localStorage.removeItem(STORAGE_KEYS.PENDING_LOOT);
+    localStorage.removeItem(STORAGE_KEYS.CHILD_NAME);
+    resetOnboarding(); // Reset onboarding but don't remove it
     
     // Re-initialize with default values
     initializeStorage();

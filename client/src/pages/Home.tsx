@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import UnicornShower from "@/components/UnicornShower";
 import DirtyUnicorn from "@/components/DirtyUnicorn";
 import AnimatedLevelIndicator from "@/components/AnimatedLevelIndicator";
+import OnboardingDialog from "@/components/OnboardingDialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
@@ -13,7 +14,9 @@ import {
   getPendingLoot, 
   setPendingLoot as storageSavePendingLoot, 
   addCollectedLoot, 
-  getCollectedLoot 
+  getCollectedLoot,
+  getChildName,
+  isOnboardingCompleted
 } from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
@@ -51,6 +54,8 @@ const getDaysSinceLastShower = (lastShowerDate: string): number => {
 
 export default function Home() {
   const { toast } = useToast();
+  // Get the child's name from storage
+  const [childName, setChildName] = useState(getChildName());
   const { 
     isShowering, 
     elapsedTime, 
@@ -396,14 +401,14 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-blue-600 text-center">
                 {stats.lastShowerDate ? (
                   getDaysSinceLastShower(stats.lastShowerDate) === 0 ? (
-                    <>Zoya had a shower today!</>
+                    <>{childName} had a shower today!</>
                   ) : (
                     <>
-                      It's been {getDaysSinceLastShower(stats.lastShowerDate)} day{getDaysSinceLastShower(stats.lastShowerDate) !== 1 ? 's' : ''} since Zoya's last shower
+                      It's been {getDaysSinceLastShower(stats.lastShowerDate)} day{getDaysSinceLastShower(stats.lastShowerDate) !== 1 ? 's' : ''} since {childName}'s last shower
                     </>
                   )
                 ) : (
-                  <>Zoya's First Shower</>
+                  <>{childName}'s First Shower</>
                 )}
               </h1>
             </div>
@@ -670,6 +675,15 @@ export default function Home() {
           </div>
         </div>
       )}
+      
+      {/* Onboarding dialog for first-time users */}
+      <OnboardingDialog 
+        onComplete={() => {
+          setChildName(getChildName());
+          // Refresh stats and UI after name is set
+          setStats(getShowerStats());
+        }}
+      />
     </div>
   );
 }

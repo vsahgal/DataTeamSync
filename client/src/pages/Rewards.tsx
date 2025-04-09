@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { getShowerSessions, getCollectedLoot, resetAllUserData } from "@/lib/storage";
+import { getShowerSessions, getCollectedLoot, resetAllUserData, getChildName } from "@/lib/storage";
 import { LocalShowerSession } from "@shared/schema";
 import { CollectedItem } from "@/lib/lootItems";
 import { Droplet, CheckCircle, CalendarClock, ChevronRight, Star, X, RefreshCw } from "lucide-react";
 import { lootItems } from "@/lib/lootItems";
 import { useToast } from "@/hooks/use-toast";
+import OnboardingDialog from "@/components/OnboardingDialog";
 
 export default function Rewards() {
   const [sessions, setSessions] = useState<LocalShowerSession[]>([]);
@@ -19,6 +20,8 @@ export default function Rewards() {
     totalAvailable: lootItems.length
   });
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [childName, setChildName] = useState(getChildName());
   const { toast } = useToast();
   
   // Get shower stats (total showers and showers per week)
@@ -86,10 +89,16 @@ export default function Rewards() {
       variant: "default",
     });
     
-    // Reload the page to ensure everything is refreshed
+    // Show the onboarding dialog for personalization
+    setShowOnboarding(true);
+    
+    // Reload the page after a delay to ensure everything is refreshed
+    // but give user time to complete onboarding first
     setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+      if (!showOnboarding) {
+        window.location.reload();
+      }
+    }, 2500);
   };
   
   return (
@@ -98,7 +107,7 @@ export default function Rewards() {
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl p-5 shadow-lg">
         <div className="flex items-center mb-3">
           <Star className="w-7 h-7 mr-3" />
-          <h1 className="text-2xl font-bold">Zoya's Collection</h1>
+          <h1 className="text-2xl font-bold">{childName}'s Collection</h1>
         </div>
         
         <div className="grid grid-cols-2 gap-3">
@@ -313,7 +322,7 @@ export default function Rewards() {
           </DialogHeader>
           <div className="pt-4 pb-2">
             <p className="text-sm text-gray-600 mb-4">
-              Zoya will start fresh with no shower history or treasures.
+              {childName} will start fresh with no shower history or treasures.
             </p>
           </div>
           <DialogFooter className="flex sm:justify-between">
@@ -332,6 +341,20 @@ export default function Rewards() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Onboarding Dialog for new name input after reset */}
+      <OnboardingDialog 
+        forceOpen={showOnboarding}
+        onComplete={() => {
+          setShowOnboarding(false);
+          setChildName(getChildName());
+          
+          // Reload page after onboarding is complete
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        }}
+      />
     </div>
   );
 }
