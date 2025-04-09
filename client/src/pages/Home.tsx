@@ -549,10 +549,10 @@ export default function Home() {
               <CarouselContent className="-ml-2">
                 {collectedItems.map((item, index) => (
                   <CarouselItem key={item.id + "-" + index} className="basis-1/4 sm:basis-1/5 md:basis-1/6 pl-2">
-                    <div className="flex items-center justify-center p-2 bg-white rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow relative">
-                      <div className="text-4xl">{item.emoji}</div>
-                      {/* Count badge - smaller size */}
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white rounded-full flex items-center justify-center text-[8px] font-bold">
+                    <div className="relative text-center p-1">
+                      <div className="text-5xl">{item.emoji}</div>
+                      {/* Count badge - positioned to the top right of emoji */}
+                      <div className="absolute top-0 right-1 bg-pink-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold">
                         {item.count}
                       </div>
                     </div>
