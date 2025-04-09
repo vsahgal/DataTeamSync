@@ -189,9 +189,20 @@ export default function Home() {
     }
   };
   
-  // Function to get target position for animation
-  const getTargetPosition = (): {top: number, left: number} => {
-    // Target the bottom of the screen, slightly above the carousel
+  // Function to find visible center of carousel for animation target
+  const getCarouselCenterPosition = (): {top: number, left: number} => {
+    // Try to target the center of the visible carousel area
+    const carouselElement = document.querySelector('.carousel-viewport');
+    
+    if (carouselElement) {
+      const rect = carouselElement.getBoundingClientRect();
+      return {
+        top: rect.top + (rect.height / 2),
+        left: rect.left + (rect.width / 2)
+      };
+    }
+    
+    // Fallback if carousel not found
     return {
       top: window.innerHeight - 120,
       left: window.innerWidth / 2
@@ -239,10 +250,15 @@ export default function Home() {
         // Start the animation
         setItemAnimating(true);
         
-        // Set target position and scroll carousel
-        const targetPos = getTargetPosition();
-        setTargetPosition(targetPos);
+        // First scroll the carousel to the newest item
         scrollToNewestItem();
+        
+        // Give carousel time to scroll, then get proper position
+        setTimeout(() => {
+          const targetPos = getCarouselCenterPosition();
+          setTargetPosition(targetPos);
+          console.log("Targeting carousel position:", targetPos);
+        }, 300);
         
         // End the animation after a delay
         setTimeout(() => {
