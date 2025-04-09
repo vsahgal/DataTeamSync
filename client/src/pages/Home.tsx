@@ -266,18 +266,25 @@ export default function Home() {
         setTimeout(() => {
           // Add item to collection now that animation is complete
           if (currentItem) {
+            console.log("Animation complete, adding item to collection:", currentItem);
+            
             // Add the item to the collection
             const collectedItem = addCollectedLoot(currentItem);
+            console.log("Item added, collectedItem:", collectedItem);
             
             // Update the state with the refreshed collection
-            setCollectedItems(getCollectedLoot());
+            const updatedItems = getCollectedLoot();
+            console.log("Updated collection:", updatedItems);
+            setCollectedItems(updatedItems);
             
             // Show confirmation toast
             toast({
               title: "Item Added!",
               description: `${currentItem.name} has been added to your collection.`,
-              variant: "success",
+              variant: "default",
             });
+          } else {
+            console.error("No currentItem to add to collection at end of animation");
           }
           
           // End animation
