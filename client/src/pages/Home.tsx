@@ -195,40 +195,9 @@ export default function Home() {
   };
   
   // Function to find the exact position of a specific item in the carousel by ID
-  const getItemPosition = (itemId: string): {top: number, left: number} => {
-    try {
-      // Try to find the specific item in the DOM
-      const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
-      
-      if (itemElement) {
-        console.log("Found item element for position calculation:", itemId);
-        const rect = itemElement.getBoundingClientRect();
-        return {
-          top: rect.top + (rect.height / 2),
-          left: rect.left + (rect.width / 2)
-        };
-      } else {
-        console.log("Item element not found, using carousel center instead");
-        // If we can't find the item, use the carousel center as fallback
-        const carouselElement = document.querySelector('.carousel-viewport');
-        
-        if (carouselElement) {
-          const rect = carouselElement.getBoundingClientRect();
-          return {
-            top: rect.top + (rect.height / 2),
-            left: rect.left + (rect.width / 2)
-          };
-        }
-      }
-    } catch (e) {
-      console.error("Error getting item position:", e);
-    }
-    
-    // Ultimate fallback
-    return {
-      top: window.innerHeight - 120,
-      left: window.innerWidth / 2
-    };
+  // Helper to log position information for debugging
+  const logPositionInfo = (position: {top: number, left: number}, label: string) => {
+    console.log(`Animation position (${label}):`, position);
   };
   
   // Handle opening the gift box and collecting the loot
@@ -246,12 +215,15 @@ export default function Home() {
     storageSavePendingLoot(null);
     setPendingLootState(null);
     
-    // Capture the initial position (center of screen)
+    // Capture the initial position (center of the gift modal)
     const initialPosition = { 
       top: window.innerHeight / 2, 
       left: window.innerWidth / 2 
     };
     setItemPosition(initialPosition);
+    
+    // Set current item for animation
+    setCurrentItem(item);
     
     // Show a celebration toast
     toast({
@@ -259,9 +231,6 @@ export default function Home() {
       description: `${item.name} ${item.emoji} has been added to your collection!`,
       variant: "default",
     });
-    
-    // Save the current item for use in the animation 
-    setCurrentItem(item);
       
     // After a delay, animate the item to the carousel
     setTimeout(() => {
@@ -272,29 +241,27 @@ export default function Home() {
         // Start the animation
         setItemAnimating(true);
         
-        // Directly target the carousel area with fixed positioning
-        // Try a few different selectors since the class might vary
-        const carouselArea = document.querySelector('.embla__container') || 
-                             document.querySelector('.carousel-content') || 
-                             document.querySelector('.carousel-viewport');
+        // Try to find the carousel with our custom class first
+        const carouselElement = document.querySelector('.treasure-carousel');
         let targetPos;
         
-        if (carouselArea) {
-          const rect = carouselArea.getBoundingClientRect();
-          // Target the center of the carousel
+        if (carouselElement) {
+          // If we found the carousel, target its center
+          const rect = carouselElement.getBoundingClientRect();
           targetPos = {
-            top: rect.top + 30,  // Aim for the top portion of the carousel with some padding
-            left: rect.left + 80 // Aim for the left portion where items typically start
+            top: rect.top + 30, // Position near the top of the carousel
+            left: rect.left + 80 // Position near the left of the carousel
           };
+          logPositionInfo(targetPos, "Using treasure-carousel position");
         } else {
-          // Fallback if we can't find the carousel
+          // Fallback to fixed positioning if we can't find the carousel
           targetPos = {
-            top: window.innerHeight - 100,
-            left: 80 // Left side of screen
+            top: window.innerHeight - 120, // Always aim at the bottom of the screen where carousel is
+            left: window.innerWidth / 2 - 40 // Center horizontally with a slight offset
           };
         }
         
-        console.log("Targeting fixed carousel position:", targetPos);
+        logPositionInfo(targetPos, "Animation target position");
         setTargetPosition(targetPos);
         
         // End the animation after a delay
@@ -666,7 +633,7 @@ export default function Home() {
               }}
               setApi={setCarouselApi}
             >
-              <CarouselContent className="-ml-2">
+              <CarouselContent className="-ml-2 treasure-carousel">
                 {collectedItems.map((item, index) => (
                   <CarouselItem 
                     key={item.id + "-" + index} 
