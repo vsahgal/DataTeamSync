@@ -205,11 +205,9 @@ export default function Home() {
     // Show the opened box with the item inside first
     setOpenedItem(item);
     
-    // Add the item to the collection
-    const collectedItem = addCollectedLoot(item);
-    
-    // Update the state with the refreshed collection
-    setCollectedItems(getCollectedLoot());
+    // We'll add the item to the collection AFTER the animation completes
+    // This creates a better visual effect where the user sees the item
+    // fly to the carousel and THEN appear in the collection
     
     // Clear the pending loot
     storageSavePendingLoot(null);
@@ -228,7 +226,7 @@ export default function Home() {
     // Show a celebration toast
     toast({
       title: `You found a ${item.rarity} item!`,
-      description: `${item.name} ${item.emoji} has been added to your collection!`,
+      description: `${item.name} ${item.emoji} will be added to your collection!`,
       variant: "default",
     });
       
@@ -264,8 +262,25 @@ export default function Home() {
         logPositionInfo(targetPos, "Animation target position");
         setTargetPosition(targetPos);
         
-        // End the animation after a delay
+        // End the animation after a delay and THEN add the item to collection
         setTimeout(() => {
+          // Add item to collection now that animation is complete
+          if (currentItem) {
+            // Add the item to the collection
+            const collectedItem = addCollectedLoot(currentItem);
+            
+            // Update the state with the refreshed collection
+            setCollectedItems(getCollectedLoot());
+            
+            // Show confirmation toast
+            toast({
+              title: "Item Added!",
+              description: `${currentItem.name} has been added to your collection.`,
+              variant: "success",
+            });
+          }
+          
+          // End animation
           setItemAnimating(false);
           setCurrentItem(null);
         }, 1500);
