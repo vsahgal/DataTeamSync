@@ -262,30 +262,32 @@ export default function Home() {
         logPositionInfo(targetPos, "Animation target position");
         setTargetPosition(targetPos);
         
+        // Save a reference to the current item before it might get cleared
+        // This ensures we still have the item even if state changes during animation
+        const itemToAdd = { ...currentItem };
+        
+        console.log("Animation started, itemToAdd:", itemToAdd);
+        
         // End the animation after a delay and THEN add the item to collection
         setTimeout(() => {
-          // Add item to collection now that animation is complete
-          if (currentItem) {
-            console.log("Animation complete, adding item to collection:", currentItem);
-            
-            // Add the item to the collection
-            const collectedItem = addCollectedLoot(currentItem);
-            console.log("Item added, collectedItem:", collectedItem);
-            
-            // Update the state with the refreshed collection
-            const updatedItems = getCollectedLoot();
-            console.log("Updated collection:", updatedItems);
-            setCollectedItems(updatedItems);
-            
-            // Show confirmation toast
-            toast({
-              title: "Item Added!",
-              description: `${currentItem.name} has been added to your collection.`,
-              variant: "default",
-            });
-          } else {
-            console.error("No currentItem to add to collection at end of animation");
-          }
+          // We use the saved reference instead of the state variable
+          console.log("Animation complete, adding saved item to collection:", itemToAdd);
+          
+          // Add the item to the collection
+          const collectedItem = addCollectedLoot(itemToAdd);
+          console.log("Item added, collectedItem:", collectedItem);
+          
+          // Update the state with the refreshed collection
+          const updatedItems = getCollectedLoot();
+          console.log("Updated collection:", updatedItems);
+          setCollectedItems(updatedItems);
+          
+          // Show confirmation toast
+          toast({
+            title: "Item Added!",
+            description: `${itemToAdd.name} has been added to your collection.`,
+            variant: "default",
+          });
           
           // End animation
           setItemAnimating(false);
