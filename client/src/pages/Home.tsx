@@ -269,26 +269,40 @@ export default function Home() {
       
       // A small delay to ensure the item has been added to the DOM
       setTimeout(() => {
-        // Start by scrolling the carousel to the end where new items are
-        scrollCarouselToEnd();
+        // Start the animation
+        setItemAnimating(true);
         
-        // Give carousel time to scroll before starting the animation
+        // Directly target the carousel area with fixed positioning
+        // Try a few different selectors since the class might vary
+        const carouselArea = document.querySelector('.embla__container') || 
+                             document.querySelector('.carousel-content') || 
+                             document.querySelector('.carousel-viewport');
+        let targetPos;
+        
+        if (carouselArea) {
+          const rect = carouselArea.getBoundingClientRect();
+          // Target the center of the carousel
+          targetPos = {
+            top: rect.top + 30,  // Aim for the top portion of the carousel with some padding
+            left: rect.left + 80 // Aim for the left portion where items typically start
+          };
+        } else {
+          // Fallback if we can't find the carousel
+          targetPos = {
+            top: window.innerHeight - 100,
+            left: 80 // Left side of screen
+          };
+        }
+        
+        console.log("Targeting fixed carousel position:", targetPos);
+        setTargetPosition(targetPos);
+        
+        // End the animation after a delay
         setTimeout(() => {
-          // Start the animation
-          setItemAnimating(true);
-          
-          // Find the precise position of this item in the carousel
-          const targetPos = getItemPosition(item.id);
-          setTargetPosition(targetPos);
-          console.log("Targeting item position for animation:", targetPos);
-          
-          // End the animation after a delay
-          setTimeout(() => {
-            setItemAnimating(false);
-            setCurrentItem(null);
-          }, 1500);
-        }, 400);
-      }, 300);
+          setItemAnimating(false);
+          setCurrentItem(null);
+        }, 1500);
+      }, 500);
     }, 2000);
   };
   
@@ -680,7 +694,7 @@ export default function Home() {
       
       {/* We've removed the modal completely, using only the carousel */}
 
-      {/* Animating item from gift to carousel */}
+      {/* Animating item from gift to carousel with enhanced glow effect */}
       {itemAnimating && currentItem && (
         <div className="fixed inset-0 z-50 pointer-events-none">
           <div 
@@ -693,10 +707,15 @@ export default function Home() {
                 top: targetPosition.top,
                 left: targetPosition.left
               }),
-              animation: 'flyToTarget 1.5s forwards'
+              filter: "drop-shadow(0 0 10px rgba(255,255,255,0.8))"
             }}
           >
-            <div className="text-7xl">{currentItem.emoji}</div>
+            <div className="text-7xl animate-pulse-fast relative">
+              {currentItem.emoji}
+              <div className="absolute inset-0 blur-md opacity-40 animate-ping text-7xl">
+                {currentItem.emoji}
+              </div>
+            </div>
           </div>
         </div>
       )}

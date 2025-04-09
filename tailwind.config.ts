@@ -79,11 +79,22 @@ export default {
             height: "0",
           },
         },
+        "pulse-fast": {
+          '0%, 100%': { 
+            opacity: '1',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            opacity: '0.85',
+            transform: 'scale(1.1)'
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "bounce-slow": "bounce 4s infinite ease-in-out",
+        "pulse-fast": "pulse-fast 0.8s infinite ease-in-out",
       },
     },
   },
