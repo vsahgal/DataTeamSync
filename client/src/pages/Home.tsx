@@ -166,72 +166,36 @@ export default function Home() {
   // State to manage the opened box with revealed item and animation
   const [openedItem, setOpenedItem] = useState<LootItem | null>(null);
   
-  // Function to find carousel item by ID and scroll to it
-  const findAndScrollToItem = (itemId: string): {top: number, left: number} => {
-    // Default position (carousel area, bottom of the screen)
-    const defaultPosition = {
-      top: window.innerHeight - 100,
-      left: window.innerWidth / 2
-    };
-    
-    // Try to find the item in the carousel
+  // Function to scroll to the newest item in carousel (simplified)
+  const scrollToNewestItem = () => {
     try {
-      console.log("Looking for item with ID:", itemId);
-      
-      // Find all items with this ID
-      const matchingItems = document.querySelectorAll(`[data-item-id='${itemId}']`);
-      
-      if (matchingItems.length > 0) {
-        // Get the first matching item
-        const item = matchingItems[0];
-        console.log("Found matching item:", item);
+      // Get carousel API and scroll to the end
+      if (carouselApi) {
+        console.log("Scrolling carousel to the end where new items are added");
         
-        // Get its position for animation
-        const rect = item.getBoundingClientRect();
-        
-        // Try to scroll the carousel to this item if API is available
-        if (carouselApi) {
-          console.log("Using carousel API to scroll to item");
-          
-          // Find the index of the item
-          const carouselItems = document.querySelectorAll('.carousel-item');
-          let itemIndex = -1;
-          
-          for (let i = 0; i < carouselItems.length; i++) {
-            if (carouselItems[i].getAttribute('data-item-id') === itemId) {
-              itemIndex = i;
-              break;
-            }
-          }
-          
-          if (itemIndex >= 0) {
-            console.log("Scrolling to item at index:", itemIndex);
-            // Scroll to the item
-            carouselApi.scrollTo(itemIndex);
-            
-            // Return the position for animation
-            return {
-              top: rect.top + rect.height / 2,
-              left: rect.left + rect.width / 2
-            };
-          }
-        } else {
-          console.log("Carousel API not available for scrolling");
+        // Get all items in the carousel
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        if (carouselItems.length > 0) {
+          // Scroll to the last item (most recently added)
+          const lastItemIndex = carouselItems.length - 1;
+          carouselApi.scrollTo(lastItemIndex);
+          console.log("Scrolled to item at index:", lastItemIndex);
         }
-        
-        // Return the position for animation even if we couldn't scroll
-        return {
-          top: rect.top + rect.height / 2,
-          left: rect.left + rect.width / 2
-        };
       } else {
-        console.log("No matching items found in carousel");
+        console.log("Carousel API not available for scrolling");
       }
     } catch (e) {
-      console.error("Error finding carousel position:", e);
+      console.error("Error scrolling carousel:", e);
     }
-    
-    return defaultPosition;
+  };
+  
+  // Function to get target position for animation
+  const getTargetPosition = (): {top: number, left: number} => {
+    // Target the bottom of the screen, slightly above the carousel
+    return {
+      top: window.innerHeight - 120,
+      left: window.innerWidth / 2
+    };
   };
   
   // Handle opening the gift box and collecting the loot
@@ -275,9 +239,10 @@ export default function Home() {
         // Start the animation
         setItemAnimating(true);
         
-        // Find where the item should animate to and scroll the carousel
-        const targetPos = findAndScrollToItem(item.id);
+        // Set target position and scroll carousel
+        const targetPos = getTargetPosition();
         setTargetPosition(targetPos);
+        scrollToNewestItem();
         
         // End the animation after a delay
         setTimeout(() => {
