@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { getShowerSessions, getCollectedLoot } from "@/lib/storage";
+import { getShowerSessions, getCollectedLoot, resetAllUserData } from "@/lib/storage";
 import { LocalShowerSession } from "@shared/schema";
 import { CollectedItem } from "@/lib/lootItems";
-import { Droplet, CheckCircle, CalendarClock, ChevronRight, Star, X } from "lucide-react";
+import { Droplet, CheckCircle, CalendarClock, ChevronRight, Star, X, RefreshCw } from "lucide-react";
 import { lootItems } from "@/lib/lootItems";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Rewards() {
   const [sessions, setSessions] = useState<LocalShowerSession[]>([]);
@@ -17,6 +18,8 @@ export default function Rewards() {
     uniqueItems: 0,
     totalAvailable: lootItems.length
   });
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const { toast } = useToast();
   
   // Get shower stats (total showers and showers per week)
   const calculateShowersPerWeek = (sessions: LocalShowerSession[]): number => {
@@ -58,6 +61,36 @@ export default function Rewards() {
 
   // Calculate showers per week
   const showersPerWeek = calculateShowersPerWeek(sessions);
+  
+  // Function to handle data reset
+  const handleReset = () => {
+    // Reset all user data in storage
+    resetAllUserData();
+    
+    // Update UI state
+    setSessions(getShowerSessions());
+    setCollectedItems(getCollectedLoot());
+    setTreasureStats({
+      totalCollected: 0,
+      uniqueItems: 0,
+      totalAvailable: lootItems.length
+    });
+    
+    // Close dialog
+    setIsResetDialogOpen(false);
+    
+    // Show confirmation
+    toast({
+      title: "Data Reset Complete",
+      description: "All shower data and treasures have been reset.",
+      variant: "default",
+    });
+    
+    // Reload the page to ensure everything is refreshed
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  };
   
   return (
     <div className="flex flex-col gap-4 pb-20">
@@ -199,6 +232,18 @@ export default function Rewards() {
           )}
         </CardContent>
       </Card>
+
+      {/* Reset Data Button */}
+      <div className="mt-4 mb-2 flex justify-center">
+        <Button 
+          variant="outline" 
+          className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+          onClick={() => setIsResetDialogOpen(true)}
+        >
+          <RefreshCw className="h-4 w-4" />
+          Reset All Data
+        </Button>
+      </div>
     
       {/* Item Detail Dialog */}
       <Dialog open={viewingItem !== null} onOpenChange={(open) => !open && setViewingItem(null)}>
@@ -254,6 +299,37 @@ export default function Rewards() {
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Confirmation Dialog */}
+      <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Reset All Data?</DialogTitle>
+            <DialogDescription>
+              This will delete all shower history, levels, and treasures. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="pt-4 pb-2">
+            <p className="text-sm text-gray-600 mb-4">
+              Zoya will start fresh with no shower history or treasures.
+            </p>
+          </div>
+          <DialogFooter className="flex sm:justify-between">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsResetDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={handleReset}
+            >
+              Yes, Reset Everything
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

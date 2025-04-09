@@ -409,3 +409,20 @@ export const setPendingLoot = (item: LootItem | null): void => {
     console.error('Error setting pending loot:', error);
   }
 };
+
+// Reset all user data in storage
+export const resetAllUserData = (): void => {
+  try {
+    // Clear all existing data
+    localStorage.removeItem(STORAGE_KEYS.SESSIONS);
+    localStorage.removeItem(STORAGE_KEYS.REWARDS);
+    localStorage.removeItem(STORAGE_KEYS.STATS);
+    localStorage.removeItem(STORAGE_KEYS.COLLECTED_LOOT);
+    localStorage.removeItem(STORAGE_KEYS.PENDING_LOOT);
+    
+    // Re-initialize with default values
+    initializeStorage();
+  } catch (error) {
+    console.error('Error resetting user data:', error);
+  }
+};
