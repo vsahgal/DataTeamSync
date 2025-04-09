@@ -19,9 +19,15 @@ import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
 import { ShowerStats, LocalShowerSession } from "@shared/schema";
 import Confetti from "react-confetti";
-import { getRandomLootItem, LootItem, lootItems } from "@/lib/lootItems";
+import { getRandomLootItem, LootItem, lootItems, CollectedItem } from "@/lib/lootItems";
 import GiftBox from "@/components/GiftBox";
-import LootCollection from "@/components/LootCollection";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 // Create a test loot item for debugging
 const TEST_LOOT = lootItems[0];
@@ -175,10 +181,11 @@ export default function Home() {
     storageSavePendingLoot(null);
     setPendingLootState(null);
     
-    // Show the collection after a delay so user can see what they got
+    // Simply close the opened item after a delay - no modal needed with the carousel
     setTimeout(() => {
       setOpenedItem(null); // Hide the opened box
-      setShowLootCollection(true);
+      
+      // Highlight the newly added item in the carousel (could implement this later)
     }, 2500);
     
     // Show a celebration toast
@@ -199,7 +206,6 @@ export default function Home() {
   
   // States for loot system
   const [pendingLoot, setPendingLootState] = useState<LootItem | null>(getPendingLoot());
-  const [showLootCollection, setShowLootCollection] = useState(false);
   const [collectedItems, setCollectedItems] = useState(getCollectedLoot());
   const [delayedLoot, setDelayedLoot] = useState<LootItem | null>(null);
   
@@ -509,17 +515,7 @@ export default function Home() {
             </div>
           </div>
           
-          {collectedItems.length > 0 && (
-            <div className="mt-4">
-              <Button 
-                onClick={() => setShowLootCollection(true)} 
-                variant="outline" 
-                className="w-full"
-              >
-                <Gift className="mr-2 h-4 w-4" /> View Collection ({collectedItems.length})
-              </Button>
-            </div>
-          )}
+          {/* We don't need the View Collection button anymore since we have the carousel */}
         </CardContent>
       </Card>
       
@@ -585,12 +581,38 @@ export default function Home() {
         </div>
       )}
       
-      {/* Loot collection modal */}
-      <LootCollection
-        items={collectedItems}
-        isOpen={showLootCollection}
-        onClose={() => setShowLootCollection(false)}
-      />
+      {/* Treasures carousel */}
+      {collectedItems.length > 0 && !isShowering && (
+        <Card className="overflow-hidden border-2 border-pink-200">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-bold mb-4 text-center text-pink-700">
+              <Gift className="inline-block mr-2 h-5 w-5" /> Zoya's Treasures ({collectedItems.length})
+            </h2>
+            
+            <Carousel className="w-full">
+              <CarouselContent>
+                {collectedItems.map((item, index) => (
+                  <CarouselItem key={item.id + "-" + index} className="basis-1/4 sm:basis-1/5 md:basis-1/6">
+                    <div className="flex flex-col items-center p-2 bg-white rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="text-3xl mb-1">{item.emoji}</div>
+                      <p className="text-xs font-medium text-center text-pink-800 truncate w-full">{item.name}</p>
+                      <div className="text-[10px] px-1.5 py-0.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full mt-1 uppercase">
+                        {item.rarity}
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex items-center justify-center mt-4">
+                <CarouselPrevious className="relative mr-2" />
+                <CarouselNext className="relative ml-2" />
+              </div>
+            </Carousel>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* We've removed the modal completely, using only the carousel */}
     </div>
   );
 }
