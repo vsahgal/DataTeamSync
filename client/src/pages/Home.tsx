@@ -357,7 +357,7 @@ export default function Home() {
             
             {/* Animated dirty unicorn */}
             {!isShowering && (
-              <div className="text-center py-0 mb-4">
+              <div className="text-center py-0 mb-2">
                 <DirtyUnicorn 
                   dirtiness={stats.lastShowerDate ? 
                     (getDaysSinceLastShower(stats.lastShowerDate) === 0 ? 0 : Math.min(7, getDaysSinceLastShower(stats.lastShowerDate))) : 
@@ -378,7 +378,7 @@ export default function Home() {
               />
             )}
             
-            <div className="w-full mt-1 mb-3">
+            <div className="w-full mt-0 mb-2">
               {!isShowering && (
                 <div className="level-progress">
                   {(() => {
@@ -459,7 +459,7 @@ export default function Home() {
             {!isShowering && (
               <Button 
                 onClick={handleStart} 
-                className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 mb-1 rounded-full text-xl"
+                className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 mb-0 rounded-full text-xl"
               >
                 Start Shower
               </Button>
@@ -535,8 +535,8 @@ export default function Home() {
       
       {/* Simplified Treasures carousel with item counts and better scrolling */}
       {collectedItems.length > 0 && !isShowering && (
-        <Card className="overflow-hidden border-2 border-pink-200">
-          <CardContent className="p-3">
+        <Card className="overflow-hidden border-2 border-pink-200 mt-1">
+          <CardContent className="p-2">
             {/* Carousel with touch/swipe support */}
             <Carousel 
               className="w-full" 
