@@ -29,36 +29,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-// Create a test loot item for debugging
-// For testing, we use a specific pre-defined loot item
-const TEST_LOOT: LootItem = {
-  id: "test-item",
-  name: "Magic Wand",
-  type: "toy",
-  emoji: "🪄",
-  rarity: "rare",
-  description: "A sparkling magic wand that grants wishes!"
-};
+
 
 // Helper function to calculate days since last shower
-// COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
-// FOR TESTING ONLY: Using seconds instead of days (5 seconds = 1 "day")
-const getDaysSinceLastShower = (lastShowerDate: string): number => {
-  const lastDate = new Date(lastShowerDate);
-  const today = new Date();
-  
-  // For testing: Calculate difference in seconds and consider every 5 seconds as 1 "day"
-  const diffTime = Math.abs(today.getTime() - lastDate.getTime());
-  const diffSeconds = Math.floor(diffTime / 1000);
-  const diffDays = Math.floor(diffSeconds / 5);
-  
-  // Cap at 7 days maximum
-  return Math.min(diffDays, 7);
-};
-// COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
-
-// UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
-/*
 // Production version: Calculate actual days difference
 const getDaysSinceLastShower = (lastShowerDate: string): number => {
   const lastDate = new Date(lastShowerDate);
@@ -75,8 +48,6 @@ const getDaysSinceLastShower = (lastShowerDate: string): number => {
   // Cap at 7 days maximum
   return Math.min(diffDays, 7);
 };
-*/
-// UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
 
 export default function Home() {
   const { toast } = useToast();
@@ -107,23 +78,7 @@ export default function Home() {
     setStats(getShowerStats());
   }, [isShowering]);
   
-  // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
-  // Automatically update stats periodically to keep dirtiness current (FOR TESTING)
-  useEffect(() => {
-    if (!isShowering) {
-      // Refresh stats every 5 seconds to update dirtiness (FOR TESTING)
-      const intervalId = setInterval(() => {
-        setStats(getShowerStats());
-      }, 5000);
-      
-      return () => clearInterval(intervalId);
-    }
-  }, [isShowering]);
-  // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
-  
-  // UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
-  /*
-  // Automatically update stats periodically to keep the UI current (FOR PRODUCTION)
+  // Automatically update stats periodically to keep the UI current
   useEffect(() => {
     if (!isShowering) {
       // In production, we only need to refresh once per hour to check for day changes
@@ -134,8 +89,6 @@ export default function Home() {
       return () => clearInterval(intervalId);
     }
   }, [isShowering]);
-  */
-  // UNCOMMENT THIS SECTION WHEN DEPLOYING TO PRODUCTION - END
   
   const handleStart = () => {
     startShower();
@@ -179,43 +132,32 @@ export default function Home() {
     try {
       // Only proceed if we have the carousel API
       if (carouselApi) {
-        console.log("Scrolling carousel to the most recent item");
-        
         // Get all items in the carousel
         const carouselItems = document.querySelectorAll('.carousel-item');
         const lastItemIndex = carouselItems.length - 1;
         
         if (lastItemIndex >= 0) {
-          console.log(`Scrolling to item at index ${lastItemIndex}`);
           // Scroll to the last item
           carouselApi.scrollTo(lastItemIndex);
           return true;
-        } else {
-          console.log("No items found in carousel");
         }
-      } else {
-        console.log("Carousel API not available for scrolling");
       }
     } catch (e) {
-      console.error("Error scrolling carousel:", e);
+      // Silently handle errors
     }
     return false;
   };
   
-  // Function to find the exact position of a specific item in the carousel by ID
-  // Helper to log position information for debugging
-  const logPositionInfo = (position: {top: number, left: number}, label: string) => {
-    console.log(`Animation position (${label}):`, position);
+  // Function to capture the position of an element for animation purposes
+  const capturePosition = (position: {top: number, left: number}) => {
+    return position;
   };
   
   // Handle opening the gift box and collecting the loot
   const handleOpenGift = (item: LootItem) => {
-    console.log("Opening gift with item:", item);
-    
     // Create a copy that we'll keep for the whole animation sequence
     // This is critical - we need to save it in a variable that persists through the closures
     const itemToSave = { ...item };
-    console.log("Created persistent copy of item:", itemToSave);
     
     // Show the opened box with the item inside first
     setOpenedItem(itemToSave);
@@ -265,7 +207,7 @@ export default function Home() {
             top: rect.top + 30, // Position near the top of the carousel
             left: rect.left + 80 // Position near the left of the carousel
           };
-          logPositionInfo(targetPos, "Using treasure-carousel position");
+          targetPos = capturePosition(targetPos);
         } else {
           // Fallback to fixed positioning if we can't find the carousel
           targetPos = {
@@ -274,22 +216,19 @@ export default function Home() {
           };
         }
         
-        logPositionInfo(targetPos, "Animation target position");
+        targetPos = capturePosition(targetPos);
         setTargetPosition(targetPos);
         
         // End the animation after a delay and THEN add the item to collection
         setTimeout(() => {
           // We're using itemToSave from the closure in handleOpenGift that was created at the beginning
-          // This guarantees we have the correct item data regardless of state changes 
-          console.log("Animation complete, adding saved item to collection:", itemToSave);
+          // This guarantees we have the correct item data regardless of state changes
           
           // Add the item to the collection
           const collectedItem = addCollectedLoot(itemToSave);
-          console.log("Item added successfully:", collectedItem);
           
           // Update the state with the refreshed collection
           const updatedItems = getCollectedLoot();
-          console.log("Updated collection:", updatedItems);
           setCollectedItems(updatedItems);
           
           // Show confirmation toast
@@ -376,7 +315,6 @@ export default function Home() {
   // Step 1: Start level-up animation when the level up is detected
   useEffect(() => {
     if (didLevelUp && newLevel) {
-      console.log("Starting level-up animation sequence");
       setShowConfetti(true);
       setShowLevelAnimation(true);
       setLevelUpComplete(false);
@@ -388,7 +326,6 @@ export default function Home() {
   useEffect(() => {
     if (showLevelAnimation) {
       const timer = setTimeout(() => {
-        console.log("Starting unicorn dance");
         setIsDancingUnicorn(true);
         setShowLevelAnimation(false);
       }, 2000);
@@ -400,7 +337,6 @@ export default function Home() {
   useEffect(() => {
     if (isDancingUnicorn) {
       const timer = setTimeout(() => {
-        console.log("Ending unicorn dance");
         setIsDancingUnicorn(false);
         setShowConfetti(false);
         setLevelUpComplete(true);
@@ -414,14 +350,11 @@ export default function Home() {
   // Step 4: After pause, show the loot (if any)
   useEffect(() => {
     if (pauseTimerActive) {
-      console.log("Starting 3-second pause before showing gift");
       const timer = setTimeout(() => {
-        console.log("Pause complete, showing gift");
         setPauseTimerActive(false);
         
         // If we had a delayed loot item, show it now
         if (delayedLoot) {
-          console.log("Processing delayed loot item:", delayedLoot);
           storageSavePendingLoot(delayedLoot);
           setPendingLootState(delayedLoot);
           setDelayedLoot(null);
@@ -430,12 +363,9 @@ export default function Home() {
           setTimeout(() => {
             // If for some reason the loot didn't show, force it to show
             if (!pendingLoot) {
-              console.log("Forcing loot to show after delay");
               setPendingLootState(delayedLoot);
             }
           }, 500);
-        } else {
-          console.log("No delayed loot to show after animation sequence");
         }
       }, 3000); // Reduced to 3 seconds for better user experience
       return () => clearTimeout(timer);
@@ -639,23 +569,7 @@ export default function Home() {
         </div>
       )}
       
-      {/* Test gift box for debugging - always visible */}
-      {!isShowering && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <Button 
-            onClick={() => {
-              // Show a test gift box - make a fresh copy each time to avoid reference issues
-              const testLoot: LootItem = { ...TEST_LOOT };
-              console.log("Test button clicked, showing test loot:", testLoot);
-              storageSavePendingLoot(testLoot);
-              setPendingLootState(testLoot);
-            }}
-            className="bg-purple-500 hover:bg-purple-600"
-          >
-            Show Test Gift Box
-          </Button>
-        </div>
-      )}
+
       
       {/* Simplified Treasures carousel with item counts and better scrolling */}
       {collectedItems.length > 0 && !isShowering && (
@@ -681,7 +595,6 @@ export default function Home() {
                     <div 
                       className="relative text-center p-1 cursor-pointer hover:scale-110 transition-transform active:scale-95"
                       onClick={() => {
-                        console.log("Item clicked:", item);
                         setViewingItem(item);
                       }}
                     >
