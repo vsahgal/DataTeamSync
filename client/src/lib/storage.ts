@@ -13,7 +13,8 @@ const STORAGE_KEYS = {
   COLLECTED_LOOT: 'collected_loot',
   PENDING_LOOT: 'pending_loot',
   CHILD_NAME: 'child_name',
-  ONBOARDING_COMPLETED: 'onboarding_completed'
+  ONBOARDING_COMPLETED: 'onboarding_completed',
+  LAST_SHOWER_DAYS: 'last_shower_days'
 };
 
 // Initialize local storage with default values if empty
@@ -462,6 +463,33 @@ export const resetOnboarding = (): void => {
   }
 };
 
+// Last shower days functions
+export const getLastShowerDays = (): number => {
+  try {
+    const days = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
+    return days ? JSON.parse(days) : 0; // Default to 0 days (today) if not set
+  } catch (error) {
+    console.error('Error getting last shower days:', error);
+    return 0; // Default to 0 in case of error
+  }
+};
+
+export const setLastShowerDays = (days: number): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(days));
+    
+    // Also update the last shower date in stats based on the number of days
+    const stats = getShowerStats();
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    
+    stats.lastShowerDate = date.toISOString();
+    updateShowerStats(stats);
+  } catch (error) {
+    console.error('Error setting last shower days:', error);
+  }
+};
+
 // Reset all user data in storage
 export const resetAllUserData = (): void => {
   try {
@@ -472,6 +500,7 @@ export const resetAllUserData = (): void => {
     localStorage.removeItem(STORAGE_KEYS.COLLECTED_LOOT);
     localStorage.removeItem(STORAGE_KEYS.PENDING_LOOT);
     localStorage.removeItem(STORAGE_KEYS.CHILD_NAME);
+    localStorage.removeItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
     resetOnboarding(); // Reset onboarding but don't remove it
     
     // Re-initialize with default values

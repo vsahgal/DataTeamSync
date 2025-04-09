@@ -16,7 +16,8 @@ import {
   addCollectedLoot, 
   getCollectedLoot,
   getChildName,
-  isOnboardingCompleted
+  isOnboardingCompleted,
+  getLastShowerDays
 } from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
@@ -37,6 +38,14 @@ import {
 // Helper function to calculate days since last shower
 // Production version: Calculate actual days difference
 const getDaysSinceLastShower = (lastShowerDate: string): number => {
+  // Check if we have a manual setting from the onboarding first
+  const manualDays = getLastShowerDays();
+  if (manualDays > 0) {
+    // If this was manually set during onboarding, use that value
+    return Math.min(manualDays, 7);
+  }
+  
+  // Otherwise calculate based on the last shower date
   const lastDate = new Date(lastShowerDate);
   const today = new Date();
   
