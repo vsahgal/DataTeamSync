@@ -30,7 +30,15 @@ import {
 } from "@/components/ui/carousel";
 
 // Create a test loot item for debugging
-const TEST_LOOT = lootItems[0];
+// For testing, we use a specific pre-defined loot item
+const TEST_LOOT: LootItem = {
+  id: "test-item",
+  name: "Magic Wand",
+  type: "toy",
+  emoji: "🪄",
+  rarity: "rare",
+  description: "A sparkling magic wand that grants wishes!"
+};
 
 // Helper function to calculate days since last shower
 // COMMENT OUT THIS SECTION WHEN DEPLOYING TO PRODUCTION - START
@@ -202,8 +210,15 @@ export default function Home() {
   
   // Handle opening the gift box and collecting the loot
   const handleOpenGift = (item: LootItem) => {
+    console.log("Opening gift with item:", item);
+    
+    // Create a copy that we'll keep for the whole animation sequence
+    // This is critical - we need to save it in a variable that persists through the closures
+    const itemToSave = { ...item };
+    console.log("Created persistent copy of item:", itemToSave);
+    
     // Show the opened box with the item inside first
-    setOpenedItem(item);
+    setOpenedItem(itemToSave);
     
     // We'll add the item to the collection AFTER the animation completes
     // This creates a better visual effect where the user sees the item
@@ -221,12 +236,12 @@ export default function Home() {
     setItemPosition(initialPosition);
     
     // Set current item for animation
-    setCurrentItem(item);
+    setCurrentItem(itemToSave);
     
     // Show a celebration toast
     toast({
-      title: `You found a ${item.rarity} item!`,
-      description: `${item.name} ${item.emoji} will be added to your collection!`,
+      title: `You found a ${itemToSave.rarity} item!`,
+      description: `${itemToSave.name} ${itemToSave.emoji} will be added to your collection!`,
       variant: "default",
     });
       
@@ -262,20 +277,15 @@ export default function Home() {
         logPositionInfo(targetPos, "Animation target position");
         setTargetPosition(targetPos);
         
-        // Save a reference to the current item before it might get cleared
-        // This ensures we still have the item even if state changes during animation
-        const itemToAdd = { ...currentItem };
-        
-        console.log("Animation started, itemToAdd:", itemToAdd);
-        
         // End the animation after a delay and THEN add the item to collection
         setTimeout(() => {
-          // We use the saved reference instead of the state variable
-          console.log("Animation complete, adding saved item to collection:", itemToAdd);
+          // We're using itemToSave from the closure in handleOpenGift that was created at the beginning
+          // This guarantees we have the correct item data regardless of state changes 
+          console.log("Animation complete, adding saved item to collection:", itemToSave);
           
           // Add the item to the collection
-          const collectedItem = addCollectedLoot(itemToAdd);
-          console.log("Item added, collectedItem:", collectedItem);
+          const collectedItem = addCollectedLoot(itemToSave);
+          console.log("Item added successfully:", collectedItem);
           
           // Update the state with the refreshed collection
           const updatedItems = getCollectedLoot();
@@ -285,7 +295,7 @@ export default function Home() {
           // Show confirmation toast
           toast({
             title: "Item Added!",
-            description: `${itemToAdd.name} has been added to your collection.`,
+            description: `${itemToSave.name} has been added to your collection.`,
             variant: "default",
           });
           
@@ -631,8 +641,9 @@ export default function Home() {
         <div className="fixed bottom-4 right-4 z-50">
           <Button 
             onClick={() => {
-              // Show a test gift box 
-              const testLoot = TEST_LOOT;
+              // Show a test gift box - make a fresh copy each time to avoid reference issues
+              const testLoot: LootItem = { ...TEST_LOOT };
+              console.log("Test button clicked, showing test loot:", testLoot);
               storageSavePendingLoot(testLoot);
               setPendingLootState(testLoot);
             }}
