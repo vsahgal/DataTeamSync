@@ -320,6 +320,9 @@ export default function Home() {
   const [collectedItems, setCollectedItems] = useState(getCollectedLoot());
   const [delayedLoot, setDelayedLoot] = useState<LootItem | null>(null);
   
+  // State for showing item details when tapping on a carousel item
+  const [viewingItem, setViewingItem] = useState<CollectedItem | null>(null);
+  
   // States for gift animation
   const [itemAnimating, setItemAnimating] = useState(false);
   const [itemPosition, setItemPosition] = useState({ top: 0, left: 0 });
@@ -675,7 +678,13 @@ export default function Home() {
                     className="basis-1/4 sm:basis-1/5 md:basis-1/6 pl-2"
                     data-item-id={item.id}
                   >
-                    <div className="relative text-center p-1">
+                    <div 
+                      className="relative text-center p-1 cursor-pointer hover:scale-110 transition-transform active:scale-95"
+                      onClick={() => {
+                        console.log("Item clicked:", item);
+                        setViewingItem(item);
+                      }}
+                    >
                       <div className="text-5xl">{item.emoji}</div>
                       {/* Count badge - positioned to the top right of emoji */}
                       <div className="absolute top-0 right-1 bg-pink-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-bold">
@@ -694,7 +703,34 @@ export default function Home() {
         </Card>
       )}
       
-      {/* We've removed the modal completely, using only the carousel */}
+      {/* Item detail modal - shows when tapping an item in the carousel */}
+      {viewingItem && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60" onClick={() => setViewingItem(null)}>
+          <div 
+            className="flex flex-col items-center justify-center bg-gradient-to-b from-purple-100 to-pink-100 p-8 rounded-2xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+          >
+            <div className="text-9xl mb-4">{viewingItem.emoji}</div>
+            <h3 className="text-2xl font-bold text-purple-800 mb-1">{viewingItem.name}</h3>
+            <div className="inline-block px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-medium mb-2 uppercase text-xs tracking-wider">
+              {viewingItem.rarity}
+            </div>
+            <p className="text-center text-purple-600 mb-2">{viewingItem.description}</p>
+            <div className="bg-purple-100 px-3 py-1 rounded-full text-sm text-purple-800 font-medium mt-1 mb-2">
+              Collected: {viewingItem.count} {viewingItem.count === 1 ? 'time' : 'times'}
+            </div>
+            <div className="text-xs text-gray-500 mb-3">
+              First found: {new Date(viewingItem.firstCollectedAt).toLocaleDateString()}
+            </div>
+            <Button 
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full"
+              onClick={() => setViewingItem(null)}
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Animating item from gift to carousel with enhanced glow effect */}
       {itemAnimating && currentItem && (
