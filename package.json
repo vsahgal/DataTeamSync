@@ -1,5 +1,5 @@
 {
-  "name": "rest-express",
+  "name": "zoyas-shower",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
@@ -11,6 +11,9 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
+    "@capacitor/ios": "^7.2.0",
     "@hookform/resolvers": "^3.9.1",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
@@ -100,5 +103,6 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
-  }
+  },
+  "description": "A gamified shower app for kids with a unicorn character and reward system"
 }
