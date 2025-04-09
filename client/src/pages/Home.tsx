@@ -559,9 +559,9 @@ export default function Home() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <div className="flex items-center justify-center mt-2 mb-1">
-                <CarouselPrevious className="relative h-8 w-8 mr-2" />
-                <CarouselNext className="relative h-8 w-8 ml-2" />
+              <div className="flex items-center justify-center mt-1 mb-0">
+                <CarouselPrevious className="relative h-6 w-6 mr-2" />
+                <CarouselNext className="relative h-6 w-6 ml-2" />
               </div>
             </Carousel>
           </CardContent>
