@@ -166,32 +166,24 @@ export default function Home() {
   // State to manage the opened box with revealed item and animation
   const [openedItem, setOpenedItem] = useState<LootItem | null>(null);
   
-  // Function to scroll to the item with specific ID in carousel
-  const scrollToItemById = (itemId: string): boolean => {
+  // Function to scroll to the end of the carousel where the newest item is
+  const scrollCarouselToEnd = () => {
     try {
-      // Get carousel API and scroll to the specific item
+      // Only proceed if we have the carousel API
       if (carouselApi) {
-        console.log("Looking for item in carousel with ID:", itemId);
+        console.log("Scrolling carousel to the most recent item");
         
         // Get all items in the carousel
         const carouselItems = document.querySelectorAll('.carousel-item');
+        const lastItemIndex = carouselItems.length - 1;
         
-        // Find the item's index by its data attribute
-        let targetIndex = -1;
-        carouselItems.forEach((item, index) => {
-          if (item.getAttribute('data-item-id') === itemId) {
-            targetIndex = index;
-          }
-        });
-        
-        if (targetIndex >= 0) {
-          console.log("Found item at index:", targetIndex);
-          carouselApi.scrollTo(targetIndex);
+        if (lastItemIndex >= 0) {
+          console.log(`Scrolling to item at index ${lastItemIndex}`);
+          // Scroll to the last item
+          carouselApi.scrollTo(lastItemIndex);
           return true;
         } else {
-          console.log("Item not found in carousel, scrolling to end");
-          const lastItemIndex = carouselItems.length - 1;
-          carouselApi.scrollTo(lastItemIndex);
+          console.log("No items found in carousel");
         }
       } else {
         console.log("Carousel API not available for scrolling");
@@ -277,25 +269,25 @@ export default function Home() {
       
       // A small delay to ensure the item has been added to the DOM
       setTimeout(() => {
-        // Start the animation
-        setItemAnimating(true);
+        // Start by scrolling the carousel to the end where new items are
+        scrollCarouselToEnd();
         
-        // First scroll the carousel to the item with this ID
-        scrollToItemById(item.id);
-        
-        // Give carousel time to scroll, then get proper position
+        // Give carousel time to scroll before starting the animation
         setTimeout(() => {
+          // Start the animation
+          setItemAnimating(true);
+          
           // Find the precise position of this item in the carousel
           const targetPos = getItemPosition(item.id);
           setTargetPosition(targetPos);
-          console.log("Targeting item position:", targetPos);
-        }, 300);
-        
-        // End the animation after a delay
-        setTimeout(() => {
-          setItemAnimating(false);
-          setCurrentItem(null);
-        }, 1500);
+          console.log("Targeting item position for animation:", targetPos);
+          
+          // End the animation after a delay
+          setTimeout(() => {
+            setItemAnimating(false);
+            setCurrentItem(null);
+          }, 1500);
+        }, 400);
       }, 300);
     }, 2000);
   };
