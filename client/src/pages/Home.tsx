@@ -320,7 +320,7 @@ export default function Home() {
   }, [pauseTimerActive, delayedLoot]);
 
   return (
-    <div className="flex flex-col gap-4 relative">
+    <div className="flex flex-col gap-2 relative">
       {/* Confetti effect for level-up */}
       {showConfetti && (
         <Confetti 
@@ -533,23 +533,35 @@ export default function Home() {
         </div>
       )}
       
-      {/* Simplified Treasures carousel - just emojis */}
+      {/* Simplified Treasures carousel with item counts and better scrolling */}
       {collectedItems.length > 0 && !isShowering && (
         <Card className="overflow-hidden border-2 border-pink-200">
-          <CardContent className="p-4">
-            <Carousel className="w-full">
-              <CarouselContent>
+          <CardContent className="p-3">
+            {/* Carousel with touch/swipe support */}
+            <Carousel 
+              className="w-full" 
+              opts={{
+                align: "start",
+                loop: true,
+                dragFree: true
+              }}
+            >
+              <CarouselContent className="-ml-2">
                 {collectedItems.map((item, index) => (
-                  <CarouselItem key={item.id + "-" + index} className="basis-1/5 sm:basis-1/6 md:basis-1/8">
-                    <div className="flex items-center justify-center p-3 bg-white rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow">
+                  <CarouselItem key={item.id + "-" + index} className="basis-1/4 sm:basis-1/5 md:basis-1/6 pl-2">
+                    <div className="flex items-center justify-center p-2 bg-white rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-shadow relative">
                       <div className="text-4xl">{item.emoji}</div>
+                      {/* Count badge */}
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                        {item.count}
+                      </div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <div className="flex items-center justify-center mt-3">
-                <CarouselPrevious className="relative mr-2" />
-                <CarouselNext className="relative ml-2" />
+              <div className="flex items-center justify-center mt-2 mb-1">
+                <CarouselPrevious className="relative h-8 w-8 mr-2" />
+                <CarouselNext className="relative h-8 w-8 ml-2" />
               </div>
             </Carousel>
           </CardContent>
