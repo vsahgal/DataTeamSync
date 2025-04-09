@@ -163,8 +163,17 @@ export default function Home() {
     });
   };
   
-  // State to manage the opened box with revealed item before showing treasures
+  // State to manage the opened box with revealed item and animation
   const [openedItem, setOpenedItem] = useState<LootItem | null>(null);
+  
+  // Function to find target position in carousel for animation
+  const findItemPositionInCarousel = (): {top: number, left: number} => {
+    // Default position (carousel area, bottom of the screen)
+    return {
+      top: window.innerHeight - 100,
+      left: window.innerWidth / 2
+    };
+  };
   
   // Handle opening the gift box and collecting the loot
   const handleOpenGift = (item: LootItem) => {
@@ -181,12 +190,12 @@ export default function Home() {
     storageSavePendingLoot(null);
     setPendingLootState(null);
     
-    // Simply close the opened item after a delay - no modal needed with the carousel
-    setTimeout(() => {
-      setOpenedItem(null); // Hide the opened box
-      
-      // Highlight the newly added item in the carousel (could implement this later)
-    }, 2500);
+    // Capture the initial position (center of screen)
+    const initialPosition = { 
+      top: window.innerHeight / 2, 
+      left: window.innerWidth / 2 
+    };
+    setItemPosition(initialPosition);
     
     // Show a celebration toast
     toast({
@@ -194,6 +203,21 @@ export default function Home() {
       description: `${item.name} ${item.emoji} has been added to your collection!`,
       variant: "default",
     });
+    
+    // After a delay, animate the item to the carousel
+    setTimeout(() => {
+      setOpenedItem(null); // Hide the opened box modal
+      setItemAnimating(true); // Start the item animation
+      
+      // Find where the item should animate to
+      const targetPos = findItemPositionInCarousel();
+      setTargetPosition(targetPos);
+      
+      // End the animation after a delay
+      setTimeout(() => {
+        setItemAnimating(false);
+      }, 1000);
+    }, 2000);
   };
   
   // States for managing the level-up celebration sequence
@@ -208,6 +232,11 @@ export default function Home() {
   const [pendingLoot, setPendingLootState] = useState<LootItem | null>(getPendingLoot());
   const [collectedItems, setCollectedItems] = useState(getCollectedLoot());
   const [delayedLoot, setDelayedLoot] = useState<LootItem | null>(null);
+  
+  // States for gift animation
+  const [itemAnimating, setItemAnimating] = useState(false);
+  const [itemPosition, setItemPosition] = useState({ top: 0, left: 0 });
+  const [targetPosition, setTargetPosition] = useState({ top: 0, left: 0 });
   
   // We've removed the testing state variables since they're no longer needed
   
@@ -548,7 +577,11 @@ export default function Home() {
             >
               <CarouselContent className="-ml-2">
                 {collectedItems.map((item, index) => (
-                  <CarouselItem key={item.id + "-" + index} className="basis-1/4 sm:basis-1/5 md:basis-1/6 pl-2">
+                  <CarouselItem 
+                    key={item.id + "-" + index} 
+                    className="basis-1/4 sm:basis-1/5 md:basis-1/6 pl-2"
+                    data-item-id={item.id}
+                  >
                     <div className="relative text-center p-1">
                       <div className="text-5xl">{item.emoji}</div>
                       {/* Count badge - positioned to the top right of emoji */}
@@ -569,6 +602,23 @@ export default function Home() {
       )}
       
       {/* We've removed the modal completely, using only the carousel */}
+
+      {/* Animating item from gift to carousel */}
+      {itemAnimating && pendingLoot && (
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <div 
+            className="absolute transition-all duration-1000 ease-in-out transform"
+            style={{
+              top: targetPosition.top,
+              left: targetPosition.left,
+              transform: 'translate(-50%, -50%) scale(0.5)',
+              opacity: 1,
+            }}
+          >
+            <div className="text-7xl">{pendingLoot.emoji}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
