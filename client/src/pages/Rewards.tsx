@@ -96,7 +96,7 @@ export default function Rewards() {
     // but give user time to complete onboarding first
     setTimeout(() => {
       if (!showOnboarding) {
-        window.location.reload();
+        window.location.href = '/'; // Navigate to home page
       }
     }, 2500);
   };
@@ -349,9 +349,9 @@ export default function Rewards() {
           setShowOnboarding(false);
           setChildName(getChildName());
           
-          // Reload page after onboarding is complete
+          // Navigate to home page after onboarding is complete
           setTimeout(() => {
-            window.location.reload();
+            window.location.href = '/';
           }, 500);
         }}
       />
