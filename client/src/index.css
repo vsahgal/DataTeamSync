@@ -37,3 +37,19 @@
 .animate-water-fall {
   animation: water-fall 1.5s linear infinite;
 }
+
+/* Flying animation for items going to the carousel */
+@keyframes flyToTarget {
+  0% {
+    transform: translate(-50%, -50%) scale(1.5);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.5);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  }
+}

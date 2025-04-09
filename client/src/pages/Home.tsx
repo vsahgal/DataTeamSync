@@ -166,13 +166,72 @@ export default function Home() {
   // State to manage the opened box with revealed item and animation
   const [openedItem, setOpenedItem] = useState<LootItem | null>(null);
   
-  // Function to find target position in carousel for animation
-  const findItemPositionInCarousel = (): {top: number, left: number} => {
+  // Function to find carousel item by ID and scroll to it
+  const findAndScrollToItem = (itemId: string): {top: number, left: number} => {
     // Default position (carousel area, bottom of the screen)
-    return {
+    const defaultPosition = {
       top: window.innerHeight - 100,
       left: window.innerWidth / 2
     };
+    
+    // Try to find the item in the carousel
+    try {
+      console.log("Looking for item with ID:", itemId);
+      
+      // Find all items with this ID
+      const matchingItems = document.querySelectorAll(`[data-item-id='${itemId}']`);
+      
+      if (matchingItems.length > 0) {
+        // Get the first matching item
+        const item = matchingItems[0];
+        console.log("Found matching item:", item);
+        
+        // Get its position for animation
+        const rect = item.getBoundingClientRect();
+        
+        // Try to scroll the carousel to this item if API is available
+        if (carouselApi) {
+          console.log("Using carousel API to scroll to item");
+          
+          // Find the index of the item
+          const carouselItems = document.querySelectorAll('.carousel-item');
+          let itemIndex = -1;
+          
+          for (let i = 0; i < carouselItems.length; i++) {
+            if (carouselItems[i].getAttribute('data-item-id') === itemId) {
+              itemIndex = i;
+              break;
+            }
+          }
+          
+          if (itemIndex >= 0) {
+            console.log("Scrolling to item at index:", itemIndex);
+            // Scroll to the item
+            carouselApi.scrollTo(itemIndex);
+            
+            // Return the position for animation
+            return {
+              top: rect.top + rect.height / 2,
+              left: rect.left + rect.width / 2
+            };
+          }
+        } else {
+          console.log("Carousel API not available for scrolling");
+        }
+        
+        // Return the position for animation even if we couldn't scroll
+        return {
+          top: rect.top + rect.height / 2,
+          left: rect.left + rect.width / 2
+        };
+      } else {
+        console.log("No matching items found in carousel");
+      }
+    } catch (e) {
+      console.error("Error finding carousel position:", e);
+    }
+    
+    return defaultPosition;
   };
   
   // Handle opening the gift box and collecting the loot
@@ -204,19 +263,28 @@ export default function Home() {
       variant: "default",
     });
     
+    // Save the current item for use in the animation 
+    setCurrentItem(item);
+      
     // After a delay, animate the item to the carousel
     setTimeout(() => {
       setOpenedItem(null); // Hide the opened box modal
-      setItemAnimating(true); // Start the item animation
       
-      // Find where the item should animate to
-      const targetPos = findItemPositionInCarousel();
-      setTargetPosition(targetPos);
-      
-      // End the animation after a delay
+      // A small delay to ensure the item has been added to the DOM
       setTimeout(() => {
-        setItemAnimating(false);
-      }, 1000);
+        // Start the animation
+        setItemAnimating(true);
+        
+        // Find where the item should animate to and scroll the carousel
+        const targetPos = findAndScrollToItem(item.id);
+        setTargetPosition(targetPos);
+        
+        // End the animation after a delay
+        setTimeout(() => {
+          setItemAnimating(false);
+          setCurrentItem(null);
+        }, 1500);
+      }, 300);
     }, 2000);
   };
   
@@ -237,6 +305,10 @@ export default function Home() {
   const [itemAnimating, setItemAnimating] = useState(false);
   const [itemPosition, setItemPosition] = useState({ top: 0, left: 0 });
   const [targetPosition, setTargetPosition] = useState({ top: 0, left: 0 });
+  const [currentItem, setCurrentItem] = useState<LootItem | null>(null);
+  
+  // Reference to the carousel API for controlling the scroll position
+  const [carouselApi, setCarouselApi] = useState<any>(null);
   
   // We've removed the testing state variables since they're no longer needed
   
@@ -574,6 +646,7 @@ export default function Home() {
                 loop: true,
                 dragFree: true
               }}
+              setApi={setCarouselApi}
             >
               <CarouselContent className="-ml-2">
                 {collectedItems.map((item, index) => (
@@ -604,18 +677,22 @@ export default function Home() {
       {/* We've removed the modal completely, using only the carousel */}
 
       {/* Animating item from gift to carousel */}
-      {itemAnimating && pendingLoot && (
+      {itemAnimating && currentItem && (
         <div className="fixed inset-0 z-50 pointer-events-none">
           <div 
             className="absolute transition-all duration-1000 ease-in-out transform"
             style={{
-              top: targetPosition.top,
-              left: targetPosition.left,
-              transform: 'translate(-50%, -50%) scale(0.5)',
-              opacity: 1,
+              top: itemPosition.top,
+              left: itemPosition.left, 
+              transition: "top 1.5s, left 1.5s",
+              ...(!itemAnimating ? {} : {
+                top: targetPosition.top,
+                left: targetPosition.left
+              }),
+              animation: 'flyToTarget 1.5s forwards'
             }}
           >
-            <div className="text-7xl">{pendingLoot.emoji}</div>
+            <div className="text-7xl">{currentItem.emoji}</div>
           </div>
         </div>
       )}
