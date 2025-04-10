@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getShowerStats } from "@/lib/storage";
 import newUnicornImage from "../assets/unicorn-with-wings.png";
+import { useShoweringContext } from "@/App";
 
 interface UnicornShowerProps {
   isShowering: boolean;
@@ -11,6 +12,8 @@ interface UnicornShowerProps {
 }
 
 export default function UnicornShower({ isShowering, elapsedTime, isActive, onStopShower }: UnicornShowerProps) {
+  // Access the global showering context
+  const { setIsShowering } = useShoweringContext();
   // Force dirty state at the beginning of the shower
   const [showingSoap, setShowingSoap] = useState(false);
   const [showingRinse, setShowingRinse] = useState(false);
@@ -579,7 +582,12 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
       {/* Done Showering Button */}
       <div className="absolute top-20 right-6 z-50">
         <motion.button
-          onClick={onStopShower}
+          onClick={() => {
+            // Call the local handler
+            onStopShower();
+            // Additionally update the global context
+            setIsShowering(false);
+          }}
           className="bg-red-500 hover:bg-red-600 text-white text-xl font-bold py-3 px-6 rounded-full shadow-lg border-4 border-white"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
