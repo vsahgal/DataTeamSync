@@ -108,10 +108,8 @@ export default function Home() {
   }, [isShowering]);
   
   const handleStart = () => {
-    // Start the shower which will update the global context
+    // Start the shower which already updates the global context internally
     startShower();
-    // This will also update the global isShowering state
-    setIsShowering(true);
     
     toast({
       title: "Shower started!",
