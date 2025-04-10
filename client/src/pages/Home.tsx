@@ -108,8 +108,17 @@ export default function Home() {
   }, [isShowering]);
   
   const handleStart = () => {
+    console.log("handleStart called in Home.tsx");
+    console.log("Current isShowering state:", isShowering);
+    
     // Start the shower which already updates the global context internally
     startShower();
+    console.log("startShower() called");
+    
+    // Force update after a delay
+    setTimeout(() => {
+      console.log("Checking isShowering after delay:", isShowering);
+    }, 500);
     
     toast({
       title: "Shower started!",
@@ -530,7 +539,18 @@ export default function Home() {
             
             {!isShowering && (
               <Button 
-                onClick={handleStart} 
+                onClick={() => {
+                  console.log("Direct Start Shower button click");
+                  // Call both functions directly instead of through the handler
+                  startShower();
+                  setIsShowering(true);
+                  
+                  toast({
+                    title: "Shower started!",
+                    description: "Let's get clean and earn 50 points!",
+                    variant: "default",
+                  });
+                }} 
                 className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 mb-0 rounded-full text-xl"
               >
                 Start Shower

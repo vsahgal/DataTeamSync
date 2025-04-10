@@ -19,7 +19,9 @@ export default function useShowerState() {
 
   // Start the shower
   const startShower = useCallback(() => {
+    console.log("Starting shower...");
     setIsShowering(true);
+    console.log("Set isShowering to true");
     setElapsedTime(0);
     setIsWaterOn(true);
     
@@ -28,12 +30,20 @@ export default function useShowerState() {
       setElapsedTime(prevTime => prevTime + 1);
     }, 1000);
     setIntervalId(id);
+    console.log("Timer interval set: ", id);
     
     // Set up water animation toggle
     const toggleId = window.setInterval(() => {
       setIsWaterOn(prev => !prev);
     }, WATER_TOGGLE_INTERVAL);
     setWaterToggleId(toggleId);
+    console.log("Water toggle interval set: ", toggleId);
+    
+    // Force update global context as well
+    setTimeout(() => {
+      console.log("Double-checking that isShowering is true");
+      setIsShowering(true);
+    }, 100);
   }, [setIsShowering]);
   
   // Stop the shower and calculate points
