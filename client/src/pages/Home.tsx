@@ -67,18 +67,28 @@ export default function Home() {
   const { toast } = useToast();
   // Get the child's name from storage
   const [childName, setChildName] = useState(getChildName());
-  // Use our global showering context
-  const { isShowering, setIsShowering } = useShoweringContext();
-  const { 
-    elapsedTime, 
-    points, 
-    startShower, 
-    stopShower, 
-    isWaterOn,
-    didLevelUp,
-    newLevel,
-    resetLevelUp
-  } = useShowerState();
+  // Instead of using the global context, we'll use a local state
+  const [isShowering, setIsShowering] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [isWaterOn, setIsWaterOn] = useState(true);
+  const [waterToggleId, setWaterToggleId] = useState<number | null>(null);
+  
+  // For level up animations
+  const [didLevelUp, setDidLevelUp] = useState(false);
+  const [newLevel, setNewLevel] = useState<number | null>(null);
+  
+  // Set points award for showers
+  const points = 50;
+  
+  // Function to reset level up state
+  const resetLevelUp = () => {
+    setDidLevelUp(false);
+    setNewLevel(null);
+  };
+  
+  // Also get the global context to keep it in sync
+  const showeringContext = useShoweringContext();
   
   const [stats, setStats] = useState<ShowerStats>({
     totalSessions: 0,
@@ -107,18 +117,29 @@ export default function Home() {
     }
   }, [isShowering]);
   
-  const handleStart = () => {
-    console.log("handleStart called in Home.tsx");
-    console.log("Current isShowering state:", isShowering);
+  // Custom shower starter function (independent of hook)
+  const startShowerLocal = () => {
+    console.log("startShowerLocal called");
+    // Set local state
+    setIsShowering(true);
+    setElapsedTime(0);
+    setIsWaterOn(true);
     
-    // Start the shower which already updates the global context internally
-    startShower();
-    console.log("startShower() called");
+    // Also update global context
+    showeringContext.setIsShowering(true);
+    console.log("Set context isShowering to true");
     
-    // Force update after a delay
-    setTimeout(() => {
-      console.log("Checking isShowering after delay:", isShowering);
-    }, 500);
+    // Start the timer
+    const id = window.setInterval(() => {
+      setElapsedTime(prevTime => prevTime + 1);
+    }, 1000);
+    setIntervalId(id);
+    
+    // Set up water animation toggle
+    const toggleId = window.setInterval(() => {
+      setIsWaterOn(prev => !prev);
+    }, WATER_TOGGLE_INTERVAL);
+    setWaterToggleId(toggleId);
     
     toast({
       title: "Shower started!",
@@ -127,8 +148,68 @@ export default function Home() {
     });
   };
   
-  const handleStop = () => {
-    const earnedPoints = stopShower();
+  // Custom shower stopper function (independent of hook)
+  const stopShowerLocal = () => {
+    console.log("stopShowerLocal called");
+    
+    // Clear intervals
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+    
+    if (waterToggleId) {
+      clearInterval(waterToggleId);
+      setWaterToggleId(null);
+    }
+    
+    // Set local state
+    setIsShowering(false);
+    // Also update global context
+    showeringContext.setIsShowering(false);
+    console.log("Set context isShowering to false");
+    
+    // Award points
+    const finalPoints = 50;
+    
+    // Save the session
+    saveShowerSession({
+      id: nanoid(),
+      duration: elapsedTime,
+      points: finalPoints,
+      completed: true,
+      createdAt: new Date().toISOString()
+    });
+    
+    // Get current stats before update
+    const currentStats = getShowerStats();
+    const currentLevel = currentStats.level || 1;
+    
+    // Create updated stats object
+    const updatedStats: ShowerStats = {
+      ...currentStats,
+      totalSessions: currentStats.totalSessions + 1,
+      totalPoints: currentStats.totalPoints + finalPoints,
+      longestShower: Math.max(currentStats.longestShower, elapsedTime),
+      lastShowerDate: new Date().toISOString()
+    };
+    
+    // Update stats in storage
+    updateShowerStats(updatedStats);
+    
+    // Reset the last shower days to 0 (today) since we just had a shower
+    setLastShowerDays(0);
+    
+    // Get the fresh stats to check if level-up occurred
+    const freshStats = getShowerStats();
+    const freshLevel = freshStats.level || currentLevel;
+    
+    if (freshLevel > currentLevel) {
+      // Set level up state for animations
+      console.log("Level up detected! From level", currentLevel, "to level", freshLevel);
+      setDidLevelUp(true);
+      setNewLevel(freshLevel);
+    }
     
     // Set the justCompletedShower flag to trigger progress animation
     setJustCompletedShower(true);
@@ -147,9 +228,11 @@ export default function Home() {
     
     toast({
       title: "Shower completed!",
-      description: `Great job! You earned ${earnedPoints} points.`,
+      description: `Great job! You earned ${finalPoints} points.`,
       variant: "default",
     });
+    
+    return finalPoints;
   };
   
   // State to manage the opened box with revealed item and animation
@@ -540,10 +623,11 @@ export default function Home() {
             {!isShowering && (
               <Button 
                 onClick={() => {
-                  console.log("Direct Start Shower button click");
-                  // Call both functions directly instead of through the handler
+                  console.log("Start Shower button clicked directly");
+                  // Explicitly update global context
+                  showeringContext.setIsShowering(true);
+                  // Start the local shower timer
                   startShower();
-                  setIsShowering(true);
                   
                   toast({
                     title: "Shower started!",

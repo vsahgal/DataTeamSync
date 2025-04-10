@@ -583,10 +583,12 @@ export default function UnicornShower({ isShowering, elapsedTime, isActive, onSt
       <div className="absolute top-20 right-6 z-50">
         <motion.button
           onClick={() => {
-            // Call the local handler
-            onStopShower();
-            // Additionally update the global context
+            // First update the global context
             setIsShowering(false);
+            console.log("Done Showering button clicked. Set global context isShowering to false");
+            
+            // Then call the local handler
+            onStopShower();
           }}
           className="bg-red-500 hover:bg-red-600 text-white text-xl font-bold py-3 px-6 rounded-full shadow-lg border-4 border-white"
           whileHover={{ scale: 1.05 }}
