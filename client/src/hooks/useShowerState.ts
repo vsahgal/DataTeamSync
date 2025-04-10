@@ -4,10 +4,12 @@ import { saveShowerSession, getShowerStats, updateShowerStats, setLastShowerDays
 import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { ShowerStats } from '@shared/schema';
+import { useShoweringContext } from '@/App';
 
 export default function useShowerState() {
   const { toast } = useToast();
-  const [isShowering, setIsShowering] = useState(false);
+  // Use the global showering context instead of local state
+  const { isShowering, setIsShowering } = useShoweringContext();
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isWaterOn, setIsWaterOn] = useState(true);
   const [intervalId, setIntervalId] = useState<number | null>(null);
@@ -32,7 +34,7 @@ export default function useShowerState() {
       setIsWaterOn(prev => !prev);
     }, WATER_TOGGLE_INTERVAL);
     setWaterToggleId(toggleId);
-  }, []);
+  }, [setIsShowering]);
   
   // Stop the shower and calculate points
   const stopShower = useCallback(() => {
@@ -98,7 +100,7 @@ export default function useShowerState() {
     // We've removed the forced level-up testing code that was triggering on every shower
     
     return finalPoints;
-  }, [intervalId, waterToggleId, elapsedTime, toast]);
+  }, [intervalId, waterToggleId, elapsedTime, toast, setIsShowering]);
   
   // Clean up on unmount
   useEffect(() => {
