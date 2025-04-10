@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { useToast } from "@/hooks/use-toast";
 import useShowerState from "@/hooks/useShowerState";
+import { useShoweringContext } from "@/App";
 import { 
   getShowerStats, 
   getShowerSessions, 
@@ -66,8 +67,9 @@ export default function Home() {
   const { toast } = useToast();
   // Get the child's name from storage
   const [childName, setChildName] = useState(getChildName());
+  // Use our global showering context
+  const { isShowering, setIsShowering } = useShoweringContext();
   const { 
-    isShowering, 
     elapsedTime, 
     points, 
     startShower, 
