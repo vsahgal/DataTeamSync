@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { nanoid } from 'nanoid';
-import { saveShowerSession, getShowerStats, updateShowerStats } from '@/lib/storage';
+import { saveShowerSession, getShowerStats, updateShowerStats, setLastShowerDays } from '@/lib/storage';
 import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { ShowerStats } from '@shared/schema';
@@ -80,6 +80,9 @@ export default function useShowerState() {
     
     // Update stats in storage
     updateShowerStats(updatedStats);
+    
+    // Reset the last shower days to 0 (today) since we just had a shower
+    setLastShowerDays(0);
     
     // Get the fresh stats to check if level-up occurred
     const freshStats = getShowerStats();

@@ -38,14 +38,15 @@ import {
 // Helper function to calculate days since last shower
 // Production version: Calculate actual days difference
 const getDaysSinceLastShower = (lastShowerDate: string): number => {
-  // Check if we have a manual setting from the onboarding first
+  // Always check if we have a manual setting from onboarding first
   const manualDays = getLastShowerDays();
-  if (manualDays > 0) {
-    // If this was manually set during onboarding, use that value
-    return Math.min(manualDays, 7);
+  
+  // If we have a manual setting, use it (0 means today/just had a shower)
+  if (manualDays >= 0) {
+    return manualDays;
   }
   
-  // Otherwise calculate based on the last shower date
+  // Otherwise fall back to calculating based on the last shower date
   const lastDate = new Date(lastShowerDate);
   const today = new Date();
   
