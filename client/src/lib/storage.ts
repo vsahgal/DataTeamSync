@@ -469,11 +469,50 @@ export const updateDirtinessFromLastShower = (): number => {
     // Get the current stats to find the last shower date
     const stats = getShowerStats();
     
-    // If there's no last shower date, return 0 (default)
+    // If there's no last shower date, set an initial dirtiness level
     if (!stats.lastShowerDate) {
-      return 0;
+      // Set initial dirtiness to 3 days for testing
+      const initialDirtiness = 3;
+      localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(initialDirtiness));
+      
+      // Update the last shower date in stats
+      const date = new Date();
+      date.setDate(date.getDate() - initialDirtiness);
+      stats.lastShowerDate = date.toISOString();
+      updateShowerStats(stats);
+      
+      console.log(`Set initial dirtiness to ${initialDirtiness} days`);
+      return initialDirtiness;
     }
     
+    // For testing purposes: check if we already have a dirtiness value
+    const currentDirtiness = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
+    if (currentDirtiness) {
+      // Parse the current dirtiness
+      const currentDays = JSON.parse(currentDirtiness);
+      
+      // If we're in testing mode, artificially increment the dirtiness 
+      // (for normal operation we'd use the actual date calculation below)
+      if (currentDays < 7) {
+        // Higher chance (80%) of increasing dirtiness for testing
+        if (Math.random() < 0.8) {
+          const newDays = currentDays + 1;
+          localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(newDays));
+          
+          // Also update the lastShowerDate in stats to match
+          const newDate = new Date();
+          newDate.setDate(newDate.getDate() - newDays);
+          stats.lastShowerDate = newDate.toISOString();
+          updateShowerStats(stats);
+          
+          console.log(`TESTING: Increased dirtiness to ${newDays} days`);
+          return newDays;
+        }
+        return currentDays;
+      }
+    }
+    
+    // Normal operation calculation (for production)
     // Calculate days difference
     const lastShowerDate = new Date(stats.lastShowerDate);
     const today = new Date();
