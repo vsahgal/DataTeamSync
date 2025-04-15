@@ -5,7 +5,8 @@ import {
   getShowerStats, 
   updateShowerStats, 
   setLastShowerDays,
-  getLastShowerDays
+  getLastShowerDays,
+  setShowerInProgress
 } from '@/lib/storage';
 import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
