@@ -19,7 +19,8 @@ import {
   isOnboardingCompleted,
   getLastShowerDays,
   updateDirtinessFromLastShower,
-  setLastShowerDays
+  setLastShowerDays,
+  setShowerInProgress
 } from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
@@ -90,8 +91,13 @@ export default function Home() {
     lastLevelUp: null
   });
   
-  // Update stats when shower status changes
+  // Initialize shower in progress flag and update stats when shower status changes
   useEffect(() => {
+    // Initialize the shower in progress flag to false when component first loads
+    // This ensures we don't have leftover in-progress states from previous sessions
+    setShowerInProgress(false);
+    
+    // Update stats
     setStats(getShowerStats());
   }, [isShowering]);
   

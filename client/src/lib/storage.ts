@@ -495,8 +495,9 @@ export const updateDirtinessFromLastShower = (): number => {
       // If we're in testing mode, artificially increment the dirtiness 
       // (for normal operation we'd use the actual date calculation below)
       if (currentDays < 7) {
-        // Higher chance (80%) of increasing dirtiness for testing
-        if (Math.random() < 0.8) {
+        // Much lower chance (10%) of increasing dirtiness for testing
+        // This will make days progress about once per 10 checks (approx. 50 seconds per day)
+        if (Math.random() < 0.1) {
           const newDays = currentDays + 1;
           localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(newDays));
           
@@ -614,10 +615,14 @@ export const resetAllUserData = (): void => {
     localStorage.removeItem(STORAGE_KEYS.PENDING_LOOT);
     localStorage.removeItem(STORAGE_KEYS.CHILD_NAME);
     localStorage.removeItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
+    localStorage.removeItem(STORAGE_KEYS.SHOWER_IN_PROGRESS); // Reset shower in progress flag
     resetOnboarding(); // Reset onboarding but don't remove it
     
     // Re-initialize with default values
     initializeStorage();
+    
+    // Explicitly set shower in progress to false
+    setShowerInProgress(false);
   } catch (error) {
     console.error('Error resetting user data:', error);
   }

@@ -132,8 +132,14 @@ export default function useShowerState() {
     return () => {
       if (intervalId) clearInterval(intervalId);
       if (waterToggleId) clearInterval(waterToggleId);
+      
+      // If component unmounts during a shower, make sure to clear the in-progress flag
+      if (isShowering) {
+        setShowerInProgress(false);
+        console.log("🚿 Component unmounted during shower - clearing shower in progress flag");
+      }
     };
-  }, [intervalId, waterToggleId]);
+  }, [intervalId, waterToggleId, isShowering]);
   
   // Reset level up animation state
   const resetLevelUp = useCallback(() => {
