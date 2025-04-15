@@ -48,14 +48,15 @@ export default function useShowerState() {
     
     setIsShowering(false);
     
-    // For testing purposes, award enough points to trigger a level-up
-    // Original: const finalPoints = 10;
+    // For testing purposes, shorten the shower duration and award more points
+    // Make a minimum of 5 seconds to count as a shower
+    const effectiveTime = Math.max(5, elapsedTime);
     const finalPoints = 50; // Temporary increase for testing
     
     // Save the session
     saveShowerSession({
       id: nanoid(),
-      duration: elapsedTime,
+      duration: effectiveTime, // Use the effective time for duration
       points: finalPoints,
       completed: true,
       createdAt: new Date().toISOString()
@@ -74,7 +75,7 @@ export default function useShowerState() {
       ...currentStats,
       totalSessions: currentStats.totalSessions + 1,
       totalPoints: currentStats.totalPoints + finalPoints,
-      longestShower: Math.max(currentStats.longestShower, elapsedTime),
+      longestShower: Math.max(currentStats.longestShower, effectiveTime),
       lastShowerDate: new Date().toISOString()
     };
     

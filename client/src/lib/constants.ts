@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid';
 import { LocalReward } from '@shared/schema';
 
-// Shower constants
-export const POINTS_PER_SECOND = 1;
-export const MAX_SHOWER_TIME = 300; // 5 minutes
-export const OPTIMAL_SHOWER_TIME = 240; // 4 minutes
+// Shower constants - TESTING MODE (shortened timers)
+export const POINTS_PER_SECOND = 10; // More points for testing
+export const MAX_SHOWER_TIME = 10; // Just 10 seconds
+export const OPTIMAL_SHOWER_TIME = 5; // 5 seconds is optimal
 export const WATER_TOGGLE_INTERVAL = 300; // Water animation toggle interval in ms
 
 // Level system - now based on number of showers rather than points
