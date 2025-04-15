@@ -17,7 +17,9 @@ import {
   getCollectedLoot,
   getChildName,
   isOnboardingCompleted,
-  getLastShowerDays
+  getLastShowerDays,
+  updateDirtinessFromLastShower,
+  setLastShowerDays
 } from "@/lib/storage";
 import { LEVELS } from "@/lib/constants";
 import { Droplets, Zap, Award, BarChart, Gift } from "lucide-react";
@@ -93,15 +95,30 @@ export default function Home() {
     setStats(getShowerStats());
   }, [isShowering]);
   
-  // Automatically update stats periodically to keep the UI current
+  // Automatically update stats and dirtiness periodically to keep the UI current
   useEffect(() => {
     if (!isShowering) {
-      // In production, we only need to refresh once per hour to check for day changes
-      const intervalId = setInterval(() => {
-        setStats(getShowerStats());
-      }, 3600000); // Once per hour in milliseconds
+      // First, immediately update the dirtiness when the component loads
+      updateDirtinessFromLastShower();
       
-      return () => clearInterval(intervalId);
+      // For testing: update every 5 seconds, in production we can make it longer
+      const dirtinessIntervalId = setInterval(() => {
+        // Only update if the dirtiness is less than 7 (max)
+        const currentDays = getLastShowerDays();
+        console.log("Current dirtiness check:", currentDays);
+        updateDirtinessFromLastShower();
+        setStats(getShowerStats()); // Refresh stats 
+      }, 5000); // Every 5 seconds for testing
+      
+      // Regular stats update for other things like streaks
+      const statsIntervalId = setInterval(() => {
+        setStats(getShowerStats());
+      }, 60000); // Once per minute
+      
+      return () => {
+        clearInterval(dirtinessIntervalId);
+        clearInterval(statsIntervalId);
+      };
     }
   }, [isShowering]);
   

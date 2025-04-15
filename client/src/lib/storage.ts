@@ -463,9 +463,50 @@ export const resetOnboarding = (): void => {
   }
 };
 
+// Function to calculate days since last shower date and update LAST_SHOWER_DAYS
+export const updateDirtinessFromLastShower = (): number => {
+  try {
+    // Get the current stats to find the last shower date
+    const stats = getShowerStats();
+    
+    // If there's no last shower date, return 0 (default)
+    if (!stats.lastShowerDate) {
+      return 0;
+    }
+    
+    // Calculate days difference
+    const lastShowerDate = new Date(stats.lastShowerDate);
+    const today = new Date();
+    
+    // Reset time components to get accurate day difference
+    lastShowerDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    // Calculate difference in days
+    const diffTime = Math.abs(today.getTime() - lastShowerDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Cap at 7 days maximum dirtiness
+    const daysSinceShower = Math.min(diffDays, 7);
+    
+    // Update the last shower days value in storage
+    localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(daysSinceShower));
+    
+    console.log(`Updated dirtiness: ${daysSinceShower} days since last shower`);
+    return daysSinceShower;
+  } catch (error) {
+    console.error('Error updating dirtiness from last shower:', error);
+    return 0;
+  }
+};
+
 // Last shower days functions
 export const getLastShowerDays = (): number => {
   try {
+    // First update the dirtiness based on last shower date
+    updateDirtinessFromLastShower();
+    
+    // Then get the updated value
     const days = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
     return days ? JSON.parse(days) : 0; // Default to 0 days (today) if not set
   } catch (error) {
