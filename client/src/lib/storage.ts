@@ -497,7 +497,22 @@ export const updateDirtinessFromLastShower = (): number => {
       if (currentDays < 7) {
         // Much lower chance (10%) of increasing dirtiness for testing
         // This will make days progress about once per 10 checks (approx. 50 seconds per day)
-        if (Math.random() < 0.1) {
+        // Also add a timestamp check to prevent multiple increments in a short time period
+        
+        // Get the last update timestamp
+        const lastUpdateTimestamp = localStorage.getItem('last_dirtiness_update_timestamp');
+        const now = Date.now();
+        const minTimeBetweenUpdates = 30000; // 30 seconds minimum between updates
+        
+        // Only proceed if enough time has passed since the last update
+        const canUpdate = !lastUpdateTimestamp || 
+                         (now - parseInt(lastUpdateTimestamp, 10)) > minTimeBetweenUpdates;
+        
+        if (canUpdate && Math.random() < 0.1) {
+          // Update the timestamp
+          localStorage.setItem('last_dirtiness_update_timestamp', now.toString());
+          
+          // Only increment by 1 to ensure smooth progression
           const newDays = currentDays + 1;
           localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(newDays));
           
@@ -616,6 +631,7 @@ export const resetAllUserData = (): void => {
     localStorage.removeItem(STORAGE_KEYS.CHILD_NAME);
     localStorage.removeItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
     localStorage.removeItem(STORAGE_KEYS.SHOWER_IN_PROGRESS); // Reset shower in progress flag
+    localStorage.removeItem('last_dirtiness_update_timestamp'); // Clear dirtiness timestamp
     resetOnboarding(); // Reset onboarding but don't remove it
     
     // Re-initialize with default values

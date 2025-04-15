@@ -98,6 +98,9 @@ export default function useShowerState() {
     console.log("🚿 SETTING DIRTINESS TO 0 - Shower completed!");
     setLastShowerDays(0);
     
+    // Reset the dirtiness timestamp to prevent immediate dirtiness progression
+    localStorage.setItem('last_dirtiness_update_timestamp', Date.now().toString());
+    
     // Double-check that it was reset correctly
     setTimeout(() => {
       const currentDirtiness = getLastShowerDays();
