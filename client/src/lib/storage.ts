@@ -14,7 +14,8 @@ const STORAGE_KEYS = {
   PENDING_LOOT: 'pending_loot',
   CHILD_NAME: 'child_name',
   ONBOARDING_COMPLETED: 'onboarding_completed',
-  LAST_SHOWER_DAYS: 'last_shower_days'
+  LAST_SHOWER_DAYS: 'last_shower_days',
+  SHOWER_IN_PROGRESS: 'shower_in_progress' // Track if a shower is happening
 };
 
 // Initialize local storage with default values if empty
@@ -539,11 +540,43 @@ export const updateDirtinessFromLastShower = (): number => {
   }
 };
 
+// Functions to track when a shower is in progress to prevent dirtiness updates
+export const setShowerInProgress = (inProgress: boolean): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.SHOWER_IN_PROGRESS, JSON.stringify(inProgress));
+  } catch (error) {
+    console.error('Error setting shower in progress state:', error);
+  }
+};
+
+export const isShowerInProgress = (): boolean => {
+  try {
+    const value = localStorage.getItem(STORAGE_KEYS.SHOWER_IN_PROGRESS);
+    return value ? JSON.parse(value) : false;
+  } catch (error) {
+    console.error('Error checking if shower is in progress:', error);
+    return false;
+  }
+};
+
 // Last shower days functions
 export const getLastShowerDays = (): number => {
   try {
-    // First update the dirtiness based on last shower date
-    updateDirtinessFromLastShower();
+    // Check if a shower is currently in progress - don't update dirtiness if so
+    if (isShowerInProgress()) {
+      // Just return the current value without updating
+      const days = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
+      return days ? JSON.parse(days) : 0;
+    }
+    
+    // Get the current value first
+    const currentDaysStr = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
+    const currentDays = currentDaysStr ? JSON.parse(currentDaysStr) : 0;
+    
+    // Only update if we're not already clean (0 days) to prevent overriding recent showers
+    if (currentDays > 0) {
+      updateDirtinessFromLastShower();
+    }
     
     // Then get the updated value
     const days = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);

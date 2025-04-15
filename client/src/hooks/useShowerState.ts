@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { nanoid } from 'nanoid';
-import { saveShowerSession, getShowerStats, updateShowerStats, setLastShowerDays } from '@/lib/storage';
+import { 
+  saveShowerSession, 
+  getShowerStats, 
+  updateShowerStats, 
+  setLastShowerDays,
+  getLastShowerDays
+} from '@/lib/storage';
 import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { ShowerStats } from '@shared/schema';
@@ -17,6 +23,9 @@ export default function useShowerState() {
 
   // Start the shower
   const startShower = useCallback(() => {
+    // Mark that a shower is in progress to prevent dirtiness updates
+    setShowerInProgress(true);
+    
     setIsShowering(true);
     setElapsedTime(0);
     setIsWaterOn(true);
@@ -32,6 +41,8 @@ export default function useShowerState() {
       setIsWaterOn(prev => !prev);
     }, WATER_TOGGLE_INTERVAL);
     setWaterToggleId(toggleId);
+    
+    console.log("🚿 SHOWER STARTED - Setting shower in progress flag");
   }, []);
   
   // Stop the shower and calculate points
@@ -83,7 +94,21 @@ export default function useShowerState() {
     updateShowerStats(updatedStats);
     
     // Reset the last shower days to 0 (today) since we just had a shower
+    console.log("🚿 SETTING DIRTINESS TO 0 - Shower completed!");
     setLastShowerDays(0);
+    
+    // Double-check that it was reset correctly
+    setTimeout(() => {
+      const currentDirtiness = getLastShowerDays();
+      console.log("🚿 After shower, dirtiness level is now:", currentDirtiness);
+      
+      // Reset the shower in progress flag after a delay to ensure no dirtiness updates happen
+      // while we're showing the clean unicorn
+      setTimeout(() => {
+        setShowerInProgress(false);
+        console.log("🚿 SHOWER COMPLETED - Shower in progress flag reset");
+      }, 5000); // 5 second delay to keep the unicorn clean for a bit
+    }, 100);
     
     // Get the fresh stats to check if level-up occurred
     const freshStats = getShowerStats();
