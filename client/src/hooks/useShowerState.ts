@@ -4,12 +4,10 @@ import { saveShowerSession, getShowerStats, updateShowerStats, setLastShowerDays
 import { MAX_SHOWER_TIME, WATER_TOGGLE_INTERVAL, LEVELS } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { ShowerStats } from '@shared/schema';
-import { useShoweringContext } from '@/App';
 
 export default function useShowerState() {
   const { toast } = useToast();
-  // Use the global showering context instead of local state
-  const { isShowering, setIsShowering } = useShoweringContext();
+  const [isShowering, setIsShowering] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isWaterOn, setIsWaterOn] = useState(true);
   const [intervalId, setIntervalId] = useState<number | null>(null);
@@ -19,9 +17,7 @@ export default function useShowerState() {
 
   // Start the shower
   const startShower = useCallback(() => {
-    console.log("Starting shower...");
     setIsShowering(true);
-    console.log("Set isShowering to true");
     setElapsedTime(0);
     setIsWaterOn(true);
     
@@ -30,21 +26,13 @@ export default function useShowerState() {
       setElapsedTime(prevTime => prevTime + 1);
     }, 1000);
     setIntervalId(id);
-    console.log("Timer interval set: ", id);
     
     // Set up water animation toggle
     const toggleId = window.setInterval(() => {
       setIsWaterOn(prev => !prev);
     }, WATER_TOGGLE_INTERVAL);
     setWaterToggleId(toggleId);
-    console.log("Water toggle interval set: ", toggleId);
-    
-    // Force update global context as well
-    setTimeout(() => {
-      console.log("Double-checking that isShowering is true");
-      setIsShowering(true);
-    }, 100);
-  }, [setIsShowering]);
+  }, []);
   
   // Stop the shower and calculate points
   const stopShower = useCallback(() => {
@@ -110,7 +98,7 @@ export default function useShowerState() {
     // We've removed the forced level-up testing code that was triggering on every shower
     
     return finalPoints;
-  }, [intervalId, waterToggleId, elapsedTime, toast, setIsShowering]);
+  }, [intervalId, waterToggleId, elapsedTime, toast]);
   
   // Clean up on unmount
   useEffect(() => {
