@@ -23,16 +23,16 @@ const initializeStorage = () => {
   if (!localStorage.getItem(STORAGE_KEYS.SESSIONS)) {
     localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify([]));
   }
-  
+
   if (!localStorage.getItem(STORAGE_KEYS.REWARDS)) {
     localStorage.setItem(STORAGE_KEYS.REWARDS, JSON.stringify(initialRewards));
   }
-  
+
   if (!localStorage.getItem(STORAGE_KEYS.STATS)) {
     // Set a default last shower date that's 2 days ago
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-    
+
     const initialStats: ShowerStats = {
       totalSessions: 1,
       totalPoints: 10,
@@ -44,15 +44,15 @@ const initializeStorage = () => {
     };
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(initialStats));
   }
-  
+
   if (!localStorage.getItem(STORAGE_KEYS.COLLECTED_LOOT)) {
     localStorage.setItem(STORAGE_KEYS.COLLECTED_LOOT, JSON.stringify([]));
   }
-  
+
   if (!localStorage.getItem(STORAGE_KEYS.PENDING_LOOT)) {
     localStorage.setItem(STORAGE_KEYS.PENDING_LOOT, JSON.stringify(null));
   }
-  
+
   // Initialize onboarding status if not set
   if (localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED) === null) {
     localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, JSON.stringify(false));
@@ -78,7 +78,7 @@ export const saveShowerSession = (session: LocalShowerSession): void => {
     const sessions = getShowerSessions();
     sessions.push(session);
     localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(sessions));
-    
+
     // Check if any rewards should be unlocked
     checkAndUnlockRewards();
   } catch (error) {
@@ -110,7 +110,7 @@ export const unlockReward = (rewardId: string): LocalReward | null => {
   try {
     const rewards = getRewards();
     const rewardIndex = rewards.findIndex(r => r.id === rewardId);
-    
+
     if (rewardIndex >= 0 && !rewards[rewardIndex].unlocked) {
       rewards[rewardIndex].unlocked = true;
       rewards[rewardIndex].unlockedAt = new Date().toISOString();
@@ -132,7 +132,7 @@ export const getShowerStats = (): ShowerStats => {
       // Set a default last shower date that's 2 days ago
       const twoDaysAgo = new Date();
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-      
+
       const initialStats: ShowerStats = {
         totalSessions: 1,
         totalPoints: 10,
@@ -144,16 +144,16 @@ export const getShowerStats = (): ShowerStats => {
       };
       return initialStats;
     }
-    
+
     const parsedStats = JSON.parse(stats);
-    
+
     // Calculate streak
     if (parsedStats.lastShowerDate) {
       const lastShower = new Date(parsedStats.lastShowerDate);
       const today = new Date();
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      
+
       // If the last shower was today, maintain streak
       if (lastShower.toDateString() === today.toDateString()) {
         // Streak is already correct
@@ -167,14 +167,14 @@ export const getShowerStats = (): ShowerStats => {
         parsedStats.streakDays = 0;
       }
     }
-    
+
     return parsedStats;
   } catch (error) {
     console.error('Error getting shower stats:', error);
     // Set a default last shower date that's 2 days ago
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-    
+
     return {
       totalSessions: 1,
       totalPoints: 10,
@@ -192,15 +192,15 @@ export const updateShowerStats = (stats: ShowerStats): ShowerStats => {
     // If it's a new day, update streak
     const currentStats = getShowerStats();
     const today = new Date().toDateString();
-    
+
     if (currentStats.lastShowerDate) {
       const lastShowerDay = new Date(currentStats.lastShowerDate).toDateString();
-      
+
       if (lastShowerDay !== today) {
         // New day, check if it's consecutive
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        
+
         if (lastShowerDay === yesterday.toDateString()) {
           // Last shower was yesterday, increment streak
           stats.streakDays = currentStats.streakDays + 1;
@@ -210,18 +210,18 @@ export const updateShowerStats = (stats: ShowerStats): ShowerStats => {
       // First shower ever, start streak at 1
       stats.streakDays = 1;
     }
-    
+
     // Check level progression
     const currentLevel = currentStats.level || 1;
     stats.level = currentLevel; // Ensure level is carried over if not provided
-    
+
     // Find next level based on points
     const nextLevel = checkLevelProgression(stats);
     if (nextLevel > currentLevel) {
       stats.level = nextLevel;
       stats.lastLevelUp = new Date().toISOString();
     }
-    
+
     localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
     return stats;
   } catch (error) {
@@ -239,11 +239,11 @@ const checkLevelProgression = (stats: ShowerStats): number => {
   try {
     // If no current level, default to 1
     const currentLevel = stats.level || 1;
-    
+
     // Get the number of sessions since last level up
     let sessionsAfterLastLevel = 0;
     const sessions = getShowerSessions();
-    
+
     if (stats.lastLevelUp) {
       const lastLevelUpDate = new Date(stats.lastLevelUp);
       sessionsAfterLastLevel = sessions.filter(
@@ -253,18 +253,18 @@ const checkLevelProgression = (stats: ShowerStats): number => {
       // If never leveled up before, count all sessions
       sessionsAfterLastLevel = sessions.length;
     }
-    
+
     // Determine how many sessions needed for next level
     // For levels beyond 20, always require 3 showers
     const sessionsNeeded = currentLevel <= 10 ? 1 : 
                            currentLevel <= 20 ? 2 : 3;
-    
+
     // Check if earned enough sessions for next level
     // No level cap - can progress infinitely
     if (sessionsAfterLastLevel >= sessionsNeeded) {
       return currentLevel + 1;
     }
-    
+
     return currentLevel;
   } catch (error) {
     console.error('Error checking level progression:', error);
@@ -279,7 +279,7 @@ const checkAndUnlockRewards = (): void => {
     const stats = getShowerStats();
     const rewards = getRewards();
     let updated = false;
-    
+
     // Unlock rewards based on total sessions
     if (stats.totalSessions >= 3) {
       const beginner = rewards.find(r => r.id === 'reward-1' && !r.unlocked);
@@ -289,7 +289,7 @@ const checkAndUnlockRewards = (): void => {
         updated = true;
       }
     }
-    
+
     if (stats.totalSessions >= 7) {
       const regular = rewards.find(r => r.id === 'reward-2' && !r.unlocked);
       if (regular) {
@@ -298,7 +298,7 @@ const checkAndUnlockRewards = (): void => {
         updated = true;
       }
     }
-    
+
     // Unlock rewards based on points
     if (stats.totalPoints >= 300) {
       const swimmer = rewards.find(r => r.id === 'reward-3' && !r.unlocked);
@@ -308,7 +308,7 @@ const checkAndUnlockRewards = (): void => {
         updated = true;
       }
     }
-    
+
     if (stats.totalPoints >= 700) {
       const waterMaster = rewards.find(r => r.id === 'reward-4' && !r.unlocked);
       if (waterMaster) {
@@ -317,7 +317,7 @@ const checkAndUnlockRewards = (): void => {
         updated = true;
       }
     }
-    
+
     // Unlock rewards based on streak
     if (stats.streakDays >= 3) {
       const consistent = rewards.find(r => r.id === 'reward-5' && !r.unlocked);
@@ -327,7 +327,7 @@ const checkAndUnlockRewards = (): void => {
         updated = true;
       }
     }
-    
+
     if (stats.streakDays >= 7) {
       const weeklyChamp = rewards.find(r => r.id === 'reward-6' && !r.unlocked);
       if (weeklyChamp) {
@@ -336,7 +336,7 @@ const checkAndUnlockRewards = (): void => {
         updated = true;
       }
     }
-    
+
     if (updated) {
       saveRewards(rewards);
     }
@@ -368,7 +368,7 @@ export const addCollectedLoot = (item: LootItem): CollectedItem => {
   try {
     const collectedItems = getCollectedLoot();
     const existingItemIndex = collectedItems.findIndex(existing => existing.id === item.id);
-    
+
     if (existingItemIndex !== -1) {
       // Item already exists, increment count
       collectedItems[existingItemIndex].count += 1;
@@ -469,85 +469,43 @@ export const updateDirtinessFromLastShower = (): number => {
   try {
     // Get the current stats to find the last shower date
     const stats = getShowerStats();
-    
+
     // If there's no last shower date, set an initial dirtiness level
     if (!stats.lastShowerDate) {
       // Set initial dirtiness to 3 days for testing
       const initialDirtiness = 3;
       localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(initialDirtiness));
-      
+
       // Update the last shower date in stats
       const date = new Date();
       date.setDate(date.getDate() - initialDirtiness);
       stats.lastShowerDate = date.toISOString();
       updateShowerStats(stats);
-      
+
       console.log(`Set initial dirtiness to ${initialDirtiness} days`);
       return initialDirtiness;
     }
-    
-    // For testing purposes: check if we already have a dirtiness value
-    const currentDirtiness = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
-    if (currentDirtiness) {
-      // Parse the current dirtiness
-      const currentDays = JSON.parse(currentDirtiness);
-      
-      // If we're in testing mode, artificially increment the dirtiness 
-      // (for normal operation we'd use the actual date calculation below)
-      if (currentDays < 7) {
-        // Much lower chance (10%) of increasing dirtiness for testing
-        // This will make days progress about once per 10 checks (approx. 50 seconds per day)
-        // Also add a timestamp check to prevent multiple increments in a short time period
-        
-        // Get the last update timestamp
-        const lastUpdateTimestamp = localStorage.getItem('last_dirtiness_update_timestamp');
-        const now = Date.now();
-        const minTimeBetweenUpdates = 30000; // 30 seconds minimum between updates
-        
-        // Only proceed if enough time has passed since the last update
-        const canUpdate = !lastUpdateTimestamp || 
-                         (now - parseInt(lastUpdateTimestamp, 10)) > minTimeBetweenUpdates;
-        
-        if (canUpdate && Math.random() < 0.1) {
-          // Update the timestamp
-          localStorage.setItem('last_dirtiness_update_timestamp', now.toString());
-          
-          // Only increment by 1 to ensure smooth progression
-          const newDays = currentDays + 1;
-          localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(newDays));
-          
-          // Also update the lastShowerDate in stats to match
-          const newDate = new Date();
-          newDate.setDate(newDate.getDate() - newDays);
-          stats.lastShowerDate = newDate.toISOString();
-          updateShowerStats(stats);
-          
-          console.log(`TESTING: Increased dirtiness to ${newDays} days`);
-          return newDays;
-        }
-        return currentDays;
-      }
-    }
-    
+
+
     // Normal operation calculation (for production)
     // Calculate days difference
     const lastShowerDate = new Date(stats.lastShowerDate);
     const today = new Date();
-    
+
     // Reset time components to get accurate day difference
     lastShowerDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    
+
     // Calculate difference in days
     const diffTime = Math.abs(today.getTime() - lastShowerDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     // Cap at 7 days maximum dirtiness
     const daysSinceShower = Math.min(diffDays, 7);
-    
+
     // Update the last shower days value in storage
     localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(daysSinceShower));
-    
+
     console.log(`Updated dirtiness: ${daysSinceShower} days since last shower`);
     return daysSinceShower;
   } catch (error) {
@@ -584,16 +542,16 @@ export const getLastShowerDays = (): number => {
       const days = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
       return days ? JSON.parse(days) : 0;
     }
-    
+
     // Get the current value first
     const currentDaysStr = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
     const currentDays = currentDaysStr ? JSON.parse(currentDaysStr) : 0;
-    
+
     // Only update if we're not already clean (0 days) to prevent overriding recent showers
     if (currentDays > 0) {
       updateDirtinessFromLastShower();
     }
-    
+
     // Then get the updated value
     const days = localStorage.getItem(STORAGE_KEYS.LAST_SHOWER_DAYS);
     return days ? JSON.parse(days) : 0; // Default to 0 days (today) if not set
@@ -606,12 +564,12 @@ export const getLastShowerDays = (): number => {
 export const setLastShowerDays = (days: number): void => {
   try {
     localStorage.setItem(STORAGE_KEYS.LAST_SHOWER_DAYS, JSON.stringify(days));
-    
+
     // Also update the last shower date in stats based on the number of days
     const stats = getShowerStats();
     const date = new Date();
     date.setDate(date.getDate() - days);
-    
+
     stats.lastShowerDate = date.toISOString();
     updateShowerStats(stats);
   } catch (error) {
@@ -633,10 +591,10 @@ export const resetAllUserData = (): void => {
     localStorage.removeItem(STORAGE_KEYS.SHOWER_IN_PROGRESS); // Reset shower in progress flag
     localStorage.removeItem('last_dirtiness_update_timestamp'); // Clear dirtiness timestamp
     resetOnboarding(); // Reset onboarding but don't remove it
-    
+
     // Re-initialize with default values
     initializeStorage();
-    
+
     // Explicitly set shower in progress to false
     setShowerInProgress(false);
   } catch (error) {
