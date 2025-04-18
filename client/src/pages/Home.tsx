@@ -411,7 +411,7 @@ export default function Home() {
   }, [pauseTimerActive, delayedLoot]);
 
   return (
-    <div className="flex flex-col gap-2 relative">
+    <div className="flex flex-col gap-2 relative pt-12 px-4 md:px-2">
       {/* Confetti effect for level-up */}
       {showConfetti && (
         <Confetti 
